@@ -1,0 +1,129 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  "extends": [
+    "config:best-practices",
+    ":semanticCommits",
+    ":dependencyDashboard",
+    ":prHourlyLimit2",
+    ":prConcurrentLimit10",
+    ":label(renovate)"
+  ],
+
+  "timezone": "Europe/Berlin",
+  "schedule": ["before 13:00 on monday, tuesday, wednesday, thursday, friday"],
+
+  "enabledManagers": [
+    "dockerfile",
+    "docker-compose",
+    "kubernetes",
+    "helm-values",
+    "helm",
+    "terraform",
+    "github-actions",
+    "regex"
+  ],
+
+  "dockerCompose": {
+    "fileMatch": [
+      "(^|/)apps/[^/]+/docker/docker-compose(\\.[a-z]+)?\\.ya?ml$",
+      "(^|/)platforms/docker/docker-compose/.+\\.ya?ml$",
+      "(^|/)docker-compose(\\.[a-z]+)?\\.ya?ml$"
+    ]
+  },
+
+  "kubernetes": {
+    "fileMatch": [
+      "(^|/)gitops/(flux|argo)/clusters/.+\\.ya?ml$",
+      "(^|/)apps/[^/]+/k8s/.+\\.ya?ml$",
+      "(^|/)apps/[^/]+/charts/[^/]+/templates/.+\\.ya?ml$"
+    ]
+  },
+
+  "terraform": {
+    "fileMatch": [
+      "(^|/)infra/.+\\.tf(\\.json)?$",
+      "(^|/)infra/.+\\.tfvars$",
+      "(^|/)infra/.+\\.terraform\\.lock\\.hcl$"
+    ]
+  },
+
+  "github-actions": {
+    "fileMatch": [
+      "(^|/)\\.github/workflows/.+\\.ya?ml$"
+    ]
+  },
+
+  "packageRules": [
+    {
+      "matchDatasources": ["docker"],
+      "labels": ["docker"],
+      "prPriority": 10
+    },
+    {
+      "matchManagers": ["docker-compose", "kubernetes", "helm-values"],
+      "labels": ["runtime"],
+      "groupName": "runtime image bumps (non-major)",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": false
+    },
+    {
+      "matchManagers": ["dockerfile"],
+      "labels": ["build"],
+      "groupName": "base image bumps (non-major)",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": false
+    },
+    {
+      "matchManagers": ["helm", "helm-values"],
+      "labels": ["helm"],
+      "groupName": "Helm chart & values updates",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": false
+    },
+    {
+      "matchManagers": ["terraform"],
+      "labels": ["terraform"],
+      "groupName": "Terraform providers/modules (non-major)",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": false
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "labels": ["ci"],
+      "groupName": "GitHub Actions (non-major)",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "description": "Raise security updates quickly",
+      "matchDepTypes": ["dependencies"],
+      "minimumReleaseAge": "0 days",
+      "separateMinorPatch": true,
+      "labels": ["security"],
+      "prPriority": 20,
+      "matchConfidence": ["high"]
+    },
+    {
+      "description": "Hold back majors unless explicitly approved",
+      "matchUpdateTypes": ["major"],
+      "labels": ["major"],
+      "separateMajorMinor": true,
+      "automerge": false
+    }
+  ],
+
+  "regexManagers": [
+    {
+      "description": "Bump image tags written as plain strings in GitOps files",
+      "fileMatch": [
+        "(^|/)gitops/(flux|argo)/clusters/.+\\.ya?ml$"
+      ],
+      "matchStrings": [
+        "repository:\\s*(?<depName>[-_./a-z0-9]+)\\s*\\n\\s*tag:\\s*(?<currentValue>[-_@:.a-z0-9]+)"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ]
+}
