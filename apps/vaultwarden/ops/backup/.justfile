@@ -1,11 +1,11 @@
 set quiet
 
+backup_dir := "/data"               # directory containing original application data for backup
+staging_dir := "/tmp/backup"        # directory containing prepared application data and exported data for backup
+
 alias s := snapshots
 alias r := restore
 alias b := backup
-
-backup_dir := "/data"               # directory containing original application data for backup
-staging_dir := "/tmp/backup"        # directory containing prepared application data and exported data for backup
 
 restic_cmd := "/usr/bin/restic --verbose=0 --quiet"
 curl_cmd := "curl -fsS -m 10 --retry 5"
