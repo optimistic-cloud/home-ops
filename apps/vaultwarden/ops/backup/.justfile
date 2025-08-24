@@ -16,7 +16,7 @@ help:
 
 [group('commands')]
 [doc('List files in a snapshot from a repository. Supports "latest" as snapshot_id')]
-ls repository snapshot_id:
+ls repository snapshot_id="latest": (check repository)
     just --dotenv-filename {{repository}}.env restic-ls {{snapshot_id}}
 
 [group('commands')]
@@ -41,7 +41,7 @@ stats repository: (check repository)
 
 [group('commands')]
 [doc('Restore a snapshot from a repository. Supports "latest" as snapshot_id')]
-restore repository snapshot_id target_dir: (check repository)
+restore repository snapshot_id="latest" target_dir="/tmp/restore": (check repository)
     just --dotenv-filename {{repository}}.env restic-restore {{snapshot_id}} {{target_dir}}
 
 [private]
