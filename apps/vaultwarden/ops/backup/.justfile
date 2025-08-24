@@ -105,6 +105,7 @@ ping endpoint="":
 pre-backup: (cleanup staging_dir)
     mkdir -p -m 700 {{staging_dir}}
     rsync -a --delete --exclude 'tmp/' --exclude 'db.sqlite3*' {{backup_dir}}/ {{staging_dir}}
+    rsync -a --delete /vaultwarden.env {{staging_dir}}
     sqlite3 {{backup_dir}}/db.sqlite3 ".backup '{{staging_dir}}/db.sqlite3'"
 
 [group('maintenance')]
