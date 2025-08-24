@@ -7,8 +7,6 @@ alias b := backup
 backup_dir := "/data"               # directory containing original application data for backup
 staging_dir := "/tmp/backup"        # directory containing prepared application data and exported data for backup
 
-hc_slug := "test-1"
-
 restic_cmd := "/usr/bin/restic --verbose=0 --quiet"
 curl_cmd := "curl -fsS -m 10 --retry 5"
 
@@ -99,7 +97,7 @@ restic-restore snapshot_id target_dir:
 [doc('healthcheck.io ping')]
 [private]
 ping endpoint="":
-    {{curl_cmd}} -o /dev/null "https://hc-ping.com/{{env('HC_PING_KEY')}}/{{hc_slug}}{{endpoint}}?create=1"
+    {{curl_cmd}} -o /dev/null "https://hc-ping.com/{{env('HC_UUID')}}{{endpoint}}?create=1"
 
 [group('maintenance')]
 [doc('Prepare export directory and backup database')]
