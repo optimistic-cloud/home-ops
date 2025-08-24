@@ -6,6 +6,7 @@ staging_dir := "/tmp/backup"        # directory containing prepared application 
 alias s := snapshots
 alias r := restore
 alias b := backup
+alias repos := repositories
 
 restic_cmd := "/usr/bin/restic --verbose=0 --quiet"
 curl_cmd := "curl -fsS -m 10 --retry 5"
@@ -13,6 +14,11 @@ curl_cmd := "curl -fsS -m 10 --retry 5"
 # This help message
 help:
     just --list
+
+[group('commands')]
+[doc('Get repositories.')]
+repositories:
+    ls *.env 2>/dev/null | sed 's/\.env$//'
 
 [group('commands')]
 [doc('List files in a snapshot from a repository. Supports "latest" as snapshot_id')]
@@ -31,7 +37,7 @@ backup repository: (check repository)
 
 [group('commands')]
 [doc('Get latest n snapshots for a repository')]
-snapshots repository n="1": (check repository)
+snapshots repository  n="1": (check repository)
     just --dotenv-filename {{repository}}.env restic-snapshots {{n}}
 
 [group('commands')]
