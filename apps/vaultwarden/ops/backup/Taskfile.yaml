@@ -1,0 +1,14 @@
+version: '3'
+namespace: vaultwarden
+
+includes:
+  restic:
+    taskfile: https://raw.githubusercontent.com/optimistic-cloud/home-ops/main/apps/vaultwarden/ops/backup/restic.yml
+    internal: true
+
+tasks:
+  backup:
+    cmds:
+      - task: restic:backup
+      - echo "{{.GREETING}}"
+    silent: false
