@@ -1,0 +1,7 @@
+version: '3'
+
+tasks:
+  backup:
+    cmds:
+      - echo "{{.GREETING}}"
+    silent: false
