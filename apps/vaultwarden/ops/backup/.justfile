@@ -9,6 +9,7 @@ alias b := backup
 alias repos := repositories
 
 restic_cmd := "/usr/bin/restic --verbose=0 --quiet"
+restic_log_file := "/var/log/restic.log"
 curl_cmd := "curl -fsS -m 10 --retry 5"
 
 # This help message
@@ -56,12 +57,12 @@ restic-workflow: (ping "/start") restic-backup restic-forget restic-check && pin
 [group('restic')]
 [private]
 restic-init:
-    {{restic_cmd}} init
+    {{restic_cmd}} init 2>&1 | tee -a {{restic_log_file}}
 
 [group('restic')]
 [private]
 restic-ls snapshot_id:
-    {{restic_cmd}} ls {{snapshot_id}}
+    {{restic_cmd}} ls {{snapshot_id}} 2>&1 | tee -a {{restic_log_file}}
 
 [group('restic')]
 [private]
@@ -70,27 +71,28 @@ restic-backup: pre-backup && (cleanup staging_dir)
         --exclude-caches --one-file-system \
         --tag app='vaultwarden' \
         --tag vaultwarden_version=`{{curl_cmd}} http://vaultwarden/api/config | jq -r ".version"` \
-        --tag restic_version=`restic version | cut -d ' ' -f2`
+        --tag restic_version=`restic version | cut -d ' ' -f2` \
+        2>&1 | tee -a {{restic_log_file}}
 
 [group('restic')]
 [private]
 restic-forget keep_within="180d":
-    {{restic_cmd}} forget --prune --keep-within={{keep_within}}
+    {{restic_cmd}} forget --prune --keep-within={{keep_within}} 2>&1 | tee -a {{restic_log_file}}
 
 [group('restic')]
 [private]
 restic-check subset="25%":
-    {{restic_cmd}} check --read-data-subset {{subset}}
+    {{restic_cmd}} check --read-data-subset {{subset}} 2>&1 | tee -a {{restic_log_file}}
 
 [group('restic')]
 [private]
 restic-snapshots n:
-    {{restic_cmd}} snapshots --latest {{n}}
+    {{restic_cmd}} snapshots --latest {{n}} 2>&1 | tee -a {{restic_log_file}}
 
 [group('restic')]
 [private]
 restic-stats:
-    {{restic_cmd}} stats
+    {{restic_cmd}} stats 2>&1 | tee -a {{restic_log_file}}
 
 [group('restic')]
 [private]
