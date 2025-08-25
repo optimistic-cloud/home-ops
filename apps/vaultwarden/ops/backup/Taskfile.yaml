@@ -3,7 +3,7 @@ namespace: vaultwarden
 
 includes:
   restic:
-    taskfile: https://raw.githubusercontent.com/optimistic-cloud/home-ops/main/apps/vaultwarden/ops/backup/restic.yml
+    taskfile: https://raw.githubusercontent.com/optimistic-cloud/home-ops/main/apps/vaultwarden/ops/backup/restic.yaml
     internal: true
 
 tasks:
