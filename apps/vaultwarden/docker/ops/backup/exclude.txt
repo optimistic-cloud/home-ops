@@ -1,0 +1,2 @@
+/opt/vaultwarden/data/db.sqlite3*
+/opt/vaultwarden/data/tmp/*
