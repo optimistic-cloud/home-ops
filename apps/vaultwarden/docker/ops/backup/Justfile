@@ -1,0 +1,81 @@
+set dotenv-load
+
+restic_cmd := "restic --verbose=0 --quiet"
+curl_cmd := "curl -fsS -m 10 --retry 5"
+
+alias i := init
+alias b := backup
+alias s := snapshots
+
+help:
+    just --list --list-submodules
+
+[group('commands')]
+[doc('Initialize restic repository for vaultwarden in ionos')]
+init:
+    restic init
+
+[group('commands')]
+[doc('List files in a snapshot from vaultwarden repository. Supports "latest" as snapshot_id')]
+ls snapshot_id="latest":
+    restic ls {{snapshot_id}}
+
+[group('commands')]
+[doc('Get latest n snapshots for vaultwarden repository')]
+snapshots n="1":
+    restic snapshots --latest {{n}}
+
+[group('commands')]
+[doc('Get stats for vaultwarden repository')]
+stats:
+    restic stats
+
+[group('commands')]
+[doc('Backup vaultwarden to ionos')]
+backup:
+    #!/usr/bin/env sh
+    set -euo pipefail
+
+    backup_dir="/opt/vaultwarden"
+    export_dir="/tmp/vaultwarden/export"
+
+    ping_hc() {
+        curl -fsS -m 10 --retry 5 -o /dev/null "https://hc-ping.com/${HC_UUID}${1}?create=1" || true
+    }
+
+    cleanup() { rm -rf "$export_dir"; }
+    trap cleanup EXIT
+
+    error() { ping_hc "/fail"; }
+    trap error ERR
+
+    ping_hc "/start"
+
+    rm -rf "$export_dir" && mkdir -p -m 700 "$export_dir"
+    sqlite3 "$backup_dir/data/db.sqlite3" ".backup '$export_dir/db.sqlite3'"
+
+    {{restic_cmd}} backup \
+        --files-from ./include.txt \
+        --exclude-file ./exclude.txt \
+        --exclude-caches \
+        --one-file-system \
+        --tag app=vaultwarden \
+        --tag git_commit=`git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1` \
+        --tag restic_version=`restic version | cut -d ' ' -f2`
+    {{restic_cmd}} forget --prune --keep-within=180d
+    {{restic_cmd}} check --read-data-subset 25%
+
+    ping_hc ""
+
+[group('commands')]
+[doc('Restore vaultwarden data')]
+restore snapshot_id="latest" restore_dir="/tmp/vaultwarden/restore":
+    #!/usr/bin/env sh
+    set -euo pipefail
+
+    cleanup() { rm -rf "{{restore_dir}}"; }
+    trap cleanup ERR
+
+    rm -rf "{{restore_dir}}" && mkdir -p -m 700 "{{restore_dir}}"
+
+    {{restic_cmd}} restore {{snapshot_id}} --target "{{restore_dir}}"
