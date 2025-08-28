@@ -11,7 +11,7 @@ help:
     just --list --list-submodules
 
 [group('commands')]
-[doc('Initialize restic repository for vaultwarden in ionos')]
+[doc('Initialize restic repository for vaultwarden')]
 init:
     restic init
 
@@ -31,7 +31,7 @@ stats:
     restic stats
 
 [group('commands')]
-[doc('Backup vaultwarden to ionos')]
+[doc('Backup vaultwarden')]
 backup:
     #!/usr/bin/env sh
     set -euo pipefail
