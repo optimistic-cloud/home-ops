@@ -36,6 +36,11 @@ backup:
     #!/usr/bin/env sh
     set -euo pipefail
 
+    # Acquire lockfile to prevent concurrent execution
+    lockfile="/tmp/vaultwarden-backup.lock"
+    exec 200>"$lockfile"
+    flock -n 200 || { echo "Another backup is running. Exiting."; exit 1; }
+
     backup_dir="/opt/vaultwarden"
     export_dir="/tmp/vaultwarden/export"
 
@@ -72,6 +77,11 @@ backup:
 restore snapshot_id="latest" restore_dir="/tmp/vaultwarden/restore":
     #!/usr/bin/env sh
     set -euo pipefail
+
+    # Acquire lockfile to prevent concurrent execution
+    lockfile="/tmp/vaultwarden-restore.lock"
+    exec 200>"$lockfile"
+    flock -n 200 || { echo "Another restore is running. Exiting."; exit 1; }
 
     cleanup() { rm -rf "{{restore_dir}}"; }
     trap cleanup ERR
