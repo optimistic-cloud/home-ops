@@ -69,6 +69,8 @@ backup:
         --tag restic_version=`restic version | cut -d ' ' -f2`
     {{restic_cmd}} check --read-data-subset 25%
 
+    rm -rf "$export_dir"
+
     ping_hc ""
 
 [group('commands')]
