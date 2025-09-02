@@ -43,6 +43,6 @@ services:
     secrets:
       - restic-password-file
     volumes:
-      - ./crontab:/etc/
+      - ./crontab:/etc/crontab
 
       - ./vaultwarden/:/opt/vaultwarden/:ro
