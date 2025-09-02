@@ -45,6 +45,5 @@ services:
     volumes:
       - ./crontab:/etc/crontab
       
-      - ./vaultwarden/data:/opt/vaultwarden/data/:ro
-      - ./vaultwarden/.env:/opt/vaultwarden/.env:ro
-      - ./vaultwarden/backup:/home/toolkit/vaultwarden/:ro
+      # data/ .env backup-config
+      - ./vaultwarden/:/opt/vaultwarden/:ro
