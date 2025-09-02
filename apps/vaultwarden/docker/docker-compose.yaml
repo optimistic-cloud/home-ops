@@ -43,9 +43,17 @@ services:
       - pocket-id
     environment:
       TZ: Europe/Berlin
+      HC_UUID: ${HC_UUID}
     volumes:
       - ./crontab:/etc/crontab
-
+      # data/
+      # backup.sh
+      # s3-1.env
+      #   restic repo
+      #   restic pass
+      #   aws_key
+      #   aws_secret
+      # s3-2.env
       - ./vaultwarden/:/opt/vaultwarden/:ro
       - ./opengist/:/opt/opengist/:ro
       - ./gitea/:/opt/gitea/:ro
