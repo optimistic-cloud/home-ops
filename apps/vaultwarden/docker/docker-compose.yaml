@@ -43,12 +43,8 @@ services:
     secrets:
       - restic-password-file
     volumes:
-      - ./vaultwarden:/opt/vaultwarden/data/:ro
-      - ./.env:/opt/vaultwarden/.env:ro
-
-      - ./Justfile:/home/toolkit/Justfile:ro
-      - ./.backup.env:/home/toolkit/.env:ro
-      - ./include.txt:/home/toolkit/include.txt:ro
-      - ./exclude.txt:/home/toolkit/exclude.txt:ro
-
       - ./crontab:/etc/crontab
+      
+      - ./vaultwarden/data:/opt/vaultwarden/data/:ro
+      - ./vaultwarden/.env:/opt/vaultwarden/.env:ro
+      - ./vaultwarden/backup:/home/toolkit/vaultwarden/
