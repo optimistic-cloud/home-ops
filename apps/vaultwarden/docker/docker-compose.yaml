@@ -1,0 +1,54 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:1.34.1
+    container_name: vaultwarden
+    restart: unless-stopped
+    read_only: true
+    environment:
+      TZ: Europe/Berlin
+
+      DOMAIN: "https://vaultwarden.${DOMAIN}"
+      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
+
+      SIGNUPS_ALLOWED: false
+      INVITATIONS_ALLOWED: false
+
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURITY: ${SMTP_SECURITY}
+      SMTP_USERNAME: ${VAULTWARDEN_SMTP_USERNAME}
+      SMTP_PASSWORD: ${VAULTWARDEN_SMTP_PASSWORD}
+      SMTP_FROM: ${VAULTWARDEN_SMTP_FROM}
+
+    volumes:
+      - "./vaultwarden/:/data/"
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.${DOMAIN}`)"
+      - "traefik.http.routers.vaultwarden.entrypoints=https"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
+      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
+
+  backup:
+    image: ghcr.io/optimistic-cloud/toolkit
+    container_name: vaultwarden-backup
+    restart: unless-stopped
+    hostname: vaultwarden-backup
+    user: "1000:1000"
+    depends_on:
+      - vaultwarden
+    environment:
+      TZ: Europe/Berlin
+    secrets:
+      - restic-password-file
+    volumes:
+      - ./vaultwarden:/opt/vaultwarden/data/:ro
+      - ./.env:/opt/vaultwarden/.env:ro
+
+      - ./Justfile:/home/toolkit/Justfile:ro
+      - ./.backup.env:/home/toolkit/.env:ro
+      - ./include.txt:/home/toolkit/include.txt:ro
+      - ./exclude.txt:/home/toolkit/exclude.txt:ro
+
+      - ./crontab:/etc/crontab
