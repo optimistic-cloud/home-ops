@@ -47,4 +47,4 @@ services:
       
       - ./vaultwarden/data:/opt/vaultwarden/data/:ro
       - ./vaultwarden/.env:/opt/vaultwarden/.env:ro
-      - ./vaultwarden/backup:/home/toolkit/vaultwarden/
+      - ./vaultwarden/backup:/home/toolkit/vaultwarden/:ro
