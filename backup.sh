@@ -6,6 +6,9 @@ lockfile="/tmp/vaultwarden-backup.lock"
 exec 200>"$lockfile"
 flock -n 200 || { echo "Another backup is running. Exiting."; exit 1; }
 
+restic_cmd=restic --verbose=0 --quiet
+curl_cmd=curl -fsS -m 10 --retry 5
+
 backup_dir="/opt/vaultwarden"
 export_dir="/tmp/vaultwarden/export"
 
@@ -27,12 +30,12 @@ sqlite3 "$backup_dir/data/db.sqlite3" ".backup '$export_dir/db.sqlite3'"
 git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 restic_version=$(restic version | cut -d ' ' -f2)
 
-# loop over env files end execute
+# loop over env files end execute restic
 for file in *.env; do
     set -a
     source "$file"
     
-    restic --verbose=0 --quiet backup \
+    ${restic_cmd} backup \
       --files-from ./include.txt \
       --exclude-file ./exclude.txt \
       --exclude-caches \
@@ -41,7 +44,7 @@ for file in *.env; do
       --tag git_commit=${git_commit} \
       --tag restic_version=${restic_version}
     
-    restic --verbose=0 --quiet check --read-data-subset 25%
+    ${restic_cmd} check --read-data-subset 25%
 
     set +a
 done
