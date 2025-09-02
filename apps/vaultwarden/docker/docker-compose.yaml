@@ -21,7 +21,7 @@ services:
       SMTP_FROM: ${VAULTWARDEN_SMTP_FROM}
 
     volumes:
-      - "./vaultwarden/:/data/"
+      - "./vaultwarden/data:/data/"
 
     labels:
       - "traefik.enable=true"
