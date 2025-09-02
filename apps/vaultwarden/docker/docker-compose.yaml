@@ -21,28 +21,34 @@ services:
       SMTP_FROM: ${VAULTWARDEN_SMTP_FROM}
 
     volumes:
-      - "./vaultwarden/data:/data/"
+      - ./vaultwarden/data:/data/
 
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.${DOMAIN}`)"
-      - "traefik.http.routers.vaultwarden.entrypoints=https"
-      - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
-      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
+      - traefik.enable=true
+      - traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.${DOMAIN}`)
+      - traefik.http.routers.vaultwarden.entrypoints=https
+      - traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt
+      - traefik.http.services.vaultwarden.loadbalancer.server.port=80
 
   backup:
     image: ghcr.io/optimistic-cloud/toolkit
-    container_name: vaultwarden-backup
+    container_name: backup-toolkit
     restart: unless-stopped
-    hostname: vaultwarden-backup
+    hostname: ${WORKLOAD}-backup-toolkit
     user: "1000:1000"
     depends_on:
       - vaultwarden
+      - opengist
+      - gitea
+      - pocket-id
     environment:
       TZ: Europe/Berlin
-    secrets:
-      - restic-password-file
     volumes:
       - ./crontab:/etc/crontab
 
       - ./vaultwarden/:/opt/vaultwarden/:ro
+      - ./opengist/:/opt/opengist/:ro
+      - ./gitea/:/opt/gitea/:ro
+      - ./pocket-id/:/opt/pocket-id/:ro
+
+
