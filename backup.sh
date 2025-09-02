@@ -13,7 +13,7 @@ backup_dir="/opt/vaultwarden"
 export_dir="/tmp/vaultwarden/export"
 
 ping_hc() {
-    curl -fsS -m 10 --retry 5 -o /dev/null "https://hc-ping.com/${HC_UUID}${1}?create=1" || true
+    ${curl_cmd} -o /dev/null "https://hc-ping.com/${HC_UUID}${1}?create=1" || true
 }
 
 cleanup() { rm -rf "$export_dir"; }
