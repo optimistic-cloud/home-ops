@@ -43,7 +43,6 @@ services:
     secrets:
       - restic-password-file
     volumes:
-      - ./crontab:/etc/crontab
-      
-      # data/ .env backup-config
+      - ./crontab:/etc/
+
       - ./vaultwarden/:/opt/vaultwarden/:ro
