@@ -4,21 +4,9 @@ services:
     container_name: vaultwarden
     restart: unless-stopped
     read_only: true
-    environment:
-      TZ: Europe/Berlin
-
-      DOMAIN: "https://vaultwarden.${DOMAIN}"
-      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
-
-      SIGNUPS_ALLOWED: false
-      INVITATIONS_ALLOWED: false
-
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_SECURITY: ${SMTP_SECURITY}
-      SMTP_USERNAME: ${VAULTWARDEN_SMTP_USERNAME}
-      SMTP_PASSWORD: ${VAULTWARDEN_SMTP_PASSWORD}
-      SMTP_FROM: ${VAULTWARDEN_SMTP_FROM}
+    env_file:
+      - .env
+      - ./vaultwarden/.env
 
     volumes:
       - ./vaultwarden/data:/data/
@@ -46,6 +34,8 @@ services:
       HC_UUID: ${HC_UUID}
     volumes:
       - ./crontab:/etc/crontab
+      - ./.env:/opt/.env
+      
       # data/
       # backup.sh
       # s3-1.env

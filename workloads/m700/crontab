@@ -1,0 +1,13 @@
+# Crontab format:
+#   https://github.com/aptible/supercronic#crontab-format
+# ┌────────────── Second
+# │ ┌──────────── Minute
+# │ │ ┌────────── Hour
+# │ │ │ ┌──────── Day of month
+# │ │ │ │ ┌────── Month
+# │ │ │ │ │ ┌──── Day of week
+# │ │ │ │ │ │ ┌── Year
+# │ │ │ │ │ │ │ ┌ Command
+# ┴ ┴ ┴ ┴ ┴ ┴ ┴ ┴
+# * * * * * * * printf '%s\n' 'Hello world!'
+0 11,17,23 * * * sh /opt/vaultwarden/backup-config/backup.sh
