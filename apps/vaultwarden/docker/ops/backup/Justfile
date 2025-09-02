@@ -67,7 +67,6 @@ backup:
         --tag app=vaultwarden \
         --tag git_commit=`git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1` \
         --tag restic_version=`restic version | cut -d ' ' -f2`
-    {{restic_cmd}} forget --prune --keep-within=180d
     {{restic_cmd}} check --read-data-subset 25%
 
     ping_hc ""
