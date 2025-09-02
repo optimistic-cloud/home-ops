@@ -6,8 +6,8 @@ lockfile="/tmp/vaultwarden-backup.lock"
 exec 200>"$lockfile"
 flock -n 200 || { echo "Another backup is running. Exiting."; exit 1; }
 
-restic_cmd=restic --verbose=0 --quiet
-curl_cmd=curl -fsS -m 10 --retry 5
+restic_cmd="restic --verbose=0 --quiet"
+curl_cmd="curl -fsS -m 10 --retry 5"
 
 backup_dir="/opt/vaultwarden"
 export_dir="/tmp/vaultwarden/export"
