@@ -24,6 +24,7 @@ ping_hc "/start"
 rm -rf "$export_dir" && mkdir -p -m 700 "$export_dir"
 sqlite3 "$backup_dir/data/db.sqlite3" ".backup '$export_dir/db.sqlite3'"
 
+# loop over env files end execute
 restic --verbose=0 --quiet backup \
     --files-from ./include.txt \
     --exclude-file ./exclude.txt \
