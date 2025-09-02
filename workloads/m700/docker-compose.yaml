@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     read_only: true
     env_file:
-      - .env
+      - common.env
       - ./vaultwarden/.env
 
     volumes:
@@ -22,19 +22,18 @@ services:
     image: ghcr.io/optimistic-cloud/toolkit
     container_name: backup-toolkit
     restart: unless-stopped
-    hostname: ${HOSTNAME}
+    hostname: m700.optimistic.cloud
     user: "1000:1000"
     depends_on:
       - vaultwarden
       - opengist
       - gitea
       - pocket-id
-    environment:
-      TZ: Europe/Berlin
-      HC_UUID: ${HC_UUID}
+    env_file:
+      - backup.env
     volumes:
       - ./crontab:/etc/crontab
-      - ./.env:/opt/.env
+      - ./common.env:/opt/common.env
 
       - ./vaultwarden/:/opt/vaultwarden/:ro
       - ./opengist/:/opt/opengist/:ro
