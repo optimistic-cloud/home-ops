@@ -60,6 +60,35 @@ services:
       - "traefik.http.routers.gitea.tls.certresolver=letsencrypt"                                                                                                                                             
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
 
+  pocket-id:
+    image: ghcr.io/pocket-id/pocket-id:v1.6.4-distroless
+    container_name: pocket-id
+    restart: unless-stopped
+    user: "1000:1000"
+    read_only: true
+    depends_on:
+      traefik:
+        condition: service_healthy
+    env_file:
+      - .env
+      - ./pocket-id/.env
+    
+    volumes:
+      - "./pocket-id:/app/data"
+      - "./pocket-id.encfile:/app/data/pocket-id.encfile:ro"
+    healthcheck:
+      test: [ "CMD", "/app/pocket-id", "healthcheck" ]
+      interval: 3m00s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pocket-id-dashboard.rule=Host(`id.${DOMAIN}`)"
+      - "traefik.http.routers.pocket-id-dashboard.entrypoints=https"
+      - "traefik.http.routers.pocket-id-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.services.pocket-id-dashboard.loadbalancer.server.port=1411"
+
   backup:
     image: ghcr.io/optimistic-cloud/toolkit
     container_name: backup-toolkit
