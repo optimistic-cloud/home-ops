@@ -1,0 +1,2 @@
+/opt/gitea/data
+/opt/gitea/config

@@ -40,6 +40,26 @@ services:
       - "traefik.http.routers.gist.tls.certresolver=letsencrypt"
       - "traefik.http.services.gist.loadbalancer.server.port=6157"
 
+  gitea:
+    image: docker.gitea.com/gitea:1.24.3-rootless
+    container_name: gitea
+    restart: unless-stopped
+    user: "1000:1000"
+    #read_only: true
+    env_file:
+      - .env
+      - ./gitea/.env
+    volumes:
+      - ./gitea/data:/var/lib/gitea
+      - ./gitea/config:/etc/gitea
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitea.rule=Host(`git.${DOMAIN}`)"                                                                                                                                               
+      - "traefik.http.routers.gitea.entrypoints=https"                                                                                                                                                        
+      - "traefik.http.routers.gitea.tls.certresolver=letsencrypt"                                                                                                                                             
+      - "traefik.http.services.gitea.loadbalancer.server.port=3000"
+
   backup:
     image: ghcr.io/optimistic-cloud/toolkit
     container_name: backup-toolkit
@@ -56,3 +76,4 @@ services:
 
       - ./vaultwarden/:/opt/vaultwarden/:ro
       - ./opengist/:/opt/opengist/:ro
+      - ./gitea/:/opt/gitea/:ro
