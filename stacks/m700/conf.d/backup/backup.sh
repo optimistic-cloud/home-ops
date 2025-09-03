@@ -3,6 +3,21 @@ set -euo pipefail
 
 app=$1
 
+if [ ! -d "/opt/${app}/conf.d/backup" ]; then
+  echo "Error: Directory /opt/${app}/conf.d/backup does not exist."
+  exit 1
+fi
+
+if [ ! -f "/opt/${app}/conf.d/backup/include.txt" ]; then
+  echo "Error: Include file /opt/${app}/conf.d/backup/include.txt does not exist."
+  exit 1
+fi
+
+if [ ! -f "/opt/${app}/conf.d/backup/exclude.txt" ]; then
+  echo "Error: Exclude file /opt/${app}/conf.d/backup/exclude.txt does not exist."
+  exit 1
+fi
+
 # Acquire lockfile to prevent concurrent execution
 lockfile="/tmp/${app}-backup.lock"
 exec 200>"$lockfile"
@@ -14,7 +29,7 @@ curl_cmd="curl -fsS -m 10 --retry 5"
 backup_dir="/opt/${app}"
 export_dir="/tmp/${app}/export"
 
-ping_hc() { ${curl_cmd} -o /dev/null "https://hc-ping.com/${HC_PING_KEY}/${app}${1}?create=1" || true; }
+ping_hc() { ${curl_cmd} -o /dev/null "https://hc-ping.com/${HC_PING_KEY}/${app}-backup${1}?create=1" || true; }
 
 cleanup() { rm -rf "$export_dir"; }
 trap cleanup EXIT
@@ -39,6 +54,7 @@ for file in providers/*.env; do
     source "$file"
     
     ${restic_cmd} backup \
+      /opt/.env \
       --files-from /opt/${app}/conf.d/backup/include.txt \
       --exclude-file /opt/${app}/conf.d/backup/exclude.txt \
       --exclude-caches \
