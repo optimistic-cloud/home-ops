@@ -68,6 +68,8 @@ services:
     user: "1000:1000"
     depends_on:
       - vaultwarden
+      - opengist
+      - gitea
     env_file:
       - ./conf.d/backup/.env
     volumes:
