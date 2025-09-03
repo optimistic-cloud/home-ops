@@ -74,7 +74,9 @@ services:
       - ./conf.d/backup/.env
     volumes:
       - ./conf.d/backup/crontab:/etc/crontab
-      
+      - ./conf.d/backup/backup.sh:/opt/conf.d/backup/backup.sh
+      - ./conf.d/backup/providers:/opt/conf.d/backup/providers
+
       - ./.env:/opt/.env
 
       - ./vaultwarden/:/opt/vaultwarden/:ro

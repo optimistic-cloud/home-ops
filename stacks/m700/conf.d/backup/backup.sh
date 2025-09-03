@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -euo pipefail
 
-app=gitea
+app=$1
 
 # Acquire lockfile to prevent concurrent execution
 lockfile="/tmp/${app}-backup.lock"
@@ -25,20 +25,22 @@ trap error ERR
 ping_hc "/start"
 
 rm -rf "$export_dir" && mkdir -p -m 700 "$export_dir"
-sqlite3 "$backup_dir/data/db.sqlite3" ".backup '$export_dir/db.sqlite3'"
+
+source /opt/${app}/conf.d/backup/backup-export.sh
+export_data $backup_dir $export_dir $app
 
 git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 restic_version=$(restic version | cut -d ' ' -f2)
 
-for file in *.env; do
+for file in providers/*.env; do
   [ -f "$file" ] || continue
   (
     set -a
     source "$file"
     
     ${restic_cmd} backup \
-      --files-from ./include.txt \
-      --exclude-file ./exclude.txt \
+      --files-from /opt/${app}/conf.d/backup/include.txt \
+      --exclude-file /opt/${app}/conf.d/backup/exclude.txt \
       --exclude-caches \
       --one-file-system \
       --tag app=${app} \
