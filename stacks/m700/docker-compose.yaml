@@ -1,4 +1,64 @@
 services:
+  traefik:
+    image: traefik:v3.5.0
+    container_name: traefik
+    restart: unless-stopped
+      #read_only: true
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    env_file:
+      - .env
+      - ./traefik/.env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/data/acme.json:/acme.json
+      - ./traefik/data/traefik.yml:/etc/traefik/traefik.yml:ro
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.${DOMAIN}`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=https"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=dashboard-oidc@docker"
+
+      # https://main.traefik-oidc-auth.pages.dev/docs/getting-started
+      - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Secret=${TRAEFIK_OIDC_SECRET}"
+      - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.Url=https://id.${DOMAIN}"
+      - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.ClientId=${TRAEFIK_OIDC_CLIENT_ID}"
+      - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.ClientSecret=${TRAEFIK_OIDC_CLIENT_SECRET}"
+      - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.UsePkce=true"
+      - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.Scopes=openid,profile,email"
+      # - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.authorization.assertClaims[0].name=groups"
+      # - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.authorization.assertClaims[0].anyOf=optimistic_cloud_parents"
+
+      # 1) Catch domain1.com on HTTP and HTTPS
+      - "traefik.http.routers.redirect-domain1.rule=Host(`tryrocket.cloud`)"
+      - "traefik.http.routers.redirect-domain1.entrypoints=http,https"
+
+      # 2) Tell Traefik to terminate TLS here with the ACME resolver
+      - "traefik.http.routers.redirect-domain1.tls=true"
+      - "traefik.http.routers.redirect-domain1.tls.certresolver=letsencrypt"
+
+      # 3) Attach the redirectRegex middleware (defined inline below)
+      - "traefik.http.routers.redirect-domain1.middlewares=redirect-to-domain2@docker"
+      - "traefik.http.routers.redirect-domain1.service=noop-service"
+
+      # 4) Dummy “no-op” service so Traefik has something to bind
+      - "traefik.http.services.noop-service.loadbalancer.server.port=80"
+
+      # 5) Inline middleware definition:
+      - "traefik.http.middlewares.redirect-to-domain2.redirectregex.regex=^https?://tryrocket\\.cloud/(.*)"
+      - "traefik.http.middlewares.redirect-to-domain2.redirectregex.replacement=https://optimistic.cloud/$$1"
+      - "traefik.http.middlewares.redirect-to-domain2.redirectregex.permanent=true"
+
   vaultwarden:
     image: vaultwarden/server:1.34.1
     container_name: vaultwarden
@@ -72,10 +132,9 @@ services:
     env_file:
       - .env
       - ./pocket-id/.env
-    
     volumes:
-      - "./pocket-id:/app/data"
-      - "./pocket-id.encfile:/app/data/pocket-id.encfile:ro"
+      - ./pocket-id/data:/app/data
+      - ./pocket-id/.encfile:/app/data/pocket-id.encfile:ro
     healthcheck:
       test: [ "CMD", "/app/pocket-id", "healthcheck" ]
       interval: 3m00s
@@ -84,10 +143,10 @@ services:
       start_period: 60s
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pocket-id-dashboard.rule=Host(`id.${DOMAIN}`)"
-      - "traefik.http.routers.pocket-id-dashboard.entrypoints=https"
-      - "traefik.http.routers.pocket-id-dashboard.tls.certresolver=letsencrypt"
-      - "traefik.http.services.pocket-id-dashboard.loadbalancer.server.port=1411"
+      - "traefik.http.routers.pocket-id.rule=Host(`id.${DOMAIN}`)"
+      - "traefik.http.routers.pocket-id.entrypoints=https"
+      - "traefik.http.routers.pocket-id.tls.certresolver=letsencrypt"
+      - "traefik.http.services.pocket-id.loadbalancer.server.port=1411"
 
   backup:
     image: ghcr.io/optimistic-cloud/toolkit
@@ -112,3 +171,4 @@ services:
       - ./opengist/:/opt/opengist/:ro
       - ./gitea/:/opt/gitea/:ro
       - ./pocket-id/:/opt/pocket-id/:ro
+      - ./traefik/:/opt/traefik/:ro

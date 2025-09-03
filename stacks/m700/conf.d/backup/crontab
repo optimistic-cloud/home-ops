@@ -10,6 +10,8 @@
 # │ │ │ │ │ │ │ ┌ Command
 # ┴ ┴ ┴ ┴ ┴ ┴ ┴ ┴
 # * * * * * * * printf '%s\n' 'Hello world!'
-0 11,17,23 * * * cd /opt/conf.d/backup/ && sh backup.sh vaultwarden
-2 23 * * *       cd /opt/conf.d/backup/ && sh backup.sh opengist
-4 23 * * *       cd /opt/conf.d/backup/ && sh backup.sh gitea
+@daily cd /opt/conf.d/backup/ && sh backup.sh vaultwarden
+@daily cd /opt/conf.d/backup/ && sh backup.sh opengist
+@daily cd /opt/conf.d/backup/ && sh backup.sh gitea
+@weekly cd /opt/conf.d/backup/ && sh backup.sh pocket-id
+@weekly cd /opt/conf.d/backup/ && sh backup.sh traefik
