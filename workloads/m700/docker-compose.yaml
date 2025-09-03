@@ -12,11 +12,11 @@ services:
       - ./vaultwarden/data:/data/
 
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.${DOMAIN}`)
-      - traefik.http.routers.vaultwarden.entrypoints=https
-      - traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt
-      - traefik.http.services.vaultwarden.loadbalancer.server.port=80
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.${DOMAIN}`)"
+      - "traefik.http.routers.vaultwarden.entrypoints=https"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
+      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
 
   backup:
     image: ghcr.io/optimistic-cloud/toolkit
@@ -26,9 +26,6 @@ services:
     user: "1000:1000"
     depends_on:
       - vaultwarden
-      - opengist
-      - gitea
-      - pocket-id
     env_file:
       - backup.env
     volumes:
@@ -36,8 +33,3 @@ services:
       - ./.env:/opt/.env
 
       - ./vaultwarden/:/opt/vaultwarden/:ro
-      - ./opengist/:/opt/opengist/:ro
-      - ./gitea/:/opt/gitea/:ro
-      - ./pocket-id/:/opt/pocket-id/:ro
-
-
