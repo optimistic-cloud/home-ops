@@ -33,3 +33,4 @@ services:
       - ./.env:/opt/.env
 
       - ./vaultwarden/:/opt/vaultwarden/:ro
+      - ./opengist/:/opt/opengist/:ro
