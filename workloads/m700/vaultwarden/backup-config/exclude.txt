@@ -1,2 +1,3 @@
-/opt/vaultwarden/data/db.sqlite3*
-/opt/vaultwarden/data/tmp/*
+vaultwarden/data/db.sqlite3*
+vaultwarden/data/tmp
+vaultwarden/backup-config

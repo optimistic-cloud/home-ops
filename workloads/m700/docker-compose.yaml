@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     read_only: true
     env_file:
-      - common.env
+      - .env
       - ./vaultwarden/.env
 
     volumes:
@@ -33,7 +33,7 @@ services:
       - backup.env
     volumes:
       - ./crontab:/etc/crontab
-      - ./common.env:/opt/common.env
+      - ./.env:/opt/.env
 
       - ./vaultwarden/:/opt/vaultwarden/:ro
       - ./opengist/:/opt/opengist/:ro

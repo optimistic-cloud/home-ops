@@ -1,3 +1,4 @@
-/opt/common.env
-/opt/vaultwarden/*
-/tmp/vaultwarden/export/*
+/opt/.env
+/opt/vaultwarden/.env
+/opt/vaultwarden/data
+/tmp/vaultwarden/export/db.sqlite3
