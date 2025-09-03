@@ -1,0 +1,3 @@
+/opt/opengist/data/opengist.db*
+/opt/opengist/data/tmp
+/opt/opengist/data/log

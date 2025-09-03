@@ -1,2 +1,0 @@
-/opt/opengist/*
-/tmp/opengist/export/*
