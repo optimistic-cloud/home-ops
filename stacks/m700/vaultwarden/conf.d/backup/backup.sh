@@ -1,18 +1,20 @@
   #!/usr/bin/env sh
   set -euo pipefail
 
+  app=vaultwarden
+
   # Acquire lockfile to prevent concurrent execution
-  lockfile="/tmp/vaultwarden-backup.lock"
+  lockfile="/tmp/${app}-backup.lock"
   exec 200>"$lockfile"
   flock -n 200 || { echo "Another backup is running. Exiting."; exit 1; }
 
   restic_cmd="restic --verbose=0 --quiet"
   curl_cmd="curl -fsS -m 10 --retry 5"
 
-  backup_dir="/opt/vaultwarden"
-  export_dir="/tmp/vaultwarden/export"
+  backup_dir="/opt/${app}"
+  export_dir="/tmp/${app}/export"
 
-  ping_hc() { ${curl_cmd} -o /dev/null "https://hc-ping.com/${HC_UUID}${1}?create=1" || true; }
+  ping_hc() { ${curl_cmd} -o /dev/null "https://hc-ping.com/${HC_PING_KEY}/${app}${1}?create=1" || true; }
 
   cleanup() { rm -rf "$export_dir"; }
   trap cleanup EXIT
@@ -39,7 +41,7 @@
         --exclude-file ./exclude.txt \
         --exclude-caches \
         --one-file-system \
-        --tag app=vaultwarden \
+        --tag app=${app} \
         --tag git_commit=${git_commit} \
         --tag restic_version=${restic_version}
       

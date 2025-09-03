@@ -11,5 +11,5 @@
 # ┴ ┴ ┴ ┴ ┴ ┴ ┴ ┴
 # * * * * * * * printf '%s\n' 'Hello world!'
 0 11,17,23 * * * cd /opt/vaultwarden/conf.d/backup/ && sh backup.sh
-2 11,17,23 * * * cd /opt/opengist/conf.d/backup/ && sh backup.sh
-4 11,17,23 * * * cd /opt/gitea/conf.d/backup/ && sh backup.sh
+2 23 * * * cd /opt/opengist/conf.d/backup/ && sh backup.sh
+4 23 * * * cd /opt/gitea/conf.d/backup/ && sh backup.sh

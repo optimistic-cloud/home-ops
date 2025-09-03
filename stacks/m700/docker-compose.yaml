@@ -69,9 +69,10 @@ services:
     depends_on:
       - vaultwarden
     env_file:
-      - backup.env
+      - ./conf.d/backup/.env
     volumes:
-      - ./crontab:/etc/crontab
+      - ./conf.d/backup/crontab:/etc/crontab
+      
       - ./.env:/opt/.env
 
       - ./vaultwarden/:/opt/vaultwarden/:ro

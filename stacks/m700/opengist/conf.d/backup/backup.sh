@@ -1,54 +1,56 @@
-  #!/usr/bin/env sh
-  set -euo pipefail
+#!/usr/bin/env sh
+set -euo pipefail
 
-  # Acquire lockfile to prevent concurrent execution
-  lockfile="/tmp/opengist-backup.lock"
-  exec 200>"$lockfile"
-  flock -n 200 || { echo "Another backup is running. Exiting."; exit 1; }
+app=opengist
 
-  restic_cmd="restic --verbose=0 --quiet"
-  curl_cmd="curl -fsS -m 10 --retry 5"
+# Acquire lockfile to prevent concurrent execution
+lockfile="/tmp/${app}-backup.lock"
+exec 200>"$lockfile"
+flock -n 200 || { echo "Another backup is running. Exiting."; exit 1; }
 
-  backup_dir="/opt/opengist"
-  export_dir="/tmp/opengist/export"
+restic_cmd="restic --verbose=0 --quiet"
+curl_cmd="curl -fsS -m 10 --retry 5"
 
-  ping_hc() { ${curl_cmd} -o /dev/null "https://hc-ping.com/${HC_UUID}${1}?create=1" || true; }
+backup_dir="/opt/${app}"
+export_dir="/tmp/${app}/export"
 
-  cleanup() { rm -rf "$export_dir"; }
-  trap cleanup EXIT
+ping_hc() { ${curl_cmd} -o /dev/null "https://hc-ping.com/${HC_PING_KEY}/${app}${1}?create=1" || true; }
 
-  error() { ping_hc "/fail"; }
-  trap error ERR
+cleanup() { rm -rf "$export_dir"; }
+trap cleanup EXIT
 
-  ping_hc "/start"
+error() { ping_hc "/fail"; }
+trap error ERR
 
-  rm -rf "$export_dir" && mkdir -p -m 700 "$export_dir"
-  sqlite3 "$backup_dir/data/opengist.db" ".backup '$export_dir/opengist.db'"
+ping_hc "/start"
 
-  git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
-  restic_version=$(restic version | cut -d ' ' -f2)
+rm -rf "$export_dir" && mkdir -p -m 700 "$export_dir"
+sqlite3 "$backup_dir/data/${app}.db" ".backup '$export_dir/${app}.db'"
 
-  for file in *.env; do
-    [ -f "$file" ] || continue
-    (
-      set -a
-      source "$file"
-      
-      ${restic_cmd} backup \
-        --files-from ./include.txt \
-        --exclude-file ./exclude.txt \
-        --exclude-caches \
-        --one-file-system \
-        --tag app=opengist \
-        --tag git_commit=${git_commit} \
-        --tag restic_version=${restic_version}
-      
-      ${restic_cmd} check --read-data-subset 100%
+git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
+restic_version=$(restic version | cut -d ' ' -f2)
 
-      set +a
-    )
-  done
+for file in *.env; do
+  [ -f "$file" ] || continue
+  (
+    set -a
+    source "$file"
+    
+    ${restic_cmd} backup \
+      --files-from ./include.txt \
+      --exclude-file ./exclude.txt \
+      --exclude-caches \
+      --one-file-system \
+      --tag app=${app} \
+      --tag git_commit=${git_commit} \
+      --tag restic_version=${restic_version}
+    
+    ${restic_cmd} check --read-data-subset 100%
 
-  rm -rf "$export_dir"
+    set +a
+  )
+done
 
-  ping_hc ""
+rm -rf "$export_dir"
+
+ping_hc ""
