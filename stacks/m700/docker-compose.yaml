@@ -18,6 +18,28 @@ services:
       - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
       - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
 
+  opengist:
+    image: ghcr.io/thomiceli/opengist:1.10
+    container_name: opengist
+    restart: unless-stopped
+    # user: "1000:1000"
+    # read_only: true
+    # ports:
+    #   - "6157:6157" # HTTP port
+    #   - "2222:2222" # SSH port, can be removed if you don't use SSH
+    env_file:
+      - .env
+      - ./opengist/.env
+    volumes:
+      - ./opengist/data:/opengist/data
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gist.rule=Host(`gist.${DOMAIN}`)"
+      - "traefik.http.routers.gist.entrypoints=https"
+      - "traefik.http.routers.gist.tls.certresolver=letsencrypt"
+      - "traefik.http.services.gist.loadbalancer.server.port=6157"
+
   backup:
     image: ghcr.io/optimistic-cloud/toolkit
     container_name: backup-toolkit
