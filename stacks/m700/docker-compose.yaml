@@ -111,3 +111,4 @@ services:
       - ./vaultwarden/:/opt/vaultwarden/:ro
       - ./opengist/:/opt/opengist/:ro
       - ./gitea/:/opt/gitea/:ro
+      - ./pocket-id/:/opt/pocket-id/:ro

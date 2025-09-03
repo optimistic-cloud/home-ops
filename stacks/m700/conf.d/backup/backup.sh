@@ -3,7 +3,7 @@ set -euo pipefail
 
 app=$1
 
-if [ ! -d "/opt/${app}/conf.d/backup/backup-export.sh" ]; then
+if [ ! -f "/opt/${app}/conf.d/backup/backup-export.sh" ]; then
   echo "Error: Directory /opt/${app}/conf.d/backup does not exist."
   exit 1
 fi

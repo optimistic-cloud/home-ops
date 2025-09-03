@@ -1,6 +1,9 @@
 export_data() {
-  local backup_dir=$1
-  local export_dir=$2
-  local app=$3
-  sqlite3 "$backup_dir/data/db.sqlite3" ".backup '$export_dir/db.sqlite3'"
+  # 1 param: source directory
+  # 2 param: export directory
+  # 3 param: app name
+  
+  source /opt/conf.d/backup/export-sqlite.sh
+
+  export_sqlite "$1/data/db.sqlite3" "$2/db.sqlite3"
 }
