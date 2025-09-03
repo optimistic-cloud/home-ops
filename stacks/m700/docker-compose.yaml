@@ -158,6 +158,8 @@ services:
       - vaultwarden
       - opengist
       - gitea
+      - pocket-id
+      - traefik
     env_file:
       - ./conf.d/backup/.env
     volumes:
