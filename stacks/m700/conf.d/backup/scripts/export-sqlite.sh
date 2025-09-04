@@ -16,4 +16,15 @@ export_sqlite() {
         echo "Error: Export database file ${dest_db} does not exist."
         exit 1
     fi
+
+    if [ ! -s "${dest_db}" ]; then
+        echo "Error: Export database file ${dest_db} is empty."
+        exit 1
+    fi
+
+    integrity=$(sqlite3 "${dest_db}" "PRAGMA integrity_check;")
+    if [ "$integrity" != "ok" ]; then
+        echo "Error: Export database file ${dest_db} is corrupt."
+        exit 1
+    fi
 }
