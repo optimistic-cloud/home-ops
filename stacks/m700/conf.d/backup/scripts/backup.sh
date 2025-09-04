@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 set -exuo pipefail
 
+providers="/opt/conf.d/backup/providers"
+
 restic_cmd="restic --verbose=2"
 curl_cmd="curl -fsS -m 10 --retry 5"
 
@@ -45,9 +47,26 @@ source /opt/${app}/conf.d/backup/backup-export.sh
 export_data $backup_dir $export_dir $app
 
 git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
-restic_version=$(restic version | cut -d ' ' -f2)
 
-for file in providers/*.env; do
+test_snapshot() {
+  snapshot_time=$(restic snapshots latest --json | jq -r '.[0].time' | cut -d'.' -f1)
+  snapshot_epoch=$(date -d "$snapshot_time" +%s)
+  current_epoch=$(date +%s)
+
+  diff=$(( current_epoch - snapshot_epoch ))
+  diff=${diff#-}  # absolute value
+
+  threshold=600
+
+  if [ "$diff" -le "$threshold" ]; then
+      echo "Snapshot ${snapshot_time} is around current time."
+  else
+      echo "Snapshot ${snapshot_time} is NOT around current time."
+  fi
+    ${restic_cmd} snapshots --tag app=${app} --tag git_commit=${git_commit}
+}
+
+for file in ${providers}/*.env; do
   [ -f "$file" ] || continue
   (
     set -a
@@ -60,11 +79,10 @@ for file in providers/*.env; do
       --exclude-caches \
       --one-file-system \
       --tag app=${app} \
-      --tag git_commit=${git_commit} \
-      --tag restic_version=${restic_version}
+      --tag git_commit=${git_commit}
     
     ${restic_cmd} check --read-data-subset 100%
-
+    test_snapshot
     set +a
   )
 done

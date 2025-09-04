@@ -1,2 +1,2 @@
-/opt/gitea/data
-/opt/gitea/config
+/opt/gitea/appdata/data
+/opt/gitea/appdata/config
