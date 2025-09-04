@@ -6,10 +6,10 @@ services:
       #read_only: true
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
-      interval: 60s
+      interval: 180s
       timeout: 10s
-      retries: 3
-      start_period: 5s
+      retries: 5
+      start_period: 60s
     env_file:
       - ./traefik/.env
     ports:
@@ -65,10 +65,14 @@ services:
     read_only: true
     env_file:
       - ./vaultwarden/.env
-
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/api/alive"]
+      start_period: 60s
+      interval: 180s
+      timeout: 10s
+      retries: 5
     volumes:
       - ./vaultwarden/appdata:/data/
-
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.${DOMAIN}`)"
@@ -109,6 +113,12 @@ services:
       - ./gitea/appdata/data:/var/lib/gitea
       - ./gitea/appdata/config:/etc/gitea
       - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
+      start_period: 60s
+      interval: 180s
+      timeout: 10s
+      retries: 5
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.gitea.rule=Host(`git.${DOMAIN}`)"
@@ -132,9 +142,9 @@ services:
       - ./pocket-id/secrets/encfile:/app/secrets/pocket-id.encfile:ro
     healthcheck:
       test: [ "CMD", "/app/pocket-id", "healthcheck" ]
-      interval: 3m00s
+      interval: 180s
       timeout: 10s
-      retries: 3
+      retries: 5
       start_period: 60s
     labels:
       - "traefik.enable=true"
@@ -169,6 +179,7 @@ services:
       - ./gitea/:/opt/gitea/:ro
       - ./pocket-id/:/opt/pocket-id/:ro
       - ./traefik/:/opt/traefik/:ro
+
 
 
 
