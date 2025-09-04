@@ -1,2 +1,2 @@
 /opt/traefik/.env
-/opt/traefik/secrets
+/opt/traefik/secrets/traefik.yml
