@@ -17,12 +17,7 @@ logs service:
     docker compose logs -f {{service}}
 
 [group('commands')]
-[doc('Exec a container')]
-exec service shell:
-    docker exec -it {{service}} {{shell}}
-
-
-[group('commands')]
-[doc('Exec a backup-toolkit')]
-exec-backup-toolkit:
-    docker exec -it backup-toolkit /usr/bin/fish
+[doc('Backup application')]
+backup app:
+    docker exec -it backup-toolkit sh -c "set -euxo pipefail; /opt/conf.d/backup/scripts/backup.sh {{app}}"
+    # TODO: bind /opt/conf.d/backup/scripts/backup.sh in PATH
