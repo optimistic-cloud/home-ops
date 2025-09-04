@@ -49,21 +49,30 @@ export_data $backup_dir $export_dir $app
 git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
 test_snapshot() {
+  # Get snapshot time from restic
   snapshot_time=$(restic snapshots latest --json | jq -r '.[0].time' | cut -d'.' -f1)
-  snapshot_epoch=$(date -d "$snapshot_time" +%s)
+
+  # Replace T with space so date -d can parse it
+  snapshot_time_fixed=${snapshot_time/T/ }
+
+  # Convert snapshot time to epoch
+  snapshot_epoch=$(date -d "$snapshot_time_fixed" "+%s")
+
+  # Get current time in epoch
   current_epoch=$(date +%s)
 
+  # Compute absolute difference
   diff=$(( current_epoch - snapshot_epoch ))
-  diff=${diff#-}  # absolute value
+  diff=${diff#-}
 
+  # Threshold in seconds (e.g., 10 minutes)
   threshold=600
 
   if [ "$diff" -le "$threshold" ]; then
-      echo "Snapshot ${snapshot_time} is around current time."
+      echo "Snapshot ${snapshot_time} is around current time ✅"
   else
-      echo "Snapshot ${snapshot_time} is NOT around current time."
+      echo "Snapshot ${snapshot_time} is NOT around current time ❌"
   fi
-    ${restic_cmd} snapshots --tag app=${app} --tag git_commit=${git_commit}
 }
 
 for file in ${providers}/*.env; do
