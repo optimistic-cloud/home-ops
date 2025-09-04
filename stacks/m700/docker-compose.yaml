@@ -11,7 +11,7 @@ services:
       retries: 3
       start_period: 5s
     env_file:
-      - ./traefik.env
+      - ./traefik/.env
     ports:
       - "80:80"
       - "443:443"
@@ -64,7 +64,7 @@ services:
     restart: unless-stopped
     read_only: true
     env_file:
-      - ./vaultwarden.env
+      - ./vaultwarden/.env
 
     volumes:
       - ./vaultwarden/appdata:/data/
@@ -86,7 +86,7 @@ services:
     #   - "6157:6157" # HTTP port
     #   - "2222:2222" # SSH port, can be removed if you don't use SSH
     env_file:
-      - ./opengist.env
+      - ./opengist/.env
     volumes:
       - ./opengist/appdata:/opengist/data
 
@@ -104,7 +104,7 @@ services:
     user: "1000:1000"
     #read_only: true
     env_file:
-      - ./gitea.env
+      - ./gitea/.env
     volumes:
       - ./gitea/appdata/data:/var/lib/gitea
       - ./gitea/appdata/config:/etc/gitea
@@ -126,7 +126,7 @@ services:
       traefik:
         condition: service_healthy
     env_file:
-      - ./pocket-id.env
+      - ./pocket-id/.env
     volumes:
       - ./pocket-id/appdata:/app/data
       - ./pocket-id/secrets/.encfile:/app/data/pocket-id.encfile:ro
@@ -156,7 +156,7 @@ services:
       - pocket-id
       - traefik
     env_file:
-      - ./conf.d/backup.env
+      - ./conf.d/backup/.env
     volumes:
       - ./conf.d/backup/crontab:/etc/crontab
       - ./conf.d/backup/backup.sh:/opt/conf.d/backup/backup.sh
@@ -169,6 +169,7 @@ services:
       - ./gitea/:/opt/gitea/:ro
       - ./pocket-id/:/opt/pocket-id/:ro
       - ./traefik/:/opt/traefik/:ro
+
 
 
 
