@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
-set -euo pipefail
+set -exuo pipefail
+
+restic_cmd="restic --verbose=2"
+curl_cmd="curl -fsS -m 10 --retry 5"
 
 app=$1
 
@@ -22,9 +25,6 @@ fi
 lockfile="/tmp/${app}-backup.lock"
 exec 200>"$lockfile"
 flock -n 200 || { echo "Another backup is running. Exiting."; exit 1; }
-
-restic_cmd="restic --verbose=0 --quiet"
-curl_cmd="curl -fsS -m 10 --retry 5"
 
 backup_dir="/opt/${app}"
 export_dir="/tmp/${app}/export"
