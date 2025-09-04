@@ -71,6 +71,7 @@ for file in ${providers}/*.env; do
 
     export RESTIC_REPOSITORY="s3:${OBJECT_STORAGE_API}/abc-test/${app}/restic"
     export RESTIC_PASSWORD_FILE="/opt/${app}/conf.d/backup/secrets/restic-password.txt"
+    # TODO: RESTIC_PASSWORD_CMD
 
     ${restic_cmd} backup \
       --files-from /opt/${app}/conf.d/backup/include.txt \
