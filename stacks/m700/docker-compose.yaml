@@ -11,7 +11,6 @@ services:
       retries: 3
       start_period: 5s
     env_file:
-      - .env
       - ./traefik/.env
     ports:
       - "80:80"
@@ -65,7 +64,6 @@ services:
     restart: unless-stopped
     read_only: true
     env_file:
-      - .env
       - ./vaultwarden/.env
 
     volumes:
@@ -88,7 +86,6 @@ services:
     #   - "6157:6157" # HTTP port
     #   - "2222:2222" # SSH port, can be removed if you don't use SSH
     env_file:
-      - .env
       - ./opengist/.env
     volumes:
       - ./opengist/data:/opengist/data
@@ -107,7 +104,6 @@ services:
     user: "1000:1000"
     #read_only: true
     env_file:
-      - .env
       - ./gitea/.env
     volumes:
       - ./gitea/data:/var/lib/gitea
@@ -130,7 +126,6 @@ services:
       traefik:
         condition: service_healthy
     env_file:
-      - .env
       - ./pocket-id/.env
     volumes:
       - ./pocket-id/data:/app/data
@@ -174,3 +169,4 @@ services:
       - ./gitea/:/opt/gitea/:ro
       - ./pocket-id/:/opt/pocket-id/:ro
       - ./traefik/:/opt/traefik/:ro
+
