@@ -2,4 +2,4 @@
 !example.env
 
 data/
-.secret
+secrets/
