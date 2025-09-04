@@ -70,7 +70,7 @@ for file in ${providers}/*.env; do
     source "$file"
     
     ${restic_cmd} backup \
-      --repo ${OBJECT_STORAGE_API}/abc-test/${app}/restic \
+      --repo s3:${OBJECT_STORAGE_API}/abc-test/${app}/restic \
       --password-file /opt/${app}/conf.d/backup/secrets/restic-password.txt \
       --files-from /opt/${app}/conf.d/backup/include.txt \
       --exclude-file /opt/${app}/conf.d/backup/exclude.txt \
