@@ -68,10 +68,11 @@ for file in ${providers}/*.env; do
   (
     set -a
     source "$file"
-    
+
+    export RESTIC_REPOSITORY="s3:${OBJECT_STORAGE_API}/abc-test/${app}/restic"
+    export RESTIC_PASSWORD_FILE="/opt/${app}/conf.d/backup/secrets/restic-password.txt"
+
     ${restic_cmd} backup \
-      --repo s3:${OBJECT_STORAGE_API}/abc-test/${app}/restic \
-      --password-file /opt/${app}/conf.d/backup/secrets/restic-password.txt \
       --files-from /opt/${app}/conf.d/backup/include.txt \
       --exclude-file /opt/${app}/conf.d/backup/exclude.txt \
       --exclude-caches \
