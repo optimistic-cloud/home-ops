@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
-set -exuo pipefail
+set -euo pipefail
 
 providers="/opt/conf.d/backup/providers"
 
-restic_cmd="restic --verbose=2"
+restic_cmd="restic --verbose=0 --quiet"
 curl_cmd="curl -fsS -m 10 --retry 5"
 
 app=$1
@@ -49,29 +49,19 @@ export_data $backup_dir $export_dir $app
 git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
 test_snapshot() {
-  # Get snapshot time from restic
-  snapshot_time=$(restic snapshots latest --json | jq -r '.[0].time' | cut -d'.' -f1)
-
-  # Replace T with space so date -d can parse it
+  snapshot_time=$(${restic_cmd} snapshots latest --json | jq -r '.[0].time' | cut -d'.' -f1)
   snapshot_time_fixed=${snapshot_time/T/ }
-
-  # Convert snapshot time to epoch
   snapshot_epoch=$(date -d "$snapshot_time_fixed" "+%s")
 
-  # Get current time in epoch
   current_epoch=$(date +%s)
 
-  # Compute absolute difference
   diff=$(( current_epoch - snapshot_epoch ))
   diff=${diff#-}
 
-  # Threshold in seconds (e.g., 10 minutes)
   threshold=600
 
-  if [ "$diff" -le "$threshold" ]; then
-      echo "Snapshot ${snapshot_time} is around current time ✅"
-  else
-      echo "Snapshot ${snapshot_time} is NOT around current time ❌"
+  if [ "$diff" -gt "$threshold" ]; then
+    exit 2
   fi
 }
 
@@ -92,7 +82,9 @@ for file in ${providers}/*.env; do
       --tag git_commit=${git_commit}
     
     ${restic_cmd} check --read-data-subset 100%
+
     test_snapshot
+    
     set +a
   )
 done
