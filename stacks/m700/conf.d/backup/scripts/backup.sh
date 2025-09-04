@@ -18,6 +18,11 @@ if [ ! -f "/opt/${app}/conf.d/backup/exclude.txt" ]; then
   exit 1
 fi
 
+if [ ! -f "/opt/${app}/conf.d/backup/secrets/restic-password.txt" ]; then
+  echo "Error: Password file /opt/${app}/conf.d/backup/secrets/restic-password.txt does not exist."
+  exit 1
+fi
+
 # Acquire lockfile to prevent concurrent execution
 lockfile="/tmp/${app}-backup.lock"
 exec 200>"$lockfile"
