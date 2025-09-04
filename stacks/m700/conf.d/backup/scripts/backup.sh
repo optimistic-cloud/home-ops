@@ -73,29 +73,28 @@ for file in ${providers}/*.env; do
   [ -f "$file" ] || continue
   {
     (
-    set -a
-    source "$file"
+      set -a
+      source "$file"
 
-    export RESTIC_REPOSITORY="s3:${OBJECT_STORAGE_API}/abc-test/${app}/restic"
-    export RESTIC_PASSWORD_FILE="/opt/${app}/conf.d/backup/secrets/restic-password.txt"
-    # TODO: RESTIC_PASSWORD_CMD
+      export RESTIC_REPOSITORY="s3:${OBJECT_STORAGE_API}/abc-test/${app}/restic"
+      export RESTIC_PASSWORD_FILE="/opt/${app}/conf.d/backup/secrets/restic-password.txt"
+      # TODO: RESTIC_PASSWORD_CMD
 
-    ${restic_cmd} backup \
-      --files-from /opt/${app}/conf.d/backup/include.txt \
-      --exclude-file /opt/${app}/conf.d/backup/exclude.txt \
-      --exclude-caches \
-      --one-file-system \
-      --tag app=${app} \
-      --tag git_commit=${git_commit}
-    
-    ${restic_cmd} check --read-data-subset 100%
+      ${restic_cmd} backup \
+        --files-from /opt/${app}/conf.d/backup/include.txt \
+        --exclude-file /opt/${app}/conf.d/backup/exclude.txt \
+        --exclude-caches \
+        --one-file-system \
+        --tag app=${app} \
+        --tag git_commit=${git_commit}
+      
+      ${restic_cmd} check --read-data-subset 100%
 
-    test_snapshot
-    
-    set +a
-  } | ${curl_cmd} --data-binary @- "${ping_url}"
-    
+      test_snapshot
+      
+      set +a
     )
+  } | ${curl_cmd} --data-binary @- "${ping_url}"
 done
 
 rm -rf "$export_dir"
