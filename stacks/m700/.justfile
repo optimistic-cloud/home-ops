@@ -20,4 +20,5 @@ logs service:
 [doc('Backup application')]
 backup app:
     docker exec -it backup-toolkit sh -c "set -euxo pipefail; sh /opt/conf.d/backup/scripts/backup.sh {{app}}"
+    docker logs backup-toolkit --tail 50
     # TODO: bind /opt/conf.d/backup/scripts/backup.sh in PATH
