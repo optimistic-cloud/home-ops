@@ -1,0 +1,2 @@
+/opt/traefik/.env
+/opt/vaultwarden/secrets

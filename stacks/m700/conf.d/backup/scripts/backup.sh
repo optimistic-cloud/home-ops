@@ -8,11 +8,6 @@ curl_cmd="curl -fsS -m 10 --retry 5"
 
 app=$1
 
-if [ ! -f "/opt/${app}/conf.d/backup/backup-export.sh" ]; then
-  echo "Error: Directory /opt/${app}/conf.d/backup does not exist."
-  exit 1
-fi
-
 if [ ! -f "/opt/${app}/conf.d/backup/include.txt" ]; then
   echo "Error: Include file /opt/${app}/conf.d/backup/include.txt does not exist."
   exit 1
@@ -43,8 +38,10 @@ ping_hc "/start"
 
 rm -rf "$export_dir" && mkdir -p -m 700 "$export_dir"
 
-source /opt/${app}/conf.d/backup/backup-export.sh
-export_data $backup_dir $export_dir $app
+if [ -f "/opt/${app}/conf.d/backup/backup-export.sh" ]; then
+  source /opt/${app}/conf.d/backup/backup-export.sh
+  export_data $backup_dir $export_dir $app
+fi
 
 git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
