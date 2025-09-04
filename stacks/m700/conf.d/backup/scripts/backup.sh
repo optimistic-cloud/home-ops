@@ -64,7 +64,6 @@ test_snapshot() {
 
 for file in ${providers}/*.env; do
   [ -f "$file" ] || continue
-  [ "$(basename "$file")" = "example.env" ] && continue
   (
     set -a
     source "$file"

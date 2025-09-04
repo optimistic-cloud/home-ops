@@ -12,18 +12,18 @@ Each `.env` file stores credentials and settings required to connect to a specif
 
 **`s3.env`:**
 ```env
-AWS_ACCESS_KEY_ID=your-access-key
-AWS_SECRET_ACCESS_KEY=your-secret-key
-RESTIC_REPOSITORY=s3:s3.amazonaws.com/your-bucket/path
-RESTIC_PASSWORD=your-restic-password
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+
+OBJECT_STORAGE_API=
 ```
 
 **`b2.env`:**
 ```env
-B2_ACCOUNT_ID=your-account-id
-B2_ACCOUNT_KEY=your-account-key
-RESTIC_REPOSITORY=b2:your-bucket:path
-RESTIC_PASSWORD=your-restic-password
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+
+OBJECT_STORAGE_API=
 ```
 
 ## Notes
