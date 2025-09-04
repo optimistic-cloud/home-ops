@@ -1,6 +1,6 @@
 *.env
 !example.env
 
-data/
+appdata/
 **/secret/
 **/secrets/
