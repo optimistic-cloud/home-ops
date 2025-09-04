@@ -73,7 +73,6 @@ for file in ${providers}/*.env; do
     source "$file"
     
     ${restic_cmd} backup \
-      /opt/.env \
       --files-from /opt/${app}/conf.d/backup/include.txt \
       --exclude-file /opt/${app}/conf.d/backup/exclude.txt \
       --exclude-caches \
