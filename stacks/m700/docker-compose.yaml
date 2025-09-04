@@ -163,7 +163,7 @@ services:
       - ./conf.d/backup/.env
     volumes:
       - ./conf.d/backup/crontab:/etc/crontab
-      - ./conf.d/backup/backup.sh:/opt/conf.d/backup/backup.sh
+      - ./conf.d/backup/scripts:/opt/conf.d/backup/scripts
       - ./conf.d/backup/providers:/opt/conf.d/backup/providers
 
       - ./.env:/opt/.env
@@ -173,6 +173,7 @@ services:
       - ./gitea/:/opt/gitea/:ro
       - ./pocket-id/:/opt/pocket-id/:ro
       - ./traefik/:/opt/traefik/:ro
+
 
 
 
