@@ -8,7 +8,7 @@ curl_cmd="curl -fsS -m 10 --retry 5"
 
 app=$1
 
-ping_url="https://hc-ping.com/${HC_PING_KEY}/${app}-backup${1}?create=1"
+ping_url="https://hc-ping.com/${HC_PING_KEY}/${app}-backup"
 
 if [ ! -f "/opt/${app}/conf.d/backup/include.txt" ]; then
   echo "Error: Include file /opt/${app}/conf.d/backup/include.txt does not exist."
@@ -33,7 +33,7 @@ flock -n 200 || { echo "Another backup is running. Exiting."; exit 1; }
 backup_dir="/opt/${app}"
 export_dir="/tmp/${app}/export"
 
-ping_hc() { ${curl_cmd} -o /dev/null ${ping_url} || true; }
+ping_hc() { ${curl_cmd} -o /dev/null "${ping_url}${1}?create=1" || true; }
 
 cleanup() { rm -rf "$export_dir"; }
 trap cleanup EXIT
