@@ -18,7 +18,7 @@ logs service:
 
 [group('restic')]
 [doc('Init restic repository')]
-backup app:
+init app:
     docker exec -it backup-toolkit bash -exuo pipefail init.sh {{app}}
 
 [group('restic')]
