@@ -95,7 +95,7 @@ for file in ${providers}/*.env; do
 
       test_snapshot
 
-      ${restic_cmd} snapshots latest --json
+      ${restic_cmd} snapshots latest --json | jq
 
       set +a
     )
