@@ -18,7 +18,6 @@ pre_backup() {
       --type tar.gz
   docker cp gitea:"${dump_location}/${dump_name}" "${export_dir}"
   docker exec -u git gitea rm -f "${dump_location}/${dump_name}"
-  ls -la "${export_dir}"
 }
 
 post_backup() {
