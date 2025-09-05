@@ -1,8 +1,3 @@
-container_sh="/opt/conf.d/backup/scripts/container.sh"
-if [ -f "${container_sh}" ]; then
-  source "${container_sh}"
-fi
-
 export_sqlite_sh="/opt/conf.d/backup/scripts/export-sqlite.sh"
 if [ -f "${export_sqlite_sh}" ]; then
   source "${export_sqlite_sh}"
@@ -17,11 +12,7 @@ pre_backup() {
   local app=$3
 
   # Stop container
-  if declare -F stop_container >/dev/null; then
-      stop_container "${app}"
-  else
-    exit 3
-  fi
+  docker container stop "${app}"
 
   # export sqlite database
   if declare -F export_sqlite >/dev/null; then
@@ -39,9 +30,5 @@ post_backup() {
   # 3 param: app name
   local app=$3
 
-  if declare -F start_container >/dev/null; then
-      start_container "${app}"
-  else
-    exit 3
-  fi
+  docker container start "${app}"
 }
