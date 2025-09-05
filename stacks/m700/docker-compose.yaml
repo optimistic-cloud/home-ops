@@ -152,7 +152,7 @@ services:
     container_name: backup-toolkit
     restart: unless-stopped
     hostname: m700.optimistic.cloud
-    user: "1000:1000"
+    user: "root:root"
     depends_on:
       - vaultwarden
       - opengist
@@ -175,6 +175,7 @@ services:
       - ./gitea/:/opt/gitea/:ro
       - ./pocket-id/:/opt/pocket-id/:ro
       - ./traefik/:/opt/traefik/:ro
+
 
 
 
