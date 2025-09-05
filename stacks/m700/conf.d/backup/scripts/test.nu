@@ -3,9 +3,8 @@ use std/log
 def main [--config (-c): path] {
     let config = open $config
 
-
     $config.backup | each { |b|
-        let app = $config.apps | where app == $b.app | first
+        let app = $config.apps | where name == $b.app | first
         let provider = $config.providers | where name == $b.provider | first
 
         with-env {

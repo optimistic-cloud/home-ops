@@ -1,5 +1,5 @@
 apps:
-  - vaultwarden:
+  - name: vaultwarden
     pre_backup: ascsa
     post_backup: asd
     include:
@@ -9,10 +9,10 @@ apps:
       - /ghi
 
 providers:
-  - ionos:
-      api: "https://api.ionos.com"
-      AWS_ACCESS_KEY_ID: "asc"
-      AWS_SECRET_ACCESS_KEY: "sc"
+  - name: ionos
+    api: "https://api.ionos.com"
+    AWS_ACCESS_KEY_ID: "asc"
+    AWS_SECRET_ACCESS_KEY: "sc"
 
 backup:
   - app: vaultwarden
