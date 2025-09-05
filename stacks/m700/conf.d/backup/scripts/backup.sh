@@ -47,7 +47,10 @@ rm -rf "$export_dir" && mkdir -p -m 700 "$export_dir"
 
 if [ -f "/opt/${app}/conf.d/backup/backup-export.sh" ]; then
   source /opt/${app}/conf.d/backup/backup-export.sh
-  export_data $backup_dir $export_dir $app
+fi
+
+if declare -F pre_backup >/dev/null; then
+    pre_backup $backup_dir $export_dir $app
 fi
 
 git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
@@ -97,5 +100,9 @@ for file in ${providers}/*.env; do
 done
 
 rm -rf "$export_dir"
+
+if declare -F post_backup >/dev/null; then
+    post_backup $backup_dir $export_dir $app
+fi
 
 ping_hc ""
