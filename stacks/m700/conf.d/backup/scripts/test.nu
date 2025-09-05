@@ -3,17 +3,38 @@ use std/log
 def main [--config (-c): path] {
     let config = open $config
 
-    $config.apps | each { |a|
-        $config.providers | par-each { |p|
-            with-env {
-                RESTIC_REPOSITORY: $"s3:($p)/($a)"
-                RESTIC_PASSWORD_FILE: "Z"
-            } {
+
+    $config.backup | each { |b|
+        $config.apps | where app == $b.app | first | set app = $a
+        $config.providers | where name == $b.provider | first | set provider = $p
+
+        with-env {
+            AWS_ACCESS_KEY_ID: $"($p.AWS_ACCESS_KEY_ID)"
+            AWS_SECRET_ACCESS_KEY: $"($p.AWS_SECRET_ACCESS_KEY)"
+            RESTIC_REPOSITORY: $"($b.restic.repository)"
+            RESTIC_PASSWORD_FILE: $"($b.restic.password-file)"
+        } {
                 print $"Backing up ($a) to ($p)"
+                print $env.AWS_ACCESS_KEY_ID
+                print $env.AWS_SECRET_ACCESS_KEY
                 print $env.RESTIC_REPOSITORY
                 print $env.RESTIC_PASSWORD_FILE
-            }
         }
+
+
     }
+
+#    $config.apps | each { |app|
+#        $config.providers | par-each { |p|
+#            with-env {
+#                RESTIC_PASSWORD: $"s3:($p.api)/($p.path)/($app)/restic"
+#                RESTIC_PASSWORD_FILE: "Z"
+#            } {
+#                print $"Backing up ($a) to ($p)"
+#                print $env.RESTIC_REPOSITORY
+#                print $env.RESTIC_PASSWORD_FILE
+#            }
+#        }
+#    }
 }
 

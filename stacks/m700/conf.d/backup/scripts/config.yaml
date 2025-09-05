@@ -1,8 +1,24 @@
 apps:
-  - vaultwarden
-  - nextcloud
-  - gitlab
+  - vaultwarden:
+    pre_backup: ascsa
+    post_backup: asd
+    include:
+      - /abc
+      - /def
+    exclude:
+      - /ghi
 
 providers:
-  - ionos
-  - hetzner
+  - ionos:
+      api: "https://api.ionos.com"
+      AWS_ACCESS_KEY_ID: "asc"
+      AWS_SECRET_ACCESS_KEY: "sc"
+
+backup:
+  - app: vaultwarden
+    provider: ionos
+    restic:
+      repository: "s3:s3.eu-central-1.ionos.com/vaultwarden-backup"
+      password-file: "/run/secrets/restic"
+      retention:
+        keep-within: 180d
