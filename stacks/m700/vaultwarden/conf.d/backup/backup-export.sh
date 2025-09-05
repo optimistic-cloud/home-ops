@@ -6,9 +6,9 @@ export_data() {
   # 3 param: app name
   local app=$3
 
-
   # Stop container
-  docker container stop "${app}"
+  source /opt/conf.d/backup/scripts/container.sh
+  stop_container "${app}"
 
   # export sqlite database
   source /opt/conf.d/backup/scripts/export-sqlite.sh
@@ -23,9 +23,9 @@ pre_backup() {
   # 3 param: app name
   local app=$3
 
-
   # Stop container
-  docker container stop "${app}"
+  source /opt/conf.d/backup/scripts/container.sh
+  stop_container "${app}"
 
   # export sqlite database
   source /opt/conf.d/backup/scripts/export-sqlite.sh
@@ -40,6 +40,6 @@ post_backup() {
   # 3 param: app name
   local app=$3
 
-  # Start container
-  docker container start "${app}"
+  source /opt/conf.d/backup/scripts/container.sh
+  stop_container "${app}"
 }
