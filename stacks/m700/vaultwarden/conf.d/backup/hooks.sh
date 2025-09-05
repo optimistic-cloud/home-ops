@@ -24,7 +24,7 @@ pre_backup() {
   fi
 
   # export sqlite database
-  if declare -F stop_container >/dev/null; then
+  if declare -F export_sqlite >/dev/null; then
       export_sqlite "${source_dir}/appdata/db.sqlite3" "${export_dir}/db.sqlite3"
   else
     exit 3
@@ -39,7 +39,7 @@ post_backup() {
   # 3 param: app name
   local app=$3
 
-  if declare -F stop_container >/dev/null; then
+  if declare -F start_container >/dev/null; then
       start_container "${app}"
   else
     exit 3
