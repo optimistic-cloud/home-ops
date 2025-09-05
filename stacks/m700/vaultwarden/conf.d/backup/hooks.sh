@@ -4,8 +4,8 @@ if [ -f "${container_sh}" ]; then
 fi
 
 export-sqlite_sh="/opt/conf.d/backup/scripts/export-sqlite.sh"
-if [ -f "${export}" ]; then
-  source "${export}"
+if [ -f "${export-sqlite_sh}" ]; then
+  source "${export-sqlite_sh}"
 fi
 
 pre_backup() {
