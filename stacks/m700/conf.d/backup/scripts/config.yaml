@@ -3,6 +3,6 @@ apps:
   - nextcloud
   - gitlab
 
-provider:
+providers:
   - ionos
   - hetzner

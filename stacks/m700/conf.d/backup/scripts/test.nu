@@ -9,9 +9,10 @@ def main [--config (-c): path] {
     #    print $"Backing up app: ($app)"
     #}
 
-    for app in ($config.apps) {
-        for provider in ($config.provider) | each-parallel {
-            echo "Backing up ($it.app) to ($it.provider)"
+    $config.apps | each { |a|
+        $config.providers | par-each { |p|
+            echo "Backing up ($a) to ($p)"
         }
     }
 }
+
