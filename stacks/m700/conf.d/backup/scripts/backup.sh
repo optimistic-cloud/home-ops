@@ -75,7 +75,7 @@ for file in ${providers}/*.env; do
       set -a
       source "$file"
 
-      provider=$(basename "$file")
+      provider=$(basename "$file" .env)
 
       export RESTIC_REPOSITORY="s3:${OBJECT_STORAGE_API}/abc-test/${app}/restic"
       export RESTIC_PASSWORD_FILE="/opt/${app}/conf.d/backup/secrets/${provider}-restic-password.txt"
