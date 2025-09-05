@@ -1,5 +1,11 @@
-if [ -f "source /opt/conf.d/backup/scripts/container.sh" ]; then
-  source source /opt/conf.d/backup/scripts/container.sh
+container_sh="/opt/conf.d/backup/scripts/container.sh"
+if [ -f "${container_sh}" ]; then
+  source /"${container_sh}"
+fi
+
+export-sqlite_sh="/opt/conf.d/backup/scripts/export-sqlite.sh"
+if [ -f "${export}" ]; then
+  source /"${export}"
 fi
 
 pre_backup() {
@@ -18,8 +24,11 @@ pre_backup() {
   fi
 
   # export sqlite database
-  source /opt/conf.d/backup/scripts/export-sqlite.sh
-  export_sqlite "${source_dir}/appdata/db.sqlite3" "${export_dir}/db.sqlite3"
+  if declare -F stop_container >/dev/null; then
+      export_sqlite "${source_dir}/appdata/db.sqlite3" "${export_dir}/db.sqlite3"
+  else
+    exit 3
+  fi
 }
 
 post_backup() {
