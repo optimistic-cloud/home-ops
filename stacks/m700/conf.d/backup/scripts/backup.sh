@@ -96,6 +96,7 @@ for file in ${providers}/*.env; do
       test_snapshot
 
       ${restic_cmd} snapshots latest --json | jq
+      ${restic_cmd} ls latest --long --recursive  --json | jq
 
       set +a
     )
