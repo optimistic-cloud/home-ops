@@ -6,18 +6,18 @@ pre_backup() {
   # 3 param: app name
   local app=$3
 
-  local dump_name=gitea-dump
+  local dump_name=gitea-dump.tar.gz
+  local dump_location=/var/lib/gitea/git
 
-  #docker container stop "${app}"
-  docker exec -u git gitea rm -f /tmp/gitea-dump-*
+  docker exec -u git gitea rm -f "${dump_location}/${dump_name}"
   docker exec -u git gitea /usr/local/bin/gitea \
     dump --work-path /tmp \
       --file "${dump_name}" \
       --config /etc/gitea/app.ini \
       --database sqlite3 \
       --type tar.gz
-  docker cp gitea:/tmp/"${dump_name}".tar.gz "${export_dir}"
-  docker exec -u git gitea rm -f /tmp/gitea-dump-*
+  docker cp gitea:"${dump_location}/${dump_name}" "${export_dir}"
+  docker exec -u git gitea rm -f "${dump_location}/${dump_name}"
   ls -la "${export_dir}"
 }
 
