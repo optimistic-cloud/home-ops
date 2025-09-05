@@ -78,7 +78,7 @@ for file in ${providers}/*.env; do
       provider=$(basename "$file" .env)
 
       export RESTIC_REPOSITORY="s3:${OBJECT_STORAGE_API}/abc-test/${app}/restic"
-      export RESTIC_PASSWORD_FILE="/opt/${app}/conf.d/backup/secrets/${provider}-restic-password.txt"
+      export RESTIC_PASSWORD_FILE="/opt/${app}/conf.d/${provider}-restic-password.txt"
 
       if [ ! -f "${RESTIC_PASSWORD_FILE}" ]; then
         echo "Error: Password file ${RESTIC_PASSWORD_FILE} does not exist."
