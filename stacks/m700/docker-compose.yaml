@@ -124,7 +124,7 @@ services:
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
 
   pocket-id:
-    image: ghcr.io/pocket-id/pocket-id:v1.6.4-distroless
+    image: ghcr.io/pocket-id/pocket-id:v1.10.0-distroless
     container_name: pocket-id
     restart: unless-stopped
     user: "1000:1000"
@@ -175,6 +175,7 @@ services:
       - ./gitea/:/opt/gitea/:ro
       - ./pocket-id/:/opt/pocket-id/:ro
       - ./traefik/:/opt/traefik/:ro
+
 
 
 
