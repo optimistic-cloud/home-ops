@@ -1,11 +1,11 @@
 container_sh="/opt/conf.d/backup/scripts/container.sh"
 if [ -f "${container_sh}" ]; then
-  source /"${container_sh}"
+  source "${container_sh}"
 fi
 
 export-sqlite_sh="/opt/conf.d/backup/scripts/export-sqlite.sh"
 if [ -f "${export}" ]; then
-  source /"${export}"
+  source "${export}"
 fi
 
 pre_backup() {
