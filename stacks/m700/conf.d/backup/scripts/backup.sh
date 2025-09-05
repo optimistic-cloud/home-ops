@@ -94,7 +94,9 @@ for file in ${providers}/*.env; do
       ${restic_cmd} check --read-data-subset 33%
 
       test_snapshot
-      
+
+      ${restic_cmd} snapshots latest --json
+
       set +a
     )
   } | ${curl_cmd} --data-binary @- "${ping_url}"
