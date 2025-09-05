@@ -91,7 +91,7 @@ for file in ${providers}/*.env; do
         --one-file-system \
         --tag git_commit=${git_commit}
       
-      ${restic_cmd} check --read-data-subset 100%
+      ${restic_cmd} check --read-data-subset 33%
 
       test_snapshot
       
