@@ -1,2 +1,1 @@
-/opt/gitea/appdata/data
-/opt/gitea/appdata/config
+/tmp/gitea/export/
