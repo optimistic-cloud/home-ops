@@ -5,16 +5,16 @@ def main [--config (-c): path] {
 
 
     $config.backup | each { |b|
-        $config.apps | where app == $b.app | first | set app = $a
-        $config.providers | where name == $b.provider | first | set provider = $p
+        let app = $config.apps | where app == $b.app | first
+        let provider = $config.providers | where name == $b.provider | first
 
         with-env {
-            AWS_ACCESS_KEY_ID: $"($p.AWS_ACCESS_KEY_ID)"
-            AWS_SECRET_ACCESS_KEY: $"($p.AWS_SECRET_ACCESS_KEY)"
+            AWS_ACCESS_KEY_ID: $"($provider.AWS_ACCESS_KEY_ID)"
+            AWS_SECRET_ACCESS_KEY: $"($provider.AWS_SECRET_ACCESS_KEY)"
             RESTIC_REPOSITORY: $"($b.restic.repository)"
             RESTIC_PASSWORD_FILE: $"($b.restic.password-file)"
         } {
-                print $"Backing up ($a) to ($p)"
+                print $"Backing up ($app) to ($provider)"
                 print $env.AWS_ACCESS_KEY_ID
                 print $env.AWS_SECRET_ACCESS_KEY
                 print $env.RESTIC_REPOSITORY
