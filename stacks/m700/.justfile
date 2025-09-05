@@ -28,5 +28,5 @@ backup app:
 
 [group('restic')]
 [doc('Restore backup for an application')]
-backup app:
+restore app:
     docker compose -f {{app}}/conf.d/backup-restore/    docker-compose.yml up -d
