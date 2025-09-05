@@ -7,7 +7,7 @@ pre_backup() {
   local app=$3
 
   local dump_name=gitea-dump.tar.gz
-  local dump_location=/var/lib/gitea/git
+  local dump_location=/var/lib/gitea
 
   docker exec -u git gitea rm -f "${dump_location}/${dump_name}"
   docker exec -u git gitea /usr/local/bin/gitea \
