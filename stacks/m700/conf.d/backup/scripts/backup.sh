@@ -42,7 +42,7 @@ rm -rf "$export_dir" && mkdir -p -m 700 "$export_dir"
 
 hooks_sh="/opt/${app}/conf.d/backup/hooks.sh"
 if [ -f "${hooks_sh}" ]; then
-  source /"${hooks_sh}"
+  source "${hooks_sh}"
 fi
 
 if declare -F pre_backup >/dev/null; then
@@ -77,8 +77,8 @@ for file in ${providers}/*.env; do
 
       provider=$(basename "$file" .env)
 
-      export RESTIC_REPOSITORY="s3:${OBJECT_STORAGE_API}/abc-test/${app}/restic"
-      export RESTIC_PASSWORD_FILE="/opt/${app}/conf.d/${provider}-restic-password.txt"
+      RESTIC_REPOSITORY="s3:${OBJECT_STORAGE_API}/abc-test/${app}/restic"
+      RESTIC_PASSWORD_FILE="/opt/${app}/conf.d/${provider}-restic-password.txt"
 
       if [ ! -f "${RESTIC_PASSWORD_FILE}" ]; then
         echo "Error: Password file ${RESTIC_PASSWORD_FILE} does not exist."
