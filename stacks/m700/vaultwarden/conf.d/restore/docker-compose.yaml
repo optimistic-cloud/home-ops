@@ -8,4 +8,4 @@ services:
     ports:
       - '127.0.0.1:8200:80'
     volumes:
-      - vaultwarden-data:/data/
+      - ./appdata:/data/

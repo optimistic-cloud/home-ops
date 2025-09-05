@@ -20,11 +20,6 @@ if [ ! -f "/opt/${app}/conf.d/backup/exclude.txt" ]; then
   exit 1
 fi
 
-if [ ! -f "/opt/${app}/conf.d/backup/secrets/restic-password.txt" ]; then
-  echo "Error: Password file /opt/${app}/conf.d/backup/secrets/restic-password.txt does not exist."
-  exit 1
-fi
-
 # Acquire lockfile to prevent concurrent execution
 lockfile="/tmp/${app}-backup.lock"
 exec 200>"$lockfile"
@@ -80,9 +75,15 @@ for file in ${providers}/*.env; do
       set -a
       source "$file"
 
+      provider=$(basename "$file")
+
       export RESTIC_REPOSITORY="s3:${OBJECT_STORAGE_API}/abc-test/${app}/restic"
-      export RESTIC_PASSWORD_FILE="/opt/${app}/conf.d/backup/secrets/restic-password.txt"
-      # TODO: RESTIC_PASSWORD_CMD
+      export RESTIC_PASSWORD_FILE="/opt/${app}/conf.d/backup/secrets/${provider}-restic-password.txt"
+
+      if [ ! -f "${RESTIC_PASSWORD_FILE}" ]; then
+        echo "Error: Password file ${RESTIC_PASSWORD_FILE} does not exist."
+        exit 1
+      fi
 
       ${restic_cmd} backup \
         --files-from /opt/${app}/conf.d/backup/include.txt \

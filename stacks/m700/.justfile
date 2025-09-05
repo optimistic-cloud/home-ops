@@ -28,5 +28,6 @@ backup app:
 
 [group('restic')]
 [doc('Restore backup for an application')]
-restore app:
+restore app provider:
+    docker exec -it backup-toolkit bash -exuo pipefail restore.sh {{app}} {{provider}} 
     docker compose -f {{app}}/conf.d/restore/docker-compose.yml up -d
