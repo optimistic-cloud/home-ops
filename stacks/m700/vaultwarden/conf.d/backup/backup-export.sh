@@ -41,5 +41,5 @@ post_backup() {
   local app=$3
 
   source /opt/conf.d/backup/scripts/container.sh
-  stop_container "${app}"
+  start_container "${app}"
 }
