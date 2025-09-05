@@ -17,11 +17,16 @@ logs service:
     docker compose logs -f {{service}}
 
 [group('restic')]
-[doc('Init restic repository')]
+[doc('Init repository')]
 init app:
     docker exec -it backup-toolkit bash -exuo pipefail init.sh {{app}}
 
 [group('restic')]
-[doc('Backup application with restic')]
+[doc('Backup application')]
 backup app:
     docker exec -it backup-toolkit bash -exuo pipefail backup.sh {{app}}
+
+[group('restic')]
+[doc('Restore backup for an application')]
+backup app:
+    docker compose -f {{app}}/conf.d/backup-restore/    docker-compose.yml up -d
