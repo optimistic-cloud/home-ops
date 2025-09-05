@@ -45,7 +45,7 @@ ping_hc "/start"
 
 rm -rf "$export_dir" && mkdir -p -m 700 "$export_dir"
 
-if [ -f "/opt/${app}/conf.d/backup/backup-export.sh" ]; then
+if [ -f "/opt/${app}/conf.d/backup/hooks.sh" ]; then
   source /opt/${app}/conf.d/backup/hooks.sh
 fi
 
