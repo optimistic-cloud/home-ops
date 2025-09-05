@@ -162,6 +162,8 @@ services:
     env_file:
       - ./conf.d/backup/.env
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      
       - ./conf.d/backup/crontab:/etc/crontab
       - ./conf.d/backup/scripts:/opt/conf.d/backup/scripts
       - ./conf.d/backup/providers:/opt/conf.d/backup/providers
@@ -173,6 +175,7 @@ services:
       - ./gitea/:/opt/gitea/:ro
       - ./pocket-id/:/opt/pocket-id/:ro
       - ./traefik/:/opt/traefik/:ro
+
 
 
 
