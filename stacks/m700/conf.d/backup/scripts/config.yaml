@@ -2,3 +2,7 @@ apps:
   - vaultwarden
   - nextcloud
   - gitlab
+
+provider:
+  - ionos
+  - hetzner
