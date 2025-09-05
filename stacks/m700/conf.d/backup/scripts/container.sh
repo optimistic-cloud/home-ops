@@ -21,7 +21,7 @@ wait_for() {
 start_container() {
   local name=$1
 
-  "${curl_cmd}" --unix-socket /var/run/docker.sock -X POST http://localhost/containers/"${name}"/start
+  curl -fsS -m 10 --retry 5 -o /dev/null --unix-socket /var/run/docker.sock -X POST http://localhost/containers/"${name}"/start
 
   wait_for ${name} "running"
 }
@@ -29,7 +29,7 @@ start_container() {
 stop_container() {
   local name=$1
 
-  "${curl_cmd}" --unix-socket /var/run/docker.sock -X POST http://localhost/containers/"${name}"/stop
+  curl -fsS -m 10 --retry 5 -o /dev/null --unix-socket /var/run/docker.sock -X POST http://localhost/containers/"${name}"/stop
 
   wait_for ${name} "exited"
 }
