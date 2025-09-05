@@ -13,11 +13,16 @@ def main [--config (-c): path] {
             RESTIC_REPOSITORY: $"($b.restic.repository)"
             RESTIC_PASSWORD_FILE: $"($b.restic.password-file)"
         } {
-                print $"Backing up ($app.name) to ($provider.name)"
-                print $env.AWS_ACCESS_KEY_ID
-                print $env.AWS_SECRET_ACCESS_KEY
-                print $env.RESTIC_REPOSITORY
-                print $env.RESTIC_PASSWORD_FILE
+
+            if not ($env.RESTIC_PASSWORD_FILE | path exists) {
+                error make { msg: $"($env.RESTIC_PASSWORD_FILE) not found" }
+            }
+
+            print $"Backing up ($app.name) to ($provider.name)"
+            print $env.AWS_ACCESS_KEY_ID
+            print $env.AWS_SECRET_ACCESS_KEY
+            print $env.RESTIC_REPOSITORY
+            print $env.RESTIC_PASSWORD_FILE
         }
 
 
