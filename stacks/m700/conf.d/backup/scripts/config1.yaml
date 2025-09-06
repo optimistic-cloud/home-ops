@@ -9,20 +9,20 @@ hetzner: &hetzner
 backup:
   - app: vaultwarden
     <<: *ionos
-    RESTIC_REPOSITORY: "repo"
+    RESTIC_REPOSITORY: "repo_vw_ionos"
     RESTIC_PASSWORD: "password"
 
   - app: vaultwarden
     <<: *hetzner
-    RESTIC_REPOSITORY: "repo1"
+    RESTIC_REPOSITORY: "repo_vw_hetzner"
     RESTIC_PASSWORD: "password1"
 
   - app: opengist
     <<: *ionos
-    RESTIC_REPOSITORY: "repo"
+    RESTIC_REPOSITORY: "repo_og_ionos"
     RESTIC_PASSWORD: "password"
 
   - app: opengist
     <<: *hetzner
-    RESTIC_REPOSITORY: "repo1"
+    RESTIC_REPOSITORY: "repo_og_hetzner"
     RESTIC_PASSWORD: "password1"
