@@ -1,0 +1,28 @@
+ionos: &ionos
+  AWS_ACCESS_KEY_ID: "ionos_asc"
+  AWS_SECRET_ACCESS_KEY: "ionos_sc"
+
+hetzner: &hetzner
+  AWS_ACCESS_KEY_ID: "hetzner_asc"
+  AWS_SECRET_ACCESS_KEY: "hetzner_sc"
+
+backup:
+  - app: vaultwarden
+    <<: *ionos
+    RESTIC_REPOSITORY: "repo"
+    RESTIC_PASSWORD: "password"
+
+  - app: vaultwarden
+    <<: *hetzner
+    RESTIC_REPOSITORY: "repo1"
+    RESTIC_PASSWORD: "password1"
+
+  - app: opengist
+    <<: *ionos
+    RESTIC_REPOSITORY: "repo"
+    RESTIC_PASSWORD: "password"
+
+  - app: opengist
+    <<: *hetzner
+    RESTIC_REPOSITORY: "repo1"
+    RESTIC_PASSWORD: "password1"
