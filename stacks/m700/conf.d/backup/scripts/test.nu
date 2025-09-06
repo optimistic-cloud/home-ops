@@ -1,7 +1,7 @@
 use std/log
 
 let restic_cmd = "restic --verbose=0 --quiet"
-let git_commit = $(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
+#let git_commit = $(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
 def main [--config (-c): path, --appp (-a): string] {
     let config = open $config
