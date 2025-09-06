@@ -13,7 +13,7 @@ def main [--config (-c): path, --appp (-a): string] {
             RESTIC_REPOSITORY: $b.RESTIC_REPOSITORY
             RESTIC_PASSWORD: $b.RESTIC_PASSWORD
         } {
-            print $"Backing up app: $appp"
+            print $"Backing up app: ($appp)"
             print $env.RESTIC_REPOSITORY
             print $env.RESTIC_PASSWORD
             print $env.AWS_ACCESS_KEY_ID
