@@ -6,7 +6,7 @@ let git_commit = $(git ls-remote https://github.com/optimistic-cloud/home-ops.gi
 def main [--config (-c): path, --appp (-a): string] {
     let config = open $config
 
-    $config.backup | where $app == $appp | each { |b|
+    $config.backup | where app == $appp | each { |b|
         with-env {
             AWS_ACCESS_KEY_ID: $b.AWS_ACCESS_KEY_ID
             AWS_SECRET_ACCESS_KEY: $b.AWS_SECRET_ACCESS_KEY
@@ -20,7 +20,7 @@ def main [--config (-c): path, --appp (-a): string] {
             print $env.AWS_SECRET_ACCESS_KEY
 
          }
-
+    }
     #     with-env {
     #         AWS_ACCESS_KEY_ID: $"($provider.AWS_ACCESS_KEY_ID)"
     #         AWS_SECRET_ACCESS_KEY: $"($provider.AWS_SECRET_ACCESS_KEY)"
