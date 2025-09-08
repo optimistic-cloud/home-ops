@@ -69,10 +69,10 @@ def main [--config (-c): path, --app (-a): string] {
                     RESTIC_PASSWORD: $b.RESTIC_PASSWORD
                 } {
                     let include = $b.include
-                    print $include | str join " "
+                    $include | str join " " | print
 
                     let exclude = $b.exclude
-                    print $exclude | str join " "
+                    $exclude | str join " " | print
 
                     # do {
                     #     (
