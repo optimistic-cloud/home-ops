@@ -19,7 +19,7 @@ def with-healthcheck [hc_slug: string, run_id: string, operation: closure] {
     do $operation
     http get $"($url)?rid=($run_id)" --max-time $timeout | ignore
   } catch {|err|
-    http get $"($url)/fail&rid=($run_id)" --max-time $timeout | ignore
+    http get $"($url)/fail?rid=($run_id)" --max-time $timeout | ignore
     error make $err
   }
 }
