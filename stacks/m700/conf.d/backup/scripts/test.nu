@@ -55,11 +55,11 @@ let restic_cmd = "restic" # --verbose=0 --quiet
 let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
 def main [--config (-c): path, --app (-a): string] {
-    if not ($config.backup | where app == $app | is-empty) {
+    let config = open $config
+
+    if ($config.backup | where app == $app | is-empty) {
         error make {msg: $"App ($app) not found in config."}
     }
-
-    let config = open $config
 
     with-lockfile $app {
         print $"Starting backup for app: ($app)"
