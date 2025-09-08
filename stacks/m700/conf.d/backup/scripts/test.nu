@@ -25,7 +25,7 @@ def with-lockfile [app:string, operation: closure] {
             if $pid == $nu.pid {
                 rm $lockfile
             } else {
-                log warn $"Lockfile ($lockfile) is held by PID ($pid), not us. Skipping removal."
+                log warning $"Lockfile ($lockfile) is held by PID ($pid), not us. Skipping removal."
             }
         }
     }
