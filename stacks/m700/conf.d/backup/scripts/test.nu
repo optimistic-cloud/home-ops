@@ -55,7 +55,7 @@ def with-healthcheck [hc_slug: string, run_id: string, operation: closure] {
 }
 
 def with-logs [hc_slug: string, run_id: string, operation: closure] {
-    let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
+    let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)?rid=($run_id)"
     let timeout = 10sec
 
     do $operation | collect | http post $"($url)" --max-time $timeout | ignore
