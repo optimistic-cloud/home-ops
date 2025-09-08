@@ -36,8 +36,8 @@ def with-lockfile [app:string, operation: closure] {
     }
 }
 
-def with-healthcheck [app: string, operation: closure] {
-  let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($app)-backup"
+def with-healthcheck [hc_slug: string, operation: closure] {
+  let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
   let timeout = 10sec
 
   try {
@@ -55,21 +55,28 @@ let restic_cmd = "restic" # --verbose=0 --quiet
 let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
 def main [--config (-c): path, --app (-a): string] {
+    if not ($config.backup | where app == $app | is-empty) {
+        error make {msg: $"App ($app) not found in config."}
+    }
+
+    let config = open $config
+
     with-lockfile $app {
-        with-healthcheck $app {
-            print $"Starting backup for app: ($app)"
-            
-            let config = open $config
+        print $"Starting backup for app: ($app)"
+        
+        let config = open $config
 
-            $config.backup | where app == $app | each { |b|
-                with-env {
-                    AWS_ACCESS_KEY_ID: $b.AWS_ACCESS_KEY_ID
-                    AWS_SECRET_ACCESS_KEY: $b.AWS_SECRET_ACCESS_KEY
-                    RESTIC_REPOSITORY: $b.RESTIC_REPOSITORY
-                    RESTIC_PASSWORD: $b.RESTIC_PASSWORD
-                } {
+        $config.backup | where app == $app | each { |b|
+            with-env {
+                AWS_ACCESS_KEY_ID: $b.AWS_ACCESS_KEY_ID
+                AWS_SECRET_ACCESS_KEY: $b.AWS_SECRET_ACCESS_KEY
+                RESTIC_REPOSITORY: $b.RESTIC_REPOSITORY
+                RESTIC_PASSWORD: $b.RESTIC_PASSWORD
+            } {
+
+                with-healthcheck $b.hc_slug {
+
                     let include = $b.include
-
                     let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
 
                     do {
@@ -83,13 +90,10 @@ def main [--config (-c): path, --app (-a): string] {
                         #${restic_cmd} snapshots latest
                         #${restic_cmd} ls latest --long --recursive
                     }
-
-                 }
+                }
             }
-
-
         }
-    }   
+    }
 
 
     # let config = open $config
