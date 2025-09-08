@@ -50,6 +50,12 @@ def with-healthcheck [hc_slug: string, operation: closure] {
   }
 }
 
+let restic_block = {|i,e,t| 
+    restic backup ...($i) $e --exclude-caches --one-file-system --tag git_commit=($t)
+    restic snapshots latest
+    restic ls latest --long --recursive
+}
+
 def main [--config (-c): path, --app (-a): string] {
     let config = open $config
 
@@ -74,9 +80,7 @@ def main [--config (-c): path, --app (-a): string] {
                     let include = $b.include
                     let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
 
-                    restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit)
-                    restic snapshots latest
-                    restic ls latest --long --recursive
+                    do $restic_block $include $exclude $git_commit
                 }
             }
         }
