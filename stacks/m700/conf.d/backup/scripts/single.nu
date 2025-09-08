@@ -49,7 +49,7 @@ def main [] {
         vaultwarden/appdata/tmp
         vaultwarden/*backup*
     ]
-    let git_commit = $(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
+    let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
     let run_id = $(uuid)
     let hc_slug = "vaultwarden-backup"
