@@ -38,13 +38,29 @@ def with-lockfile [app:string, operation: closure] {
     }
 }
 
+def with-healthcheck [app: string, operation: closure] {
+  let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($app)-backup"
+
+  try {
+    http get $"($url)/start?create=1" --max-time $timeout | ignore
+    do $operation
+    http get $url --max-time $timeout | ignore
+  } catch {|err|
+    log error $"Error during healthcheck operation: ($err)"
+    http get $"($url)/fail" --max-time $timeout | ignore
+    error make $err
+  }
+}
+
 
 let restic_cmd = "restic --verbose=0 --quiet"
 #let git_commit = $(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
 def main [--config (-c): path, --app (-a): string] {
     with-lockfile $app {
-        print $"Starting backup for app: ($app)"
+        with-healthcheck $app {
+            print $"Starting backup for app: ($app)"
+        }
     }
 
 
