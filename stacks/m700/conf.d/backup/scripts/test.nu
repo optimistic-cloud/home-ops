@@ -69,24 +69,21 @@ def main [--config (-c): path, --app (-a): string] {
                     RESTIC_PASSWORD: $b.RESTIC_PASSWORD
                 } {
                     let include = $b.include
-                    $include | str join " " | print
 
                     let exclude = $b.exclude | each { |it| $"--exclude=($it)" }
-                    $exclude | str join " " | print
 
-                    # do {
-                    #     (
-                    #         ($restic_cmd) backup ...($files)
-                    #             --files-from $app.include
-                    #             --exclude-file $app.exclude
-                    #             --exclude-caches
-                    #             --one-file-system   
-                    #             --tag git_commit=($git_commit)
-                    #     )
+                    do {
+                        (
+                            ($restic_cmd) backup ...($include)
+                                $exclude | str join " "
+                                --exclude-caches
+                                --one-file-system   
+                                --tag git_commit=($git_commit)
+                        )
 
-                    #     ${restic_cmd} snapshots latest
-                    #     ${restic_cmd} ls latest --long --recursive
-                    # } | str collect | log info $"Backup log:\n\n$it\n"
+                        #${restic_cmd} snapshots latest
+                        #${restic_cmd} ls latest --long --recursive
+                    }
 
                  }
             }
