@@ -56,15 +56,24 @@ def with-healthcheck [hc_slug: string, operation: closure] {
 def with-logs [hc_slug: string, operation: closure] {
     let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
     let timeout = 10sec
-    
-    do $operation | collect { |x| print $"HELLOOOOO=======.   ($x)" }
+
+    do $operation | collect | http post $"($url)" --max-time $timeout | ignore
 }
 
-let restic_block = {|i,e,t| 
-    restic backup ...($i) $e --exclude-caches --one-file-system --tag git_commit=($t)
-    restic snapshots latest
-    restic ls latest --long --recursive
+def test_snapshot [] {
+    let snapshot_json = restic snapshots latest --json | from json
+    let snapshot_time = $snapshot_json.0.time | split row "." | get 0
+    let snapshot_time_fixed = $snapshot_time | str replace "T" " "
+    let snapshot_epoch = date to-timezone $snapshot_time_fixed | date to-record | get timestamp | into int
+    let current_epoch = date now | date to-record | get timestamp | into int
+    let diff = $current_epoch - $snapshot_epoch | math abs
+    let threshold = 600
+
+    if $diff > $threshold {
+        error make {msg: $"Snapshot is older than threshold ($threshold) seconds."}
+    }
 }
+
 
 def main [--config (-c): path, --app (-a): string] {
     let config = open $config
@@ -87,7 +96,6 @@ def main [--config (-c): path, --app (-a): string] {
             } {
                 with-healthcheck $b.hc_slug {
 
-
                     with-logs $b.hc_slug {
                         let include = $b.include
                         let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
@@ -99,6 +107,8 @@ def main [--config (-c): path, --app (-a): string] {
                     with-logs $b.hc_slug { 
                         restic ls latest --long --recursive
                     }
+
+                    test_snapshot
 
                     #do $restic_block $include $exclude $git_commit
                 }
