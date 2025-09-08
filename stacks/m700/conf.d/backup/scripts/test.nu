@@ -60,12 +60,10 @@ def with-logs [hc_slug: string, operation: closure] {
     do $operation | collect | http post $"($url)" --max-time $timeout | ignore
 }
 
-def test_snapshot [] {
+def test_snapshot [offset: duration = 1min] {
     let snapshot_time = (restic snapshots latest --json | from json | get 0.time | into datetime)    
-    
-    print $snapshot_time
 
-    if not (date now) < ($snapshot_time + 1min) {
+    if not ((date now) < ($snapshot_time + $offset)) {
         error make {msg: $"Snapshot is older than 1 minute. Snapshot time: ($snapshot_time), Current time: (date now)"}
     }
 }
