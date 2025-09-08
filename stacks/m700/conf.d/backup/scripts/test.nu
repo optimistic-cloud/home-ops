@@ -50,10 +50,6 @@ def with-healthcheck [hc_slug: string, operation: closure] {
   }
 }
 
-
-let restic_cmd = "restic" # --verbose=0 --quiet
-let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
-
 def main [--config (-c): path, --app (-a): string] {
     let config = open $config
 
@@ -64,6 +60,7 @@ def main [--config (-c): path, --app (-a): string] {
     with-lockfile $app {
         print $"Starting backup for app: ($app)"
         
+        let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
         $config.backup | where app == $app | each { |b|
             with-env {
@@ -72,21 +69,16 @@ def main [--config (-c): path, --app (-a): string] {
                 RESTIC_REPOSITORY: $b.RESTIC_REPOSITORY
                 RESTIC_PASSWORD: $b.RESTIC_PASSWORD
             } {
-                print $b.hc_slug
                 with-healthcheck $b.hc_slug {
 
                     let include = $b.include
                     let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
 
-                    do { $restic_cmd backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) }
+                    let restic = {|| echo $text}; do $hello
 
-
-                    #do {
-
-
-                        #${restic_cmd} snapshots latest
-                        #${restic_cmd} ls latest --long --recursive
-                    #}
+                    restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit)
+                    restic snapshots latest
+                    restic ls latest --long --recursive
                 }
             }
         }
