@@ -1,21 +1,21 @@
 use std/log
 
-def "db export" [exported: path]: string -> path {
-    let db = $in
-    if not ($db | path exists) {
-        error make {msg: $"Database file ($db) does not exist."}
-    }
-    if ($exported | path exists) {
-        error make {msg: $"Location directory ($exported) does exist."}
-    }
-    sqlite3 ${db} ".backup '${exported}'"
+# def "db export" [exported: path]: string -> path {
+#     let db = $in
+#     if not ($db | path exists) {
+#         error make {msg: $"Database file ($db) does not exist."}
+#     }
+#     if ($exported | path exists) {
+#         error make {msg: $"Location directory ($exported) does exist."}
+#     }
+#     sqlite3 ${db} ".backup '${exported}'"
 
-    let integrity = (sqlite3 "${exported}" "PRAGMA integrity_check;")
-    if "$integrity" != "ok" {
-        error make {msg: $"Export database file ($exported) is corrupt."}
-    }
-    $exported
-}
+#     let integrity = (sqlite3 "${exported}" "PRAGMA integrity_check;")
+#     if "$integrity" != "ok" {
+#         error make {msg: $"Export database file ($exported) is corrupt."}
+#     }
+#     $exported
+# }
 
 # Nushell does not support file locking natively.
 def with-lockfile [app:string, operation: closure] {
