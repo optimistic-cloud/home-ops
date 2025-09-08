@@ -97,7 +97,7 @@ def main [--config (-c): path, --app (-a): string] {
                         let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
                         restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) 
                     }
-                    restic --verboce=0 --quiet check --read-data-subset 33%
+                    restic --verbose=0 --quiet check --read-data-subset 33%
                     test_snapshot
 
                     # with-logs $b.hc_slug $run_id {
