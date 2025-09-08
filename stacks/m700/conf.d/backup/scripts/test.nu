@@ -58,7 +58,7 @@ def with-logs [hc_slug: string, run_id: string, operation: closure] {
     do $operation | collect | http post $"($url)" --max-time $timeout | ignore
 }
 
-def test_snapshot [offset: duration = 1min] {
+def test_latest_snapshot [offset: duration = 1min] {
     let snapshot_time = (restic snapshots latest --json | from json | get 0.time | into datetime)    
 
     if not ((date now) < ($snapshot_time + $offset)) {
@@ -116,7 +116,7 @@ def main [--config (-c): path, --app (-a): string] {
                             restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) 
                         }
                         restic --verbose=0 --quiet check --read-data-subset 33%
-                        test_snapshot
+                        test_latest_snapshot
 
                         # with-logs $b.hc_slug $run_id {
                         #     restic snapshots latest
