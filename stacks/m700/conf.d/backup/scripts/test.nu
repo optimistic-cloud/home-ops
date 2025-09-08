@@ -69,7 +69,7 @@ def test_latest_snapshot [offset: duration = 1min] {
 def prepare-data [app: string, operation: closure] {
     # load application hooks
     def load-backup-hooks [app: string] {
-        let hooks = $"($app)_backup_hooks.nu"
+        const hooks = $"($app)_backup_hooks.nu"
         if not ($hooks | path exists) {
             error make {msg: $"Hooks file ($hooks) does not exist."}
         }
