@@ -42,7 +42,9 @@ def with-healthcheck [hc_slug: string, operation: closure] {
 
   try {
     http get $"($url)/start?create=1" --max-time $timeout | ignore
-    do $operation
+    do { 
+        $operation
+    } | http post $"($url)" --max-time $timeout | ignore
     http get $url --max-time $timeout | ignore
   } catch {|err|
     http get $"($url)/fail" --max-time $timeout | ignore
