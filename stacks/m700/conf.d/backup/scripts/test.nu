@@ -3,24 +3,10 @@ use std/log
 def with-lockfile [app:string, operation: closure] {
     let lockfile = $"/tmp/($app)-backup.lock"
 
-    def aquire-lock [] {
-        exec 200>($lockfile)
-        flock -n 200
-    }
-
-    def release-lock [] {
-        flock -u 200
-        rm -f /tmp/($app)-backup.lock
-    }
-
     try {
-        aquire-lock
-        cat $lockfile
-        do $operation
-        release-lock
+        flock -n $lockfile -c { do $operation }
     } catch {|err|
-        release-lock
-        let message = $"Failed to open lockfile ($lockfile): ($err)"
+        let message = $"Failed to acquire lock ($lockfile): ($err)"
         log error $message
         error make {msg: $message}
     }
