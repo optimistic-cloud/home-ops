@@ -18,6 +18,8 @@ def with-lockfile [app:string, operation: closure] {
 
     try {
         aquire-lock
+        cat $lockfile | ignore
+        ls -al /tmp
         do $operation
         release-lock
     } catch {|err|
