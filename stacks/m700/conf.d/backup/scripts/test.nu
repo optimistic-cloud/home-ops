@@ -71,7 +71,7 @@ def prepare-data [app: string, operation: closure] {
     def load-backup-hooks [app: string] {
         let hooks = $"($app)_backup_hooks.nu"
         if not ($hooks | path exists) {
-            error make {msg: $"Hooks file ($hooks) does not exist."
+            error make {msg: $"Hooks file ($hooks) does not exist."}
         }
 
         source $hooks
