@@ -83,15 +83,15 @@ def test_latest_snapshot [offset: duration = 1min] {
     }
 }
 
+let vaultwarden_export = {
+    print "Hello from vaultwarden"
+}
+
 def prepare-data [app: string] {
     match $app {
         "vaultwarden" => do $vaultwarden_export
         _   => { echo "default case" }
     }
-}
-
-let vaultwarden_export = {
-    print "Hello from vaultwarden"
 }
 
 def main [--config (-c): path, --app (-a): string] {
