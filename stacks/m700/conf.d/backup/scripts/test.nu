@@ -7,7 +7,7 @@ def with-lockfile [app:string, operation: closure] {
     # Acquire lock: create the lockfile with our PID
     def acquire-lock [] {
         if not ($lockfile | path exists) {
-            $nu.pid | save --force $lockfile
+            $nu.pid | save $lockfile
         } else {
             let pid = (open $lockfile)
             error make {msg: $"Lockfile ($lockfile) exists. Held by PID ($pid). Another backup process might be running."}
@@ -21,14 +21,13 @@ def with-lockfile [app:string, operation: closure] {
             if $pid == $nu.pid {
                 rm $lockfile
             } else {
-                log warn $"Lockfile ($lockfile) is held by PID ($pid), not us. Skipping removal."
+                #log warn $"Lockfile ($lockfile) is held by PID ($pid), not us. Skipping removal."
             }
         }
     }
 
     try {
         acquire-lock
-        ls -al /tmp | print  # for debugging
         cat $lockfile | print # for debugging
         do $operation
         release-lock
