@@ -1,29 +1,40 @@
 use std/log
 
-# nushell does not support file locking natively.
+# Nushell does not support file locking natively.
 def with-lockfile [app:string, operation: closure] {
     let lockfile = $"/tmp/($app)-backup.lock"
 
-    def aquire-lock [] {
+    # Acquire lock: create the lockfile with our PID
+    def acquire-lock [] {
         if not ($lockfile | path exists) {
-            touch $lockfile
+            $nu.pid | save --force $lockfile
+        } else {
+            let pid = (open $lockfile)
+            error make {msg: $"Lockfile ($lockfile) exists. Held by PID ($pid). Another backup process might be running."}
         }
     }
 
+    # Release lock only if it’s ours
     def release-lock [] {
         if ($lockfile | path exists) {
-            rm $lockfile
+            let pid = (open $lockfile)
+            if $pid == $nu.pid {
+                rm $lockfile
+            } else {
+                log warn $"Lockfile ($lockfile) is held by PID ($pid), not us. Skipping removal."
+            }
         }
     }
 
     try {
-        aquire-lock
-        ls -al /tmp | print
+        acquire-lock
+        ls -al /tmp | print  # for debugging
+        cat $lockfile | print # for debugging
         do $operation
         release-lock
     } catch {|err|
         release-lock
-        let message = $"Failed to acquire lock ($lockfile): ($err)"
+        let message = $"Failed to acquire or run operation with lock ($lockfile): ($err)"
         log error $message
         error make {msg: $message}
     }
