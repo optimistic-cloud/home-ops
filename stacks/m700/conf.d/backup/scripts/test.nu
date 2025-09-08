@@ -65,9 +65,11 @@ def test_snapshot [] {
     let snapshot_time = ($snapshot_json.0.time | split row "." | get 0)
     let snapshot_time_fixed = ($snapshot_time | str replace "T" " ")
     
-    # Fix this line - parse the date string correctly
-    let snapshot_epoch = ($snapshot_time_fixed | into datetime | date to-record | get timestamp | into int)
-    let current_epoch = (date now | date to-record | get timestamp | into int)
+    # Fixed approach - parse the date correctly
+    let snapshot_datetime = ($snapshot_time_fixed | into datetime)
+    let snapshot_epoch = ($snapshot_datetime.timestamp | into int)
+    let current_epoch = ((date now).timestamp | into int)
+    
     let diff = ($current_epoch - $snapshot_epoch | math abs)
     let threshold = 600
 
