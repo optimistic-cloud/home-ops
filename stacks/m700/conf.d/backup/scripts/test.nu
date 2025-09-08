@@ -44,12 +44,22 @@ def with-healthcheck [hc_slug: string, operation: closure] {
     http get $"($url)/start?create=1" --max-time $timeout | ignore
     do { 
         $operation
-    } | http post $"($url)" --max-time $timeout | ignore
+    } 
+#    | http post $"($url)" --max-time $timeout | ignore
+#        do { $operation }| collect { |x| print $"HELLOOOOO=======($x)" }
+    #| http post $"($url)" --max-time $timeout | ignore
     http get $url --max-time $timeout | ignore
   } catch {|err|
     http get $"($url)/fail" --max-time $timeout | ignore
     error make $err
   }
+}
+
+def with-logs [hc_slug: string, operation: closure] {
+    let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
+    let timeout = 10sec
+    
+    do { $operation } | collect { |x| print $"HELLOOOOO=======.   ($x)" }
 }
 
 let restic_block = {|i,e,t| 
@@ -82,7 +92,17 @@ def main [--config (-c): path, --app (-a): string] {
                     let include = $b.include
                     let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
 
-                    do $restic_block $include $exclude $git_commit
+                    with-logs $b.hc_slug { 
+                        restic backup ...($i) $e --exclude-caches --one-file-system --tag git_commit=($t) 
+                    }
+                    with-logs $b.hc_slug { 
+                        restic snapshots latest
+                    }
+                    with-logs $b.hc_slug { 
+                        restic ls latest --long --recursive
+                    }
+
+                    #do $restic_block $include $exclude $git_commit
                 }
             }
         }
