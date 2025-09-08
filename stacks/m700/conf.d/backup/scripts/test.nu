@@ -89,11 +89,11 @@ def main [--config (-c): path, --app (-a): string] {
             } {
                 with-healthcheck $b.hc_slug {
 
-                    let include = $b.include
-                    let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
 
-                    with-logs $b.hc_slug { 
-                        restic backup ...($i) $e --exclude-caches --one-file-system --tag git_commit=($t) 
+                    with-logs $b.hc_slug {
+                        let include = $b.include
+                        let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
+                        restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($t) 
                     }
                     with-logs $b.hc_slug { 
                         restic snapshots latest
