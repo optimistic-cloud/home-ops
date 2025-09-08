@@ -74,7 +74,7 @@ def main [--config (-c): path, --app (-a): string] {
 
                     do {
                         (
-                            $restic_cmd backup ...($include)
+                            restic backup ...($include)
                                 $exclude | str join " "
                                 --exclude-caches
                                 --one-file-system   
