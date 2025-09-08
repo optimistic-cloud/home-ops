@@ -83,11 +83,13 @@ def test_latest_snapshot [offset: duration = 1min] {
     }
 }
 
-def prepare-data [app: string] {
+def prepare-data [app: string, operation: closure] {
     match $app {
         "vaultwarden" => { print "Hello from vaultwarden" }
         _   => { echo "default case" }
     }
+
+    do $operation
 }
 
 def main [--config (-c): path, --app (-a): string] {
