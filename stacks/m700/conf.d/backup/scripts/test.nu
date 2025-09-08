@@ -84,7 +84,7 @@ def test_latest_snapshot [offset: duration = 1min] {
 }
 
 def prepare-data [app: string] {
-    match $value {
+    match $app {
         "vaultwarden" => do $vaultwarden_export
         _   => { echo "default case" }
     }
