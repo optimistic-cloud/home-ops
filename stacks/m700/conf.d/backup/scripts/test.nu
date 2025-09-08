@@ -1,14 +1,27 @@
 use std/log
 
+# nushell does not support file locking natively.
 def with-lockfile [app:string, operation: closure] {
     let lockfile = $"/tmp/($app)-backup.lock"
 
+    def aquire-lock [] {
+        if not ($lockfile | path exists) {
+            touch $lockfile
+        }
+    }
+
+    def release-lock [] {
+        if ($lockfile | path exists) {
+            rm $lockfile
+        }
+    }
+
     try {
-        flock -n $lockfile
+        aquire-lock
         do $operation
-        flock -u $lockfile
+        release-lock
     } catch {|err|
-        flock -u $lockfile
+        release-lock
         let message = $"Failed to acquire lock ($lockfile): ($err)"
         log error $message
         error make {msg: $message}
