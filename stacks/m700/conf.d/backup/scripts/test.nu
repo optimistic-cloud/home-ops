@@ -22,7 +22,7 @@ def with-lockfile [app:string, operation: closure] {
             let pid = (open $lockfile)
             print $"rl: ($nu.pid)"
             cat $lockfile | print # for debugging
-            if $pid == ($nu.pid | str) {
+            if $pid == $"($nu.pid)" {
                 rm $lockfile
             } else {
                 log warning $"Lockfile ($lockfile) is held by PID ($pid), not us. Skipping removal."
