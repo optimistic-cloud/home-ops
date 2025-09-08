@@ -64,7 +64,6 @@ def main [--config (-c): path, --app (-a): string] {
     with-lockfile $app {
         print $"Starting backup for app: ($app)"
         
-        let config = open $config
 
         $config.backup | where app == $app | each { |b|
             with-env {
@@ -73,7 +72,7 @@ def main [--config (-c): path, --app (-a): string] {
                 RESTIC_REPOSITORY: $b.RESTIC_REPOSITORY
                 RESTIC_PASSWORD: $b.RESTIC_PASSWORD
             } {
-
+                print $b.hc_slug
                 with-healthcheck $b.hc_slug {
 
                     let include = $b.include
