@@ -40,14 +40,14 @@ def logs-to-hc [hc_slug: string, run_id: string] {
 
 def main [] {
     val include = [
-        /opt/vaultwarden/.env
-        /opt/vaultwarden/appdata
-        /tmp/vaultwarden/export/db.sqlite3
+        "/opt/vaultwarden/.env"
+        "/opt/vaultwarden/appdata"
+        "/tmp/vaultwarden/export/db.sqlite3"
     ]
     val exclude = [
-        vaultwarden/appdata/db.sqlite3*
-        vaultwarden/appdata/tmp
-        vaultwarden/*backup*
+        "vaultwarden/appdata/db.sqlite3*"
+        "vaultwarden/appdata/tmp"
+        "vaultwarden/*backup*"
     ]
     let git_commit = $(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
