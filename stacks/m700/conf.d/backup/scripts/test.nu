@@ -63,9 +63,10 @@ def with-logs [hc_slug: string, operation: closure] {
 def test_snapshot [] {
     let snapshot_time = (restic snapshots latest --json | from json | get 0.time | into datetime)    
     
+    print $snapshot_time
+
     if not (date now) < ($snapshot_time + 1min) {
         error make {msg: $"Snapshot is older than 1 minute. Snapshot time: ($snapshot_time), Current time: (date now)"}
-
     }
 }
 
