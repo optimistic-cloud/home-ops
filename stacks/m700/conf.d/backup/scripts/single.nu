@@ -100,9 +100,9 @@ def main [app: string = "vaultwarden"] {
             rm -rf $export_dir
             mkdir $export_dir
 
-            docker container stop $app
+            docker container stop $app | ignore
             $"($source_dir)/appdata/db.sqlite3" | export-sqlite $"($export_dir)/db.sqlite3" | ignore 
-            docker container start $app
+            docker container start $app | ignore
 
             restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) | logs-to-hc $hc_slug $run_id
             test_latest_snapshot
