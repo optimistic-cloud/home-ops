@@ -103,6 +103,8 @@ def main [--config (-c): path, --app (-a): string] {
         let backup_dir = $"/opt/($app)"
         let export_dir = $"/tmp/($app)/export"
 
+        mkdir $export_dir
+
         prepare-data $app $backup_dir $export_dir
 
         $config.backup | where app == $app | each { |b|
