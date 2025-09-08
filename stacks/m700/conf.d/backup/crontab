@@ -10,6 +10,9 @@
 # │ │ │ │ │ │ │ ┌ Command
 # ┴ ┴ ┴ ┴ ┴ ┴ ┴ ┴
 # * * * * * * * printf '%s\n' 'Hello world!'
+0 0 * * *  just --dotenv-filename ionos.env backup
+5 0 * * *  just --dotenv-filename hetzner.env backup
+
 @daily backup.sh vaultwarden
 @daily backup.sh opengist
 @daily backup.sh gitea

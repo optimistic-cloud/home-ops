@@ -1,0 +1,2 @@
+single:
+    nu single.nu

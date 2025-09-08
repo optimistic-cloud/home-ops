@@ -106,6 +106,17 @@ def with-data [app: string, source_dir: path, export_dir: path, operation: closu
     }
 }
 
+
+1. single script per app and a single target
+2. different env files per backup
+
+ionos.env
+- aws_s3 creds
+- restic creds
+
+
+
+
 def main [--config (-c): path, --app (-a): string] {
     let config = open $config
 
