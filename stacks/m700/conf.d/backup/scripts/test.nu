@@ -70,12 +70,11 @@ def main [--config (-c): path, --app (-a): string] {
                 } {
                     let include = $b.include
 
-                    let exclude = $b.exclude | each { |it| $"--exclude=($it)" }
+                    let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
 
                     do {
                         (
-                            restic backup ...($include)
-                                $exclude | str join " "
+                            restic backup ...($include) $exclude 
                                 --exclude-caches
                                 --one-file-system   
                                 --tag git_commit=($git_commit)
