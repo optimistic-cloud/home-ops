@@ -68,10 +68,11 @@ def test_snapshot [] {
     # Fixed approach - parse the date correctly
     let snapshot_datetime = ($snapshot_time_fixed | into datetime)
     let snapshot_epoch = ($snapshot_datetime.timestamp | into int)
-    let current_epoch = ((date now).timestamp | into int)
+    let current_epoch = (date now | date to-record | get timestamp | into int)
     
     let diff = ($current_epoch - $snapshot_epoch | math abs)
     let threshold = 600
+
 
     if $diff > $threshold {
         error make {msg: $"Snapshot is older than threshold ($threshold) seconds."}
