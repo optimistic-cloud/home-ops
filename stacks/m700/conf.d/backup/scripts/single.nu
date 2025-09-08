@@ -51,7 +51,7 @@ def main [] {
     ]
     let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
-    let run_id = $(uuid)
+    let run_id = (random uuid -v 4)
     let hc_slug = "vaultwarden-backup"
     with-healthcheck $hc_slug $run_id {
         restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) | logs-to-hc $hc_slug $run_id
