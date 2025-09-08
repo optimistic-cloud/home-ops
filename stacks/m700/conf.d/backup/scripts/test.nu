@@ -4,8 +4,11 @@ def with-lockfile [app:string, operation: closure] {
     let lockfile = $"/tmp/($app)-backup.lock"
 
     try {
-        flock -n $lockfile -c { do $operation }
+        flock -n $lockfile
+        do $operation
+        flock -u $lockfile
     } catch {|err|
+        flock -u $lockfile
         let message = $"Failed to acquire lock ($lockfile): ($err)"
         log error $message
         error make {msg: $message}
