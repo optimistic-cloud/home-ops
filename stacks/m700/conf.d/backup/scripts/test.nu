@@ -83,14 +83,25 @@ def test_latest_snapshot [offset: duration = 1min] {
     }
 }
 
-def prepare-data [app: string, source_dir: path, export_dir: path] {
-    match $app {
-        "vaultwarden" => { 
-            docker container stop $app
-            $"($source_dir)/appdata/db.sqlite3" | db export $"($export_dir)/db.sqlite3" | ignore 
-            docker container start $app
+def with-data [app: string, source_dir: path, export_dir: path, operation: closure] {
+    try {
+        rm -rf $export_dir && mkdir $export_dir
+
+        match $app {
+            "vaultwarden" => { 
+                docker container stop $app
+                $"($source_dir)/appdata/db.sqlite3" | db export $"($export_dir)/db.sqlite3" | ignore 
+                docker container start $app
+            }
+            _   => { echo "default case" }
         }
-        _   => { echo "default case" }
+
+        do $operation
+
+        rm -rf $export_dir
+    } catch {|err|
+        rm -rf $export_dir
+        error make $err
     }
 }
 
@@ -109,31 +120,32 @@ def main [--config (-c): path, --app (-a): string] {
 
         mkdir $export_dir
 
-        prepare-data $app $backup_dir $export_dir
+        with-data $app $backup_dir $export_dir {
 
-        $config.backup | where app == $app | each { |b|
-            with-env {
-                AWS_ACCESS_KEY_ID: $b.AWS_ACCESS_KEY_ID
-                AWS_SECRET_ACCESS_KEY: $b.AWS_SECRET_ACCESS_KEY
-                RESTIC_REPOSITORY: $b.RESTIC_REPOSITORY
-                RESTIC_PASSWORD: $b.RESTIC_PASSWORD
-            } {
-                let run_id = (random uuid -v 4)
-                with-healthcheck $b.hc_slug $run_id {
+            $config.backup | where app == $app | each { |b|
+                with-env {
+                    AWS_ACCESS_KEY_ID: $b.AWS_ACCESS_KEY_ID
+                    AWS_SECRET_ACCESS_KEY: $b.AWS_SECRET_ACCESS_KEY
+                    RESTIC_REPOSITORY: $b.RESTIC_REPOSITORY
+                    RESTIC_PASSWORD: $b.RESTIC_PASSWORD
+                } {
+                    let run_id = (random uuid -v 4)
+                    with-healthcheck $b.hc_slug $run_id {
 
-                    with-logs $b.hc_slug $run_id {
-                        let include = $b.include
-                        let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
-                        restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) 
-                    }
-                    restic --verbose=0 --quiet check --read-data-subset 33%
-                    test_latest_snapshot
+                        with-logs $b.hc_slug $run_id {
+                            let include = $b.include
+                            let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
+                            restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) 
+                        }
+                        restic --verbose=0 --quiet check --read-data-subset 33%
+                        test_latest_snapshot
 
-                    with-logs $b.hc_slug $run_id {
-                        restic snapshots latest
-                    }
-                    with-logs $b.hc_slug $run_id {
-                        restic ls latest --long --recursive
+                        with-logs $b.hc_slug $run_id {
+                            restic snapshots latest
+                        }
+                        with-logs $b.hc_slug $run_id {
+                            restic ls latest --long --recursive
+                        }
                     }
                 }
             }
