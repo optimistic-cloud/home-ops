@@ -36,24 +36,25 @@ def with-lockfile [app:string, operation: closure] {
     }
 }
 
-def with-healthcheck [hc_slug: string, operation: closure] {
+# TODO: refactor func and with-logs toghether
+def with-healthcheck [hc_slug: string, run_id: string, operation: closure] {
   let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
   let timeout = 10sec
 
   try {
-    http get $"($url)/start?create=1" --max-time $timeout | ignore
+    http get $"($url)/start?create=1&rid=($run_id)" --max-time $timeout | ignore
     do $operation
 #    | http post $"($url)" --max-time $timeout | ignore
 #        do { $operation }| collect { |x| print $"HELLOOOOO=======($x)" }
     #| http post $"($url)" --max-time $timeout | ignore
-    http get $url --max-time $timeout | ignore
+    http get $"($url)?rid=($run_id)" --max-time $timeout | ignore
   } catch {|err|
-    http get $"($url)/fail" --max-time $timeout | ignore
+    http get $"($url)/fail&rid=($run_id)" --max-time $timeout | ignore
     error make $err
   }
 }
 
-def with-logs [hc_slug: string, operation: closure] {
+def with-logs [hc_slug: string, run_id: string, operation: closure] {
     let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
     let timeout = 10sec
 
@@ -67,7 +68,6 @@ def test_snapshot [offset: duration = 1min] {
         error make {msg: $"Snapshot is older than 1 minute. Snapshot time: ($snapshot_time), Current time: (date now)"}
     }
 }
-
 
 def main [--config (-c): path, --app (-a): string] {
     let config = open $config
@@ -88,17 +88,19 @@ def main [--config (-c): path, --app (-a): string] {
                 RESTIC_REPOSITORY: $b.RESTIC_REPOSITORY
                 RESTIC_PASSWORD: $b.RESTIC_PASSWORD
             } {
-                with-healthcheck $b.hc_slug {
 
-                    with-logs $b.hc_slug {
+                let run_id = (random uuid -v 4)
+                with-healthcheck $b.hc_slug $run_id {
+
+                    with-logs $b.hc_slug $run_id {
                         let include = $b.include
                         let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
                         restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) 
                     }
-                    with-logs $b.hc_slug { 
+                    with-logs $b.hc_slug $run_id {
                         restic snapshots latest
                     }
-                    with-logs $b.hc_slug { 
+                    with-logs $b.hc_slug $run_id {
                         restic ls latest --long --recursive
                     }
                     test_snapshot
