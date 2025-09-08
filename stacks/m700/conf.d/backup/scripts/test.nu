@@ -8,7 +8,7 @@ def with-lockfile [app:string, operation: closure] {
     def acquire-lock [] {
         if not ($lockfile | path exists) {
             $nu.pid | save $lockfile
-            print $nu.pid
+            print $"al: ($nu.pid)"
         } else {
             let pid = (open $lockfile)
             error make {msg: $"Lockfile ($lockfile) exists. Held by PID ($pid). Another backup process might be running."}
@@ -19,7 +19,7 @@ def with-lockfile [app:string, operation: closure] {
     def release-lock [] {
         if ($lockfile | path exists) {
             let pid = (open $lockfile)
-            print $nu.pid
+            print $"rl: ($nu.pid)"
             if $pid == $nu.pid {
                 rm $lockfile
             } else {
