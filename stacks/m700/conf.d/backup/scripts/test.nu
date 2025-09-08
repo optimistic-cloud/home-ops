@@ -1,21 +1,21 @@
 use std/log
 
-# def "db export" [exported: path]: string -> path {
-#     let db = $in
-#     if not ($db | path exists) {
-#         error make {msg: $"Database file ($db) does not exist."}
-#     }
-#     if ($exported | path exists) {
-#         error make {msg: $"Location directory ($exported) does exist."}
-#     }
-#     sqlite3 ${db} ".backup '${exported}'"
+def "db export" [exported: path]: string -> path {
+    let db = $in
+    if not ($db | path exists) {
+        error make {msg: $"Database file ($db) does not exist."}
+    }
+    if ($exported | path exists) {
+        error make {msg: $"Location directory ($exported) does exist."}
+    }
+    sqlite3 ${db} ".backup '${exported}'"
 
-#     let integrity = (sqlite3 "${exported}" "PRAGMA integrity_check;")
-#     if "$integrity" != "ok" {
-#         error make {msg: $"Export database file ($exported) is corrupt."}
-#     }
-#     $exported
-# }
+    let integrity = (sqlite3 "${exported}" "PRAGMA integrity_check;")
+    if "$integrity" != "ok" {
+        error make {msg: $"Export database file ($exported) is corrupt."}
+    }
+    $exported
+}
 
 # Nushell does not support file locking natively.
 def with-lockfile [app:string, operation: closure] {
@@ -83,13 +83,11 @@ def test_latest_snapshot [offset: duration = 1min] {
     }
 }
 
-def prepare-data [app: string, operation: closure] {
+def prepare-data [app: string, source_dir: path, export_dir: path] {
     match $app {
-        "vaultwarden" => { print "Hello from vaultwarden" }
+        "vaultwarden" => { $source_dir/data/db.sqlite3 | db export $"($export_dir)/db.sqlite3" | ignore }
         _   => { echo "default case" }
     }
-
-    do $operation
 }
 
 def main [--config (-c): path, --app (-a): string] {
@@ -102,32 +100,35 @@ def main [--config (-c): path, --app (-a): string] {
     with-lockfile $app {
         let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
-        prepare-data $app { 
-            $config.backup | where app == $app | each { |b|
-                with-env {
-                    AWS_ACCESS_KEY_ID: $b.AWS_ACCESS_KEY_ID
-                    AWS_SECRET_ACCESS_KEY: $b.AWS_SECRET_ACCESS_KEY
-                    RESTIC_REPOSITORY: $b.RESTIC_REPOSITORY
-                    RESTIC_PASSWORD: $b.RESTIC_PASSWORD
-                } {
-                    let run_id = (random uuid -v 4)
-                    with-healthcheck $b.hc_slug $run_id {
+        let backup_dir = $"/opt/($app)"
+        let export_dir = $"/tmp/($app)/export"
 
-                        with-logs $b.hc_slug $run_id {
-                            let include = $b.include
-                            let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
-                            restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) 
-                        }
-                        restic --verbose=0 --quiet check --read-data-subset 33%
-                        test_latest_snapshot
+        prepare-data $app $backup_dir $export_dir
 
-                        # with-logs $b.hc_slug $run_id {
-                        #     restic snapshots latest
-                        # }
-                        # with-logs $b.hc_slug $run_id {
-                        #     restic ls latest --long --recursive
-                        # }
+        $config.backup | where app == $app | each { |b|
+            with-env {
+                AWS_ACCESS_KEY_ID: $b.AWS_ACCESS_KEY_ID
+                AWS_SECRET_ACCESS_KEY: $b.AWS_SECRET_ACCESS_KEY
+                RESTIC_REPOSITORY: $b.RESTIC_REPOSITORY
+                RESTIC_PASSWORD: $b.RESTIC_PASSWORD
+            } {
+                let run_id = (random uuid -v 4)
+                with-healthcheck $b.hc_slug $run_id {
+
+                    with-logs $b.hc_slug $run_id {
+                        let include = $b.include
+                        let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
+                        restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) 
                     }
+                    restic --verbose=0 --quiet check --read-data-subset 33%
+                    test_latest_snapshot
+
+                    # with-logs $b.hc_slug $run_id {
+                    #     restic snapshots latest
+                    # }
+                    # with-logs $b.hc_slug $run_id {
+                    #     restic ls latest --long --recursive
+                    # }
                 }
             }
         }
