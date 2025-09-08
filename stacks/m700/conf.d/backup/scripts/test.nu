@@ -85,7 +85,7 @@ def test_latest_snapshot [offset: duration = 1min] {
 
 def prepare-data [app: string, source_dir: path, export_dir: path] {
     match $app {
-        "vaultwarden" => { $source_dir/data/db.sqlite3 | db export $"($export_dir)/db.sqlite3" | ignore }
+        "vaultwarden" => { $"($source_dir)/data/db.sqlite3" | db export $"($export_dir)/db.sqlite3" | ignore }
         _   => { echo "default case" }
     }
 }
