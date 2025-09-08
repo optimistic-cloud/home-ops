@@ -44,9 +44,6 @@ def with-healthcheck [hc_slug: string, run_id: string, operation: closure] {
   try {
     http get $"($url)/start?create=1&rid=($run_id)" --max-time $timeout | ignore
     do $operation
-#    | http post $"($url)" --max-time $timeout | ignore
-#        do { $operation }| collect { |x| print $"HELLOOOOO=======($x)" }
-    #| http post $"($url)" --max-time $timeout | ignore
     http get $"($url)?rid=($run_id)" --max-time $timeout | ignore
   } catch {|err|
     http get $"($url)/fail&rid=($run_id)" --max-time $timeout | ignore
@@ -89,10 +86,7 @@ def main [--config (-c): path, --app (-a): string] {
                 RESTIC_PASSWORD: $b.RESTIC_PASSWORD
             } {
 
-                with-healthcheck $b.hc_slug "prepare-data" {
-                    # prepare data
-                    print "Preparing data for backup..."
-                }
+                # prepare data
                 
 
                 let run_id = (random uuid -v 4)
@@ -103,14 +97,16 @@ def main [--config (-c): path, --app (-a): string] {
                         let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
                         restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) 
                     }
-                    with-logs $b.hc_slug $run_id {
-                        restic snapshots latest
-                    }
-                    with-logs $b.hc_slug $run_id {
-                        restic ls latest --long --recursive
-                    }
+                    restic check --read-data-subset 33%
                     test_snapshot
-                    #do $restic_block $include $exclude $git_commit
+
+                    # with-logs $b.hc_slug $run_id {
+                    #     restic snapshots latest
+                    # }
+                    # with-logs $b.hc_slug $run_id {
+                    #     restic ls latest --long --recursive
+                    # }
+                    
                 }
             }
         }
