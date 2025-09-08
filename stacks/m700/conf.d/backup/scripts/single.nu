@@ -3,42 +3,8 @@
 # pipeline
 
 use export-sqlite.nu *
-
-# Nushell does not support file locking natively.
-def with-lockfile [app:string, operation: closure] {
-    let lockfile = $"/tmp/($app)-backup.lock"
-
-    # Acquire lock: create the lockfile with our PID
-    def acquire-lock [] {
-        if not ($lockfile | path exists) {
-            $nu.pid | save $lockfile
-        } else {
-            let pid = (open $lockfile)
-            error make {msg: $"Lockfile ($lockfile) exists. Held by PID ($pid). Another backup process might be running."}
-        }
-    }
-
-    # Release lock only if it’s ours
-    def release-lock [] {
-        if ($lockfile | path exists) {
-            let pid = (open $lockfile)
-            if $pid == ($nu.pid | into string) {
-                rm $lockfile
-            } else {
-                log warning $"Lockfile ($lockfile) is held by PID ($pid), not us. Skipping removal."
-            }
-        }
-    }
-
-    try {
-        acquire-lock
-        do $operation
-        release-lock
-    } catch {|err|
-        release-lock
-        error make $err
-    }
-}
+use with-docker.nu *
+use with-lockfile.nu *
 
 def test_latest_snapshot [offset: duration = 1min] {
     let snapshot_time = (restic snapshots latest --json | from json | get 0.time | into datetime)    
@@ -60,13 +26,6 @@ def with-healthcheck [hc_slug: string, run_id: string, operation: closure] {
     http get $"($url)/fail?rid=($run_id)" --max-time $timeout | ignore
     error make $err
   }
-}
-
-def with-logs [hc_slug: string, run_id: string, operation: closure] {
-    let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)?rid=($run_id)"
-    let timeout = 10sec
-
-    do $operation | collect | http post $"($url)" --max-time $timeout | ignore
 }
 
 def logs-to-hc [hc_slug: string, run_id: string] {
@@ -100,9 +59,9 @@ def main [app: string = "vaultwarden"] {
             rm -rf $export_dir
             mkdir $export_dir
 
-            docker container stop $app | ignore
-            $"($source_dir)/appdata/db.sqlite3" | export-sqlite $"($export_dir)/db.sqlite3" | ignore 
-            docker container start $app | ignore
+            with-docker $app {
+                $"($source_dir)/appdata/db.sqlite3" | export-sqlite $"($export_dir)/db.sqlite3" | ignore 
+            }
 
             restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) | logs-to-hc $hc_slug $run_id
             test_latest_snapshot
