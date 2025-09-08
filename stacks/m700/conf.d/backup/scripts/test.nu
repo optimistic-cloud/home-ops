@@ -80,7 +80,7 @@ def main [--config (-c): path, --app (-a): string] {
 
                     do {
                         (
-                            run $restic_cmd backup ...($include) $exclude 
+                            do $restic_cmd backup ...($include) $exclude 
                                 --exclude-caches
                                 --one-file-system   
                                 --tag git_commit=($git_commit)
