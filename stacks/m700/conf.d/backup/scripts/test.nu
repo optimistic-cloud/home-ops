@@ -51,7 +51,7 @@ def with-healthcheck [app: string, operation: closure] {
 }
 
 
-let restic_cmd = "restic --verbose=0 --quiet"
+let restic_cmd = "restic" # --verbose=0 --quiet
 let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
 def main [--config (-c): path, --app (-a): string] {
@@ -74,7 +74,7 @@ def main [--config (-c): path, --app (-a): string] {
 
                     do {
                         (
-                            ($restic_cmd) backup ...($include)
+                            $restic_cmd backup ...($include)
                                 $exclude | str join " "
                                 --exclude-caches
                                 --one-file-system   
