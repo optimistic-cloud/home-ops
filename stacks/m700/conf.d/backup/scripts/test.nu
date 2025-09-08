@@ -42,9 +42,7 @@ def with-healthcheck [hc_slug: string, operation: closure] {
 
   try {
     http get $"($url)/start?create=1" --max-time $timeout | ignore
-    do { 
-        $operation
-    } 
+    do $operation
 #    | http post $"($url)" --max-time $timeout | ignore
 #        do { $operation }| collect { |x| print $"HELLOOOOO=======($x)" }
     #| http post $"($url)" --max-time $timeout | ignore
@@ -59,7 +57,7 @@ def with-logs [hc_slug: string, operation: closure] {
     let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
     let timeout = 10sec
     
-    do { $operation } | collect { |x| print $"HELLOOOOO=======.   ($x)" }
+    do $operation | collect { |x| print $"HELLOOOOO=======.   ($x)" }
 }
 
 let restic_block = {|i,e,t| 
