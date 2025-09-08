@@ -61,30 +61,12 @@ def with-logs [hc_slug: string, operation: closure] {
 }
 
 def test_snapshot [] {
-    #(date now) < (('2025-09-08T13:05:59.675673696+02:00' | into datetime) + 1min)
-
-    let snapshot_time = (restic snapshots latest --json | from json | into datetime)
-
-    (date now) | print
-    print $snapshot_time
-
-    (date now) < ($snapshot_time + 10min) | print 
+    let snapshot_time = (restic snapshots latest --json | from json | get 0.time | into datetime)    
     
-    # let snapshot_time = ($snapshot_json.0.time | split row "." | get 0)
-    # let snapshot_time_fixed = ($snapshot_time | str replace "T" " ")
-    
-    # # Fixed approach - parse the date correctly
-    # let snapshot_datetime = ($snapshot_time_fixed | into datetime)
-    # let snapshot_epoch = ($snapshot_datetime.timestamp | into int)
-    # let current_epoch = (date now | date to-record | get timestamp | into int)
-    
-    # let diff = ($current_epoch - $snapshot_epoch | math abs)
-    # let threshold = 600
+    if not (date now) < ($snapshot_time + 1min) {
+        error make {msg: $"Snapshot is older than 1 minute. Snapshot time: ($snapshot_time), Current time: (date now)"}
 
-
-    # if $diff > $threshold {
-    #     error make {msg: $"Snapshot is older than threshold ($threshold) seconds."}
-    # }
+    }
 }
 
 
