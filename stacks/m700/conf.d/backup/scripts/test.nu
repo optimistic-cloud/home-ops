@@ -66,6 +66,29 @@ def test_snapshot [offset: duration = 1min] {
     }
 }
 
+def prepare-data [app: string, operation: closure] {
+    # load application hooks
+    def load-backup-hooks [app: string] {
+        let hooks = $"($app)_backup_hooks.nu"
+        if not ($hooks | path exists) {
+            error make {msg: $"Hooks file ($hooks) does not exist."
+        }
+
+        source $hooks
+    }
+
+    load-backup-hooks $app
+
+    try {
+        pre_backup
+        do $operation
+        post_backup
+    } catch { |err|
+        post_backup
+        error make $err
+    }
+}
+
 def main [--config (-c): path, --app (-a): string] {
     let config = open $config
 
@@ -74,69 +97,36 @@ def main [--config (-c): path, --app (-a): string] {
     }
 
     with-lockfile $app {
-        print $"Starting backup for app: ($app)"
-        
         let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
-        $config.backup | where app == $app | each { |b|
-            with-env {
-                AWS_ACCESS_KEY_ID: $b.AWS_ACCESS_KEY_ID
-                AWS_SECRET_ACCESS_KEY: $b.AWS_SECRET_ACCESS_KEY
-                RESTIC_REPOSITORY: $b.RESTIC_REPOSITORY
-                RESTIC_PASSWORD: $b.RESTIC_PASSWORD
-            } {
+        prepare-data $app { 
+            $config.backup | where app == $app | each { |b|
+                with-env {
+                    AWS_ACCESS_KEY_ID: $b.AWS_ACCESS_KEY_ID
+                    AWS_SECRET_ACCESS_KEY: $b.AWS_SECRET_ACCESS_KEY
+                    RESTIC_REPOSITORY: $b.RESTIC_REPOSITORY
+                    RESTIC_PASSWORD: $b.RESTIC_PASSWORD
+                } {
+                    let run_id = (random uuid -v 4)
+                    with-healthcheck $b.hc_slug $run_id {
 
-                # prepare data
-                
+                        with-logs $b.hc_slug $run_id {
+                            let include = $b.include
+                            let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
+                            restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) 
+                        }
+                        restic --verbose=0 --quiet check --read-data-subset 33%
+                        test_snapshot
 
-                let run_id = (random uuid -v 4)
-                with-healthcheck $b.hc_slug $run_id {
-
-                    with-logs $b.hc_slug $run_id {
-                        let include = $b.include
-                        let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
-                        restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) 
+                        # with-logs $b.hc_slug $run_id {
+                        #     restic snapshots latest
+                        # }
+                        # with-logs $b.hc_slug $run_id {
+                        #     restic ls latest --long --recursive
+                        # }
                     }
-                    restic --verbose=0 --quiet check --read-data-subset 33%
-                    test_snapshot
-
-                    # with-logs $b.hc_slug $run_id {
-                    #     restic snapshots latest
-                    # }
-                    # with-logs $b.hc_slug $run_id {
-                    #     restic ls latest --long --recursive
-                    # }
-                    
                 }
             }
         }
     }
-
-
-    # let config = open $config
-
-    # $config.backup | where app == $appp | each { |b|
-    #     with-env {
-    #         AWS_ACCESS_KEY_ID: $b.AWS_ACCESS_KEY_ID
-    #         AWS_SECRET_ACCESS_KEY: $b.AWS_SECRET_ACCESS_KEY
-    #         RESTIC_REPOSITORY: $b.RESTIC_REPOSITORY
-    #         RESTIC_PASSWORD: $b.RESTIC_PASSWORD
-    #     } {
-    #         do {
-    #             (
-    #                 ($restic_cmd) backup ...($files)
-    #                     --files-from $app.include
-    #                     --exclude-file $app.exclude
-    #                     --exclude-caches
-    #                     --one-file-system   
-    #                     --tag git_commit=($git_commit)
-    #             )
-
-    #             ${restic_cmd} snapshots latest
-    #             ${restic_cmd} ls latest --long --recursive
-    #         } | str collect | log info $"Backup log:\n\n$it\n"
-
-    #      }
-    # }
 }
-
