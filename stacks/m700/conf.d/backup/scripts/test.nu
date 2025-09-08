@@ -8,7 +8,7 @@ def "db export" [exported: path]: string -> path {
     if ($exported | path exists) {
         error make {msg: $"Location directory ($exported) does exist."}
     }
-    sqlite3 ${db} ".backup '${exported}'"
+    sqlite3 $db ".backup '${exported}'"
 
     let integrity = (sqlite3 "${exported}" "PRAGMA integrity_check;")
     if "$integrity" != "ok" {
