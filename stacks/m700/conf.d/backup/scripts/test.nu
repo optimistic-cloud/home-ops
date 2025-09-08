@@ -89,6 +89,12 @@ def main [--config (-c): path, --app (-a): string] {
                 RESTIC_PASSWORD: $b.RESTIC_PASSWORD
             } {
 
+                with-healthcheck $b.hc_slug "prepare-data" {
+                    # prepare data
+                    print "Preparing data for backup..."
+                }
+                
+
                 let run_id = (random uuid -v 4)
                 with-healthcheck $b.hc_slug $run_id {
 
