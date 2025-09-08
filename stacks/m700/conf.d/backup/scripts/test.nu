@@ -40,6 +40,7 @@ def with-lockfile [app:string, operation: closure] {
 
 def with-healthcheck [app: string, operation: closure] {
   let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($app)-backup"
+  let timeout = 10sec
 
   try {
     http get $"($url)/start?create=1" --max-time $timeout | ignore
