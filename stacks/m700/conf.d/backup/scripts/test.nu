@@ -64,7 +64,9 @@ def test_snapshot [] {
     let snapshot_json = (restic snapshots latest --json | from json)
     let snapshot_time = ($snapshot_json.0.time | split row "." | get 0)
     let snapshot_time_fixed = ($snapshot_time | str replace "T" " ")
-    let snapshot_epoch = (date to-timezone $snapshot_time_fixed | date to-record | get timestamp | into int)
+    
+    # Fix this line - parse the date string correctly
+    let snapshot_epoch = ($snapshot_time_fixed | into datetime | date to-record | get timestamp | into int)
     let current_epoch = (date now | date to-record | get timestamp | into int)
     let diff = ($current_epoch - $snapshot_epoch | math abs)
     let threshold = 600
