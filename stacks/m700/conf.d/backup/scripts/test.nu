@@ -30,7 +30,7 @@ let restic_cmd = "restic --verbose=0 --quiet"
 #let git_commit = $(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
 def main [--config (-c): path, --appp (-a): string] {
-    with-lockfile $appp{
+    with-lockfile $appp {
         print $"Starting backup for app: ($appp)"
     }
 
