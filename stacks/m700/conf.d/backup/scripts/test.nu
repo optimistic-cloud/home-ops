@@ -71,7 +71,7 @@ def main [--config (-c): path, --app (-a): string] {
                     let include = $b.include
                     $include | str join " " | print
 
-                    let exclude = $b.exclude | each { $"--exclude=$it" }
+                    let exclude = $b.exclude | each { |it| $"--exclude=($it)" }
                     $exclude | str join " " | print
 
                     # do {
