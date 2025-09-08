@@ -129,12 +129,12 @@ def main [--config (-c): path, --app (-a): string] {
                     restic --verbose=0 --quiet check --read-data-subset 33%
                     test_latest_snapshot
 
-                    # with-logs $b.hc_slug $run_id {
-                    #     restic snapshots latest
-                    # }
-                    # with-logs $b.hc_slug $run_id {
-                    #     restic ls latest --long --recursive
-                    # }
+                    with-logs $b.hc_slug $run_id {
+                        restic snapshots latest
+                    }
+                    with-logs $b.hc_slug $run_id {
+                        restic ls latest --long --recursive
+                    }
                 }
             }
         }
