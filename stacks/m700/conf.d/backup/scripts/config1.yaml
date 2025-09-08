@@ -11,10 +11,13 @@ vaultwarden: &vaultwarden
   pre_backup: ascsa
   post_backup: asd
   include:
-    - /abc
-    - /def
+    - /opt/vaultwarden/.env
+    - /opt/vaultwarden/appdata
+    - /tmp/vaultwarden/export/db.sqlite3
   exclude:
-    - /ghi
+    - vaultwarden/appdata/db.sqlite3*
+    - vaultwarden/appdata/tmp
+    - vaultwarden/*backup*
   hc_slug: vaultwarden-backup
 
 opengist: &opengist
