@@ -85,7 +85,8 @@ def test_latest_snapshot [offset: duration = 1min] {
 
 def with-data [app: string, source_dir: path, export_dir: path, operation: closure] {
     try {
-        rm -rf $export_dir && mkdir $export_dir
+        rm -rf $export_dir 
+        mkdir $export_dir
 
         match $app {
             "vaultwarden" => { 
