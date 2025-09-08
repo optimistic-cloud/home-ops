@@ -78,17 +78,15 @@ def main [--config (-c): path, --app (-a): string] {
                     let include = $b.include
                     let exclude = $b.exclude | each { |it| $"--exclude=($it)" } | str join " "
 
-                    do {
-                        (
-                            do $restic_cmd backup ...($include) $exclude 
-                                --exclude-caches
-                                --one-file-system   
-                                --tag git_commit=($git_commit)
-                        )
+                    do { $restic_cmd backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) }
+
+
+                    #do {
+
 
                         #${restic_cmd} snapshots latest
                         #${restic_cmd} ls latest --long --recursive
-                    }
+                    #}
                 }
             }
         }
