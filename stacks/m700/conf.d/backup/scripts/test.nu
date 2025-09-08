@@ -32,9 +32,7 @@ def with-lockfile [app:string, operation: closure] {
         release-lock
     } catch {|err|
         release-lock
-        let message = $"Failed to acquire or run operation with lock ($lockfile): ($err)"
-        log error $message
-        error make {msg: $message}
+        error make $err
     }
 }
 
@@ -47,7 +45,6 @@ def with-healthcheck [app: string, operation: closure] {
     do $operation
     http get $url --max-time $timeout | ignore
   } catch {|err|
-    log error $"Error during healthcheck operation: ($err)"
     http get $"($url)/fail" --max-time $timeout | ignore
     error make $err
   }
