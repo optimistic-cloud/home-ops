@@ -48,6 +48,10 @@ def main [app: string = "vaultwarden"] {
             test_latest_snapshot
             restic --verbose=0 --quiet check --read-data-subset 33%
 
+            # Debug snapshot details
+            # restic snapshots latest
+            # restic ls latest --long --recursive
+
             rm -rf $export_dir
         }
     }
