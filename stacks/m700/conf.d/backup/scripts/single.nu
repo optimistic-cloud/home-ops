@@ -46,11 +46,13 @@ def main [app: string = "vaultwarden"] {
                     $out.stdout | logs-to-hc $hc_slug $run_id
                 }
 
-                let snapshot_id = $out.stdout | lines | last | split " " | get 1
+                let snapshot_id = $out.stdout | lines | last | parse "{_} {snapshot} {_}" | get snapshot
                 snapshot_id | print
 
                 assert_backup_created
             }
+
+            snapshot d58e8673 saved
 
             #restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) | logs-to-hc $hc_slug $run_id
             
