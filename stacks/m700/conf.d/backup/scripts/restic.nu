@@ -6,12 +6,12 @@ export def assert_snapshot [threshold: duration = 1min] {
     }
 }
 
-def to-restic-string [prefix: string]: string -> { $in | each { |it| $"($prefix)=($it)" } | str join " " }
+def to-prefix-string [prefix: string]: string -> string { $in | each { |it| $"($prefix)=($it)" } | str join " " }
 
 export def create_restic_backup_cmd [ hc_slug: string, run_id: string ]: nothing -> closure {
     {|includes: list<path>, excludes: list<string>, tags: list<string>|
-        let exclude_as_string = $excludes | to-restic-string "--exclude"
-        let tags_as_string = $tags | to-restic-string "--tag"
+        let exclude_as_string = $excludes | to-prefix-string "--exclude"
+        let tags_as_string = $tags | to-prefix-string "--tag"
 
         let out = ^restic backup ...($includes) $exclude_as_string --exclude-caches --one-file-system $tags_as_string | complete
 
