@@ -6,7 +6,7 @@ export def assert_snapshot [threshold: duration = 1min] {
     }
 }
 
-def to-restic-string [prefix: string]: -> string { $in | each { |it| $"($prefix)=($it)" } | str join " " }
+def to-restic-string [prefix: string]: string -> { $in | each { |it| $"($prefix)=($it)" } | str join " " }
 
 export def create_restic_backup_cmd [ hc_slug: string, run_id: string ]: nothing -> closure {
     {|includes: list<path>, excludes: list<string>, tags: list<string>|
