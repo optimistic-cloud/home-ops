@@ -17,8 +17,8 @@ def test_latest_snapshot [threshold: duration = 1min] {
 }
 
 def main [app: string = "vaultwarden"] {
-    let source_dir = $"/opt/($app)"
-    let export_dir = $"/tmp/($app)/export"
+    let source_dir = '/opt' | path join $app
+    let export_dir = '/tmp' | path join $app export
 
     let include = [
         /opt/vaultwarden/.env
