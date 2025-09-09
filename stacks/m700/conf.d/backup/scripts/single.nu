@@ -36,7 +36,7 @@ def main [app: string = "vaultwarden"] {
 
             let res = {|i,e|
                 let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
-                val exclude_as_string = $e | each { |it| $"--exclude=($it)" } | str join " "
+                let exclude_as_string = $e | each { |it| $"--exclude=($it)" } | str join " "
                 restic backup ...($i) $exclude_as_string --exclude-caches --one-file-system --tag git_commit=($git_commit) | logs-to-hc $hc_slug $run_id
                 assert_backup_created
             }
