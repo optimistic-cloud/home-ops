@@ -37,7 +37,14 @@ def main [app: string = "vaultwarden"] {
             let res = {|i,e|
                 let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
                 let exclude_as_string = $e | each { |it| $"--exclude=($it)" } | str join " "
-                ^restic backup ...($i) $exclude_as_string --exclude-caches --one-file-system --tag git_commit=($git_commit) | complete | logs-to-hc $hc_slug $run_id
+                let out = ^restic backup ...($i) $exclude_as_string --exclude-caches --one-file-system --tag git_commit=($git_commit) | complete
+
+                if $out.exit_code != 0 {
+                    error make {msg: "Restic backup command failed", code: $out.exit_code, stderr: $out.stderr}
+                }
+
+                $out.stdout | logs-to-hc $hc_slug $run_id
+
                 assert_backup_created
             }
 
