@@ -29,6 +29,6 @@ export def create_restic_backup_cmd [ hc_slug: string, run_id: string ]: nothing
         }
 
         let snapshot_id = $out.stdout | lines | last | parse "{_} {snapshot} {_}" | get snapshot
-        $snapshot_id | assert_snapshot 1min
+        $snapshot_id | assert_snapshot 5min
     }
 }
