@@ -1,6 +1,7 @@
 # closure
 # function
 # pipeline
+use std/log
 
 use export-sqlite.nu *
 use with-docker.nu *
