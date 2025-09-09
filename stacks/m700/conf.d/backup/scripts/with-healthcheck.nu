@@ -1,4 +1,4 @@
-export def with-healthcheck [hc_slug: string, run_id: string, operation: closure] {
+export def main [hc_slug: string, run_id: string, operation: closure] {
   let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
   let timeout = 10sec
 
