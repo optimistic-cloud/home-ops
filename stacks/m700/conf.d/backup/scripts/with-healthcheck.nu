@@ -18,6 +18,6 @@ export def logs-to-hc [hc_slug: string, run_id: string] {
     let timeout = 10sec
 
     #$in | collect | http post $"($url)" --max-time $timeout | ignore
-    $in | describe
+    $in | describe | print
     $in | http post $"($url)" --max-time $timeout | ignore
 }
