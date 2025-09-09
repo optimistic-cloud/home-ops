@@ -52,8 +52,6 @@ def main [app: string = "vaultwarden"] {
                 assert_backup_created
             }
 
-            snapshot d58e8673 saved
-
             #restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) | logs-to-hc $hc_slug $run_id
             
             do $res $include $exclude
