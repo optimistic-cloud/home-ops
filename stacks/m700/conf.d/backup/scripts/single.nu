@@ -39,11 +39,12 @@ def main [app: string = "vaultwarden"] {
                 let exclude_as_string = $e | each { |it| $"--exclude=($it)" } | str join " "
                 let out = ^restic backup ...($i) $exclude_as_string --exclude-caches --one-file-system --tag git_commit=($git_commit) | complete
 
+                $out.exit_code | logs-to-hc $hc_slug $run_id
                 if $out.exit_code != 0 {
-                    error make {msg: "Restic backup command failed", code: $out.exit_code, stderr: $out.stderr}
+                    $out.stderr | exit-status-to-hc $hc_slug $run_id
+                } else {
+                    $out.stdout | exit-status-to-hc $hc_slug $run_id
                 }
-
-                $out.stdout | logs-to-hc $hc_slug $run_id
 
                 assert_backup_created
             }
