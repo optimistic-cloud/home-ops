@@ -8,6 +8,7 @@ export def main [hc_slug: string, run_id: string, operation: closure] {
     http get $"($url)?rid=($run_id)" --max-time $timeout | ignore
   } catch {|err|
     http get $"($url)/fail?rid=($run_id)" --max-time $timeout | ignore
+    log error $"Error: ($err)"
     error make $err
   }
 }
@@ -17,5 +18,6 @@ export def logs-to-hc [hc_slug: string, run_id: string] {
     let timeout = 10sec
 
     #$in | collect | http post $"($url)" --max-time $timeout | ignore
+    $in | describe
     $in | http post $"($url)" --max-time $timeout | ignore
 }
