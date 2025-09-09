@@ -15,9 +15,7 @@ export def create_restic_backup_cmd [ hc_slug: string, run_id: string ]: nothing
         let exclude_as_string = $excludes | to-prefix-string "--exclude"
         let tags_as_string = $tags | to-prefix-string "--tag"
 
-        print "Starting backup..."
-        let out = ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
-        print "Backup completed successfully."
+        let out = ^restic --verbose=2 backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
 
         $out | print
 

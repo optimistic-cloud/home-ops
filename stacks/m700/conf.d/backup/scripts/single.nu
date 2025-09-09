@@ -10,7 +10,7 @@ def main [app: string = "vaultwarden"] {
     let source_dir = '/opt' | path join $app
     let export_dir = '/tmp' | path join $app export
     let run_id = (random uuid -v 4)
-    let hc_slug = "vaultwarden-backup"
+    let hc_slug = $"($app)-backup"
     let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
     with-lockfile $app {
@@ -37,17 +37,9 @@ def main [app: string = "vaultwarden"] {
             let tags = [
                 $"git_commit=($git_commit)"
             ]
-            print "Starting backup..."
             do $backup_cmd $include $exclude $tags
-            print "Backup completed successfully."
 
-            print "Starting restic check..."
-            restic --verbose=0 --quiet check --read-data-subset 33%
-            print "Restic check completed successfully."
-
-            # Debug snapshot details
-            # restic snapshots latest
-            # restic ls latest --long --recursive
+            restic --quiet check --read-data-subset 33%
 
             rm -rf $export_dir
         }
