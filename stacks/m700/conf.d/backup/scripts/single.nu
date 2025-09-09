@@ -46,6 +46,9 @@ def main [app: string = "vaultwarden"] {
                     $out.stdout | logs-to-hc $hc_slug $run_id
                 }
 
+                let snapshot_id = $out.stdout | lines | last | split " " | get 1
+                snapshot_id | print
+
                 assert_backup_created
             }
 
