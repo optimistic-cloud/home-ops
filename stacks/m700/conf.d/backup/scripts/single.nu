@@ -1,20 +1,10 @@
-# closure
-# function
-# pipeline
 use std/log
 
 use export-sqlite.nu *
 use with-docker.nu *
 use with-lockfile.nu *
 use with-healthcheck.nu *
-
-def test_latest_snapshot [threshold: duration = 1min] {
-    let snapshot_time = (restic snapshots latest --json | from json | get 0.time | into datetime)    
-
-    if not ((date now) < ($snapshot_time + $threshold)) {
-        error make {msg: $"Snapshot is older than 1 minute. Snapshot time: ($snapshot_time), Current time: (date now)"}
-    }
-}
+use utils.nu *
 
 def main [app: string = "vaultwarden"] {
     let source_dir = '/opt' | path join $app
@@ -29,9 +19,9 @@ def main [app: string = "vaultwarden"] {
         vaultwarden/appdata/db.sqlite3*
         vaultwarden/appdata/tmp
         vaultwarden/*backup*
-    ] | each { |it| $"--exclude=($it)" } | str join " "
+    ] 
 
-    let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
+    
     let run_id = (random uuid -v 4)
     let hc_slug = "vaultwarden-backup"
 
@@ -44,8 +34,16 @@ def main [app: string = "vaultwarden"] {
                 $"($source_dir)/appdata/db.sqlite3" | export-sqlite $"($export_dir)/db.sqlite3" | ignore 
             }
 
-            restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) | logs-to-hc $hc_slug $run_id
-            test_latest_snapshot
+            let res = {|i,e|
+                let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
+                val exclude_as_string = $e | each { |it| $"--exclude=($it)" } | str join " "
+                restic backup ...($i) $exclude_as_string --exclude-caches --one-file-system --tag git_commit=($git_commit) | logs-to-hc $hc_slug $run_id
+                assert_backup_created
+            }
+
+            #restic backup ...($include) $exclude --exclude-caches --one-file-system --tag git_commit=($git_commit) | logs-to-hc $hc_slug $run_id
+            
+            do $res $include $exclude
             restic --verbose=0 --quiet check --read-data-subset 33%
 
             # Debug snapshot details
