@@ -19,5 +19,5 @@ export def logs-to-hc [hc_slug: string, run_id: string] {
 
     #$in | collect | http post $"($url)" --max-time $timeout | ignore
     # $in | describe | print
-    $in | into string | http post $"($url)" --max-time $timeout | ignore
+    $in | to nuon | http post $"($url)" --max-time $timeout | ignore
 }
