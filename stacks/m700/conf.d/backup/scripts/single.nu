@@ -9,21 +9,9 @@ use restic.nu *
 def main [app: string = "vaultwarden"] {
     let source_dir = '/opt' | path join $app
     let export_dir = '/tmp' | path join $app export
-
-    let include = [
-        /opt/vaultwarden/.env
-        /opt/vaultwarden/appdata
-        /tmp/vaultwarden/export/db.sqlite3
-    ]
-    let exclude = [
-        vaultwarden/appdata/db.sqlite3*
-        vaultwarden/appdata/tmp
-        vaultwarden/*backup*
-    ] 
-
-    
     let run_id = (random uuid -v 4)
     let hc_slug = "vaultwarden-backup"
+    let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
     with-lockfile $app {
         with-healthcheck $hc_slug $run_id {
@@ -35,7 +23,19 @@ def main [app: string = "vaultwarden"] {
             }
 
             let backup_cmd = create_restic_backup_cmd $hc_slug $run_id
-            do $backup_cmd $include $exclude
+
+            let include = [
+                /opt/vaultwarden/.env
+                /opt/vaultwarden/appdata
+                /tmp/vaultwarden/export/db.sqlite3
+            ]
+            let exclude = [
+                vaultwarden/appdata/db.sqlite3*
+                vaultwarden/appdata/tmp
+                vaultwarden/*backup*
+            ]
+            let tags = [$git_commit]
+            do $backup_cmd $include $exclude $tags
 
 
             

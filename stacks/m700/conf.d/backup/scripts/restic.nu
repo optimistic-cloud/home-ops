@@ -6,13 +6,14 @@ export def assert_snapshot [threshold: duration = 1min] {
     }
 }
 
+def to-restic-string [prefix: string]: string { $in | each { |it| $"($prefix)=($it)" } | str join " " }
+
 export def create_restic_backup_cmd [ hc_slug: string, run_id: string ]: nothing -> closure {
-    {|includes: list<path>, excludes: list<string>|
-        let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
+    {|includes: list<path>, excludes: list<string>, tags: list<string>|
+        let exclude_as_string = $excludes | to-restic-string "--exclude"
+        let tags_as_string = $tags | to-restic-string "--tag"
 
-        let exclude_as_string = $excludes | each { |it| $"--exclude=($it)" } | str join " "
-
-        let out = ^restic backup ...($includes) $exclude_as_string --exclude-caches --one-file-system --tag git_commit=($git_commit) | complete
+        let out = ^restic backup ...($includes) $exclude_as_string --exclude-caches --one-file-system $tags_as_string | complete
 
         $out.exit_code | exit-status-to-hc $hc_slug $run_id
         if $out.exit_code != 0 {
