@@ -34,9 +34,11 @@ def main [app: string = "vaultwarden"] {
                 $"($source_dir)/appdata/db.sqlite3" | export-sqlite $"($export_dir)/db.sqlite3" | ignore 
             }
 
+            let backup_cmd = create_restic_backup_cmd $hc_slug $run_id
+            do $backup_cmd $include $exclude
 
 
-            do $restic-backup $include $exclude
+            
             restic --verbose=0 --quiet check --read-data-subset 33%
 
             # Debug snapshot details
