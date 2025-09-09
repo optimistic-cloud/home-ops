@@ -16,5 +16,6 @@ export def logs-to-hc [hc_slug: string, run_id: string] {
     let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)?rid=($run_id)"
     let timeout = 10sec
 
-    $in | collect | http post $"($url)" --max-time $timeout | ignore
+    #$in | collect | http post $"($url)" --max-time $timeout | ignore
+    $in | http post $"($url)" --max-time $timeout | ignore
 }
