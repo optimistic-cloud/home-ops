@@ -1,3 +1,5 @@
+use std/log
+
 # Nushell does not support file locking natively.
 export def main [app:string, operation: closure] {
     let lockfile = $"/tmp/($app)-backup.lock"
