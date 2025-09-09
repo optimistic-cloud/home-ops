@@ -2,7 +2,7 @@
 # Nushell does not support file locking natively.
 export def main [app:string, operation: closure] {
     let lockfile = '/tmp/lock/' | path join $"($app)-backup.lock"
-
+    print $lockfile
     # Acquire lock: create the lockfile with our PID
     def acquire-lock [] {
         if not ($lockfile | path exists) {
