@@ -34,7 +34,9 @@ def main [app: string = "vaultwarden"] {
                 vaultwarden/appdata/tmp
                 vaultwarden/*backup*
             ]
-            let tags = [$git_commit]
+            let tags = [
+                $"git_commit=($git_commit)"
+            ]
             do $backup_cmd $include $exclude $tags
 
 
