@@ -29,5 +29,5 @@ export def exit-status-to-hc [hc_slug: string, run_id: string] {
 
     #$in | collect | http post $"($url)" --max-time $timeout | ignore
     $in | describe | print
-    http post $"($url)/($in)?rid=($run_id)" --max-time $timeout | ignore
+    http get $"($url)/($in)?rid=($run_id)" --max-time $timeout | ignore
 }
