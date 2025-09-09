@@ -5,6 +5,7 @@
 use export-sqlite.nu *
 use with-docker.nu *
 use with-lockfile.nu *
+use with-healthcheck.nu *
 
 def test_latest_snapshot [offset: duration = 1min] {
     let snapshot_time = (restic snapshots latest --json | from json | get 0.time | into datetime)    
@@ -12,27 +13,6 @@ def test_latest_snapshot [offset: duration = 1min] {
     if not ((date now) < ($snapshot_time + $offset)) {
         error make {msg: $"Snapshot is older than 1 minute. Snapshot time: ($snapshot_time), Current time: (date now)"}
     }
-}
-
-def with-healthcheck [hc_slug: string, run_id: string, operation: closure] {
-  let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
-  let timeout = 10sec
-
-  try {
-    http get $"($url)/start?create=1&rid=($run_id)" --max-time $timeout | ignore
-    do $operation
-    http get $"($url)?rid=($run_id)" --max-time $timeout | ignore
-  } catch {|err|
-    http get $"($url)/fail?rid=($run_id)" --max-time $timeout | ignore
-    error make $err
-  }
-}
-
-def logs-to-hc [hc_slug: string, run_id: string] {
-    let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)?rid=($run_id)"
-    let timeout = 10sec
-
-    $in | collect | http post $"($url)" --max-time $timeout | ignore
 }
 
 def main [app: string = "vaultwarden"] {
