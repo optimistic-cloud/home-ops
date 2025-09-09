@@ -1,4 +1,4 @@
-export def test_latest_snapshot [threshold: duration = 1min] {
+export def assert_backup_created [threshold: duration = 1min] {
     let snapshot_time = (restic snapshots latest --json | from json | get 0.time | into datetime)    
 
     if not ((date now) < ($snapshot_time + $threshold)) {
