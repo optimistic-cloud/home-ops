@@ -13,7 +13,7 @@ export def create_restic_backup_cmd [ hc_slug: string, run_id: string ]: nothing
         let exclude_as_string = $excludes | to-prefix-string "--exclude"
         let tags_as_string = $tags | to-prefix-string "--tag"
 
-        let out = ^restic backup ...($includes) $exclude_as_string --exclude-caches --one-file-system $tags_as_string | complete
+        let out = ^restic backup ...($includes) $exclude_as_string --exclude-caches --one-file-system $tags_as_string --skip-if-unchanged | complete
 
         $out.exit_code | exit-status-to-hc $hc_slug $run_id
         if $out.exit_code != 0 {
