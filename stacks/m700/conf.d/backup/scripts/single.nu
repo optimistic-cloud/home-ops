@@ -38,10 +38,11 @@ def main [app: string = "vaultwarden"] {
                 $"git_commit=($git_commit)"
             ]
             do $backup_cmd $include $exclude $tags
-
+            print "Backup completed successfully."
 
             
             restic --verbose=0 --quiet check --read-data-subset 33%
+            print "Restic check completed successfully."
 
             # Debug snapshot details
             # restic snapshots latest
