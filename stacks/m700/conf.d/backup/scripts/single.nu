@@ -47,7 +47,7 @@ def main [app: string = "vaultwarden"] {
                 }
 
                 let snapshot_id = $out.stdout | lines | last | parse "{_} {snapshot} {_}" | get snapshot
-                snapshot_id | print
+                $snapshot_id | print
 
                 assert_backup_created
             }
