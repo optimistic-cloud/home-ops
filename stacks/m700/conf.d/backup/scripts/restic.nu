@@ -1,5 +1,7 @@
 export def assert_snapshot [threshold: duration = 1min] {
+    print "Asserting snapshot is newer than ($threshold)..."
     let snapshot_time = (restic snapshots $in.0 --json | from json | get 0.time | into datetime)    
+    print "Snapshot time: $snapshot_time, Current time: (date now)"
 
     if not ((date now) < ($snapshot_time + $threshold)) {
         error make {msg: $"Snapshot is older than 1 minute. Snapshot time: ($snapshot_time), Current time: (date now)"}
@@ -13,7 +15,9 @@ export def create_restic_backup_cmd [ hc_slug: string, run_id: string ]: nothing
         let exclude_as_string = $excludes | to-prefix-string "--exclude"
         let tags_as_string = $tags | to-prefix-string "--tag"
 
+        print "Starting backup..."
         let out = ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
+        print "Backup completed successfully."
 
         $out | print
 
