@@ -1,0 +1,3 @@
+vaultwarden/appdata/db.sqlite3*
+vaultwarden/appdata/tmp
+vaultwarden/*backup*
