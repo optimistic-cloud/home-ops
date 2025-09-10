@@ -17,6 +17,7 @@ def main [app: string = "vaultwarden"] {
     let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
     try {
+      error make {msg: "Test fail"}
       with-lockfile $app {
          
           # Prepare export directory
