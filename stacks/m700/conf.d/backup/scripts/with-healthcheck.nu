@@ -2,7 +2,7 @@ const timeout = 10sec
 const url = {
   "scheme": "https",
   "host": "hc-ping.com",
-  "path": $"($env.HC_PING_KEY)/($hc_slug)",
+  "path": $"($env.HC_PING_UUID)",
   "params":
   {
       create: 1,
