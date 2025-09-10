@@ -37,23 +37,10 @@ def main [] {
         }
 
         with-healthcheck $ping_url {
-            let include = [
-                /opt/vaultwarden/.env
-                /opt/vaultwarden/appdata
-                /tmp/vaultwarden/export/db.sqlite3
-            ]
-            let exclude = [
-                vaultwarden/appdata/db.sqlite3*
-                vaultwarden/appdata/tmp
-                vaultwarden/*backup*
-            ]
             let tags = [
                 $"git_commit=($git_commit)"
             ]
-
-            #restic-backup $include $exclude $tags
-
-            restic-backup2 $include_file $exclude_file $tags
+            restic-backup $include_file $exclude_file $tags
         }
 
         with-healthcheck $ping_url {
