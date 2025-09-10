@@ -20,7 +20,7 @@ def send_start [url: record] {
     log debug $"Send start ping to ($url.path) with run_id ($url.params.rid)"
     $url | to_url 'start' | do_get
 }
-def send_fail [url: record] { 
+export def send_fail [url: record] { 
   log debug $"Send fail ping to ($url.path) with run_id ($url.params.rid)"
   $url | to_url 'fail' | do_get
 }
@@ -32,8 +32,8 @@ def send_exit_code [url: record]: int -> nothing {
 }
 def send_log [url: record]: string -> nothing { $in | do_post ($url | to_url 'log') }
 
-export def main [slug: string, run_id: string, operation: closure] {
-  let url = {
+export def configure-ping-url [slug: string, run_id: string] {
+  {
     "scheme": "https",
     "host": "hc-ping.com",
     "path": $"($env.HC_PING_KEY)/($slug)",
@@ -43,7 +43,9 @@ export def main [slug: string, run_id: string, operation: closure] {
       rid: $run_id
     }
   }
+}
 
+export def main [url: record, operation: closure] {
   try {
     send_start $url
     do $operation | process_exit_code $url
