@@ -10,31 +10,31 @@ def do_logging_for [command: string]: record -> nothing {
   }
 }
 
+def to-prefix-string [prefix: string]: list<string> -> string { $in | each { |it| $"($prefix)=($it)" } | str join " " }
+
+#def assert_snapshot [threshold: duration = 1min]: string -> record {
+#    let snapshot_id = $in.0
+#
+#    let snapshot_time = (restic snapshots $in.0 --json | from json | get 0.time | into datetime)
+#
+#    mut exit_code = 0
+#    if not ((date now) < ($snapshot_time + $threshold)) {
+#        $exit_code = 1
+#    }
+#    
+#    {
+#      stdout: "Snapshot is ok"
+#      stderr: $"Snapshot is older than ($threshold) minutes. Snapshot time: ($snapshot_time), Current time: (date now)"
+#      exit_code: $exit_code
+#    }
+#}
+
 export def restic-check [subset: string] {
   log debug $"Start restic check command with subset of ($subset)"
 
   let out = ^restic check --read-data-subset $subset | complete
   $out | do_logging_for "Check"
   $out
-}
-
-def to-prefix-string [prefix: string]: list<string> -> string { $in | each { |it| $"($prefix)=($it)" } | str join " " }
-
-export def assert_snapshot [threshold: duration = 1min]: string -> record {
-    let snapshot_id = $in.0
-
-    let snapshot_time = (restic snapshots $in.0 --json | from json | get 0.time | into datetime)
-
-    mut exit_code = 0
-    if not ((date now) < ($snapshot_time + $threshold)) {
-        $exit_code = 1
-    }
-    
-    {
-      stdout: "Snapshot is ok"
-      stderr: $"Snapshot is older than ($threshold) minutes. Snapshot time: ($snapshot_time), Current time: (date now)"
-      exit_code: $exit_code
-    }
 }
 
 export def restic-backup [includes: list<path>, excludes: list<string>, tags: list<string>] {
