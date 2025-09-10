@@ -41,8 +41,7 @@ def send_aio [url: record]: record -> nothing {
 
   #$in | do_post ($url | url join)
 
-  $in | do_post ($url | to_url 'log')
-
+  $in | into string | do_post ($url | to_url 'log')
 }
 def send_log [url: record]: string -> nothing { $in | do_post ($url | to_url 'log') }
 
