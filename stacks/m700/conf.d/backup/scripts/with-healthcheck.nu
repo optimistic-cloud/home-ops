@@ -43,9 +43,9 @@ export def main [url: record, operation: closure] {
 
   let url = $url | to_url ($out.exit_code | into string)
 
-  if $exit_code != 0 {
-      $stderr | do_post $url
+  if $out.exit_code != 0 {
+      $out.stderr | do_post $url
   } else {
-      $stdout | do_post $url
+      $out.stdout | do_post $url
   }
 }
