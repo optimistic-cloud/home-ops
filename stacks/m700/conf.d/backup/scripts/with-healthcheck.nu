@@ -18,8 +18,11 @@ export def main [hc_slug: string, run_id: string, operation: closure] {
 
   try {
     http get $"($url)/start?create=1&rid=($run_id)" --max-time $timeout | ignore
+
     let out = do $operation
+    $out | describe | print
     $out | process_exit_code $hc_slug $run_id
+
     #http get $"($url)?rid=($run_id)" --max-time $timeout | ignore
   } catch {|err|
     http get $"($url)/fail?rid=($run_id)" --max-time $timeout | ignore
