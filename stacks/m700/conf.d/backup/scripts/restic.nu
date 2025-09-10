@@ -6,8 +6,9 @@ export def assert_snapshot [threshold: duration = 1min] {
     }
 }
 
-export def assert_repository [subset: duration = 1min] {
-    let out = ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
+export def assert_repository [subset = 33%] {
+    $subset | describe | print
+    let out ^restic check --read-data-subset $subset | complete
 
     $out.exit_code | exit-status-to-hc $hc_slug $run_id
     if $out.exit_code != 0 {
