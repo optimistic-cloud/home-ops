@@ -41,7 +41,9 @@ def main [app: string = "vaultwarden"] {
                 $"git_commit=($git_commit)"
             ]
 
-            do $backup_cmd $include $exclude $tags
+            let out = do $backup_cmd $include $exclude $tags
+            $out | describe | print
+            $out
         }
 
         with-healthcheck $hc_slug $run_id {
