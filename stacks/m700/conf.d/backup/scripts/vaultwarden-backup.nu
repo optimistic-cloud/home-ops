@@ -6,13 +6,18 @@ use with-lockfile.nu *
 use with-healthcheck.nu *
 use restic.nu *
 
-def main [app: string = "vaultwarden"] {
+const app = "vaultwarden"
+
+def main [] {
   let source_dir = '/opt' | path join $app
   let export_dir = '/tmp' | path join $app export
 
   let slug = $"($app)-backup"
   let run_id = (random uuid -v 4)
   let ping_url = configure-ping-url $slug $run_id
+
+  let include_file = $"($app).include.txt"
+  let exclude_file = $"($app).exclude.txt"
 
   try {
     send_start $ping_url
@@ -48,7 +53,7 @@ def main [app: string = "vaultwarden"] {
 
             #restic-backup $include $exclude $tags
 
-            restic-backup2 $"($app).include.txt" $"($app).exclude.txt" $tags
+            restic-backup2 $include_file $exclude_file $tags
         }
 
         with-healthcheck $ping_url {
