@@ -25,8 +25,9 @@ def send_fail [url: record] {
   $url | to_url 'fail' | do_get
 }
 def send_exit_code [url: record]: int -> nothing {
-  log debug $"Send exit code ($exit_code)"
   let exit_code = $in
+  log debug $"Send exit code ($exit_code)"
+
   $url | to_url ($exit_code | into string) | do_get
 }
 def send_log [url: record]: string -> nothing { $in | do_post ($url | to_url 'log') }
