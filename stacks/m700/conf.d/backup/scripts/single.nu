@@ -9,8 +9,11 @@ use restic.nu *
 def main [app: string = "vaultwarden"] {
     let source_dir = '/opt' | path join $app
     let export_dir = '/tmp' | path join $app export
-    let run_id = (random uuid -v 4)
+
     let slug = $"($app)-backup"
+    let run_id = (random uuid -v 4)
+    let ping_url = configure-ping-url $slug $run_id
+
     let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
     try {
@@ -25,7 +28,7 @@ def main [app: string = "vaultwarden"] {
               $"($source_dir)/appdata/db.sqlite3" | sqlite export $"($export_dir)/db.sqlite3" | ignore 
           }
   
-          with-healthcheck $slug $run_id {
+          with-healthcheck $ping_url {
               let include = [
                   /opt/vaultwarden/.env
                   /opt/vaultwarden/appdata
@@ -51,7 +54,7 @@ def main [app: string = "vaultwarden"] {
       }
     } catch {|err|
       log error $"($app) backup failed with message: ($err.msg)"
-      send_fail $slug $run_id
+      send_fail $ping_url
 
       exit 1
     }
