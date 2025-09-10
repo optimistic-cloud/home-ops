@@ -24,7 +24,7 @@ init app:
 [group('restic')]
 [doc('Backup application')]
 backup app provider:
-    docker exec -it backup-toolkit just --dotenv-filename .env.{{app}}.{provider}} backup {{app}}
+    docker exec -it backup-toolkit just --dotenv-filename .env.{{app}}.{{provider}} backup {{app}}
 
 [group('restic')]
 [doc('Restore backup for an application')]
