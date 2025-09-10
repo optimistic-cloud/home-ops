@@ -10,11 +10,8 @@
 # │ │ │ │ │ │ │ ┌ Command
 # ┴ ┴ ┴ ┴ ┴ ┴ ┴ ┴
 # * * * * * * * printf '%s\n' 'Hello world!'
-0 0 * * *  just --dotenv-filename ionos.env backup
-5 0 * * *  just --dotenv-filename hetzner.env backup
-
-@daily backup.sh vaultwarden
-@daily backup.sh opengist
-@daily backup.sh gitea
-@weekly backup.sh pocket-id
-@weekly backup.sh traefik
+@daily just --dotenv-filename .vaultwarden.env backup vaultwarden
+@daily just --dotenv-filename .opengist.env backup opengist
+@daily just --dotenv-filename .gitea.env backup gitea
+@weekly just --dotenv-filename .pocket-id.env backup pocket-id
+@weekly just --dotenv-filename .traefik.env backup traefik
