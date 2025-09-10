@@ -24,7 +24,7 @@ export def main [
 
     with-lockfile $app {
        
-        # Prepare export directory
+        # Prepare working directory
         rm -rf $working_dir
         mkdir $working_dir
 
