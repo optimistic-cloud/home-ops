@@ -12,10 +12,9 @@ def run_docker_container_command [command: string, container_name: string] {
   }
 }
 
-def assert_action [expected: string] {
+def assert_docker_container_action [expected: string] {
   let container_name = $in
   let isValue = ^docker container inspect $container_name | from json | get 0.State.Status
-  print $isValue
 
   assert ($isValue == $expected)
 }
@@ -25,7 +24,7 @@ def stop_container []: string -> nothing {
   log debug $"Stop docker container ($container_name)"
 
   run_docker_container_command 'stop' $container_name
-  $container_name | assert_action "exited"
+  $container_name | assert_docker_container_action "exited"
 }
 
 def start_container []: string -> nothing {
@@ -33,7 +32,7 @@ def start_container []: string -> nothing {
   log debug $"Start docker container ($container_name)"
 
   run_docker_container_command 'start' $container_name
-  $container_name | assert_action "running"
+  $container_name | assert_docker_container_action "running"
 }
 
 export def main [container_name: string, operation: closure] {
