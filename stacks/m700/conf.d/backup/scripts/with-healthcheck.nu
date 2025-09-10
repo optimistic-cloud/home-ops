@@ -17,17 +17,17 @@ def to_url [endpoint: string]: record -> string { $in | update path { [ $in, $en
 def do_get []: string -> nothing { http get $in --max-time $timeout | ignore }
 def do_post [url: string]: string -> nothing { $in | http post $url --max-time $timeout | ignore }
 def send_start [url: record] { 
-  $url | to_url 'start' | do_get
-  log debug "Sent start ping"
+    log debug "Send start ping"
+    $url | to_url 'start' | do_get
 }
 def send_fail [url: record] { 
+  log debug "Send fail ping"
   $url | to_url 'fail' | do_get
-  log debug "Sent fail ping"
 }
 def send_exit_code [url: record]: int -> nothing {
+  log debug $"Send exit code ($exit_code)"
   let exit_code = $in
   $url | to_url ($exit_code | into string) | do_get
-  log debug $"Sent exit code ($exit_code)"
 }
 def send_log [url: record]: string -> nothing { $in | do_post ($url | to_url 'log') }
 
