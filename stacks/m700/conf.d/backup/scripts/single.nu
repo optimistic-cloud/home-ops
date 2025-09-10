@@ -25,8 +25,6 @@ def main [app: string = "vaultwarden"] {
         }
 
         with-healthcheck $hc_slug $run_id {
-            let backup_cmd = create_restic_backup_cmd $hc_slug $run_id
-
             let include = [
                 /opt/vaultwarden/.env
                 /opt/vaultwarden/appdata
@@ -41,9 +39,7 @@ def main [app: string = "vaultwarden"] {
                 $"git_commit=($git_commit)"
             ]
 
-            let out = do $backup_cmd $include $exclude $tags
-            $out | describe | print
-            $out
+            restic-backup $include $exclude $tags
         }
 
         with-healthcheck $hc_slug $run_id {
