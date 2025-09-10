@@ -46,7 +46,7 @@ def main [app: string = "vaultwarden"] {
               restic-backup $include $exclude $tags
           }
   
-          with-healthcheck $slug $run_id {
+          with-healthcheck $ping_url {
               restic-check 33%
           }
   
