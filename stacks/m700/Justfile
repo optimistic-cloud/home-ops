@@ -24,10 +24,9 @@ init app:
 [group('restic')]
 [doc('Backup application')]
 backup app:
-    docker exec -it backup-toolkit bash -exuo pipefail just --dotenv-filename .vaultwarden.env backup vaultwarden
+    docker exec -it backup-toolkit just --dotenv-filename {{app}}.env backup {{app}}
 
 [group('restic')]
 [doc('Restore backup for an application')]
 restore app provider:
-    docker exec -it backup-toolkit bash -exuo pipefail restore.sh {{app}} {{provider}} 
-    docker compose -f {{app}}/conf.d/restore/docker-compose.yml up -d
+    exit 1
