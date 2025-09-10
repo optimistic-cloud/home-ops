@@ -30,6 +30,7 @@ export def main [app:string, operation: closure] {
         do $operation
         release-lock
     } catch {|err|
+        # https://github.com/nushell/nushell/issues/15279
         release-lock
         error make $err
     }
