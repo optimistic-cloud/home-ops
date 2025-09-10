@@ -5,8 +5,9 @@ use restic.nu *
 
 export def main [
   app: string
-  working_dir: path
   op: closure
 ] {
-  do $op
+  
+
+do $op
 }
