@@ -4,6 +4,8 @@ use with-backup.nu *
 use with-docker.nu *
 use sqlite-export.nu *
 
+def "main" [] {}
+
 def "main vaultwarden" [] {
   const app = "vaultwarden"
 
