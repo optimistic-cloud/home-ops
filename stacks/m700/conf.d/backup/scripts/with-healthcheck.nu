@@ -5,25 +5,26 @@ def process_exit_code [url: record]: record -> nothing {
     let stdout = $in.stdout
     let stderr = $in.stderr
 
-    def logs-to-hc [] {
-        let url = $url | update path { [ $in, 'log'] | str join "/" } | url join
-
-        $in | http post $url --max-time $timeout | ignore
-    }
-
-    $url | do_ping_with ($exit_code | into string)
+    $url | send_exit_code $exit_code
     if $exit_code != 0 {
-        $stderr | logs-to-hc
-        error make { msg: $stderr }
+        $url | send_log $stderr
     } else {
-        $stdout | logs-to-hc
+        $url | send_log $stdout
     }
 }
 
-def do_ping_with [ endpoint: string ]: record -> nothing {
+def to_url [ endpoint: string ]: record -> nothing {
     let url = $in
-    $url | update path { [ $in, $endpoint] | str join "/" } | url join | http get $in --max-time $timeout | ignore
+    $url | update path { [ $in, $endpoint] | str join "/" } | url join
 }
+
+def do_get []: string -> nothing { http get $in --max-time $timeout | ignore }
+def do_post [ body: string ]: string -> nothing { $body | http post $in --max-time $timeout | ignore }
+
+def send_start []: record -> nothing { $in | to_url 'start' | do_get }
+def send_fail []: record -> nothing { $in | to_url 'fail' | do_get }
+def send_exit_code [ exit_code: int ]: record -> nothing { $in | to_url ($exit_code | into string) }
+def send_log [ log: string ]: record -> nothing { $in | to_url 'log' | do_post $log }
 
 export def main [hc_slug: string, run_id: string, operation: closure] {
   let url = {
@@ -38,12 +39,12 @@ export def main [hc_slug: string, run_id: string, operation: closure] {
   }
 
   try {
-    $url | do_ping_with 'start'
+    $url | send_start
 
     let out = do $operation
     $out | process_exit_code $url
   } catch {|err|
-    $url | do_ping_with 'fail'
+    $url | send_fail
 
     log error $"Error: ($err)"
     error make $err
