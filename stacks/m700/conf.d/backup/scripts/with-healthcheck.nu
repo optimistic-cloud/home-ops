@@ -1,14 +1,4 @@
 const timeout = 10sec
-const url = {
-  "scheme": "https",
-  "host": "hc-ping.com",
-  "path": $"($env.HC_PING_UUID)",
-  "params":
-  {
-      create: 1,
-      rid: $run_id
-  }
-}
 
 def process_exit_code []: record -> nothing {
   let exit_code = $in.exit_code
@@ -34,10 +24,21 @@ def send_fail []: record -> nothing { $in | to_url 'fail' | do_get }
 def send_exit_code [exit_code: int]: record -> nothing { $in | to_url ($exit_code | into string) | do_get }
 def send_log [log: string]: record -> nothing { $in | to_url 'log' | do_post $log }
 
-export def main [hc_slug: string, run_id: string, operation: closure] {
+export def main [slug: string, run_id: string, operation: closure] {
+  let url = {
+    "scheme": "https",
+    "host": "hc-ping.com",
+    "path": $"($env.HC_PING_KEY)/($slug)",
+    "params":
+    {
+      create: 1,
+      rid: $run_id
+    }
+  }
+
   try {
     $url | send_start
-    do $operation | process_exit_code
+    do $operation | process_exit_code $url
   } catch {|err|
     $url | send_fail
 
