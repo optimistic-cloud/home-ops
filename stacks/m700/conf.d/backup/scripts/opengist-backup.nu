@@ -33,7 +33,7 @@ def main [] {
 
         # Export database
         with-docker $app {
-            $"($source_dir)/appdata/($app).sqlite3" | sqlite export $"($export_dir)/($app).sqlite3" | ignore 
+            $"($source_dir)/appdata/($app).db" | sqlite export $"($export_dir)/($app).db" | ignore 
         }
 
         with-healthcheck $ping_url {
