@@ -6,11 +6,11 @@ def main [] {
   const app = "opengist"
 
   let data_dir = '/opt' | path join $app
-  let export_dir = '/tmp' | path join $app export
+  let working_dir = '/tmp' | path join $app export
 
-  with-backup $app $export_dir {
+  with-backup $app $working_dir {
     with-docker $app {
-        $"($data_dir)/appdata/($app).db" | sqlite export $"($export_dir)/($app).db" | ignore
+        $"($data_dir)/appdata/($app).db" | sqlite export $"($working_dir)/($app).db" | ignore
     }
   }
 }
