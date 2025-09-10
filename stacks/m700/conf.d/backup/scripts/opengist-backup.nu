@@ -1,3 +1,5 @@
+use std/log
+
 use with-backup.nu *
 use with-docker.nu *
 use sqlite-export.nu *
