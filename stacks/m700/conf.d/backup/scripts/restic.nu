@@ -33,7 +33,7 @@ export def assert_snapshot [threshold: duration = 1min]: string -> record {
 
     mut exit_code = 0
     if not ((date now) < ($snapshot_time + $threshold)) {
-        exit_code = 1
+        $exit_code = 1
     }
     
     {
