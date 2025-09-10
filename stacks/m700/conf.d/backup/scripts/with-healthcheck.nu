@@ -13,7 +13,7 @@ def process_exit_code [url: record]: record -> nothing {
     }
 }
 
-def to_url [ endpoint: string ]: record -> nothing {
+def to_url [ endpoint: string ]: record -> string {
     let url = $in
     $url | update path { [ $in, $endpoint] | str join "/" } | url join
 }
