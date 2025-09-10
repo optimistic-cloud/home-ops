@@ -46,12 +46,6 @@ export def configure-ping-url [slug: string, run_id: string] {
 }
 
 export def main [url: record, operation: closure] {
-  try {
-    send_start $url
-    do $operation | process_exit_code $url
-  } catch {|err|
-    # https://github.com/nushell/nushell/issues/15279
-    send_fail $url
-    error make $err
-  }
+  send_start $url
+  do $operation | process_exit_code $url
 }
