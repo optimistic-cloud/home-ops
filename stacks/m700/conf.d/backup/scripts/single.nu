@@ -1,6 +1,6 @@
 use std/log
 
-use sqlite-export.nu *
+use sqlite_export.nu *
 use with-docker.nu *
 use with-lockfile.nu *
 use with-healthcheck.nu *
