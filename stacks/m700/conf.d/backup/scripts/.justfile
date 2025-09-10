@@ -1,3 +1,5 @@
+#!/usr/bin/env just --justfile
+
 help:
     just --list
 
