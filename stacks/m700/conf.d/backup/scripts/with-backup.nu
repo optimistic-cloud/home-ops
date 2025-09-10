@@ -6,7 +6,7 @@ use with-lockfile.nu *
 use with-healthcheck.nu *
 use restic.nu *
 
-export def main [app: string, operation: closure] {
+export def main [app: string, op: closure] {
   let source_dir = '/opt' | path join $app
   let export_dir = '/tmp' | path join $app export
 
@@ -30,7 +30,7 @@ export def main [app: string, operation: closure] {
         mkdir $export_dir
 
         print "a"
-        do $operation
+        do $op
         print "b"
 
         with-healthcheck $ping_url {
