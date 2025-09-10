@@ -31,5 +31,17 @@ export def restic-backup [includes: list<path>, excludes: list<string>, tags: li
   let exclude_as_string = $excludes | to-prefix-string "--exclude"
   let tags_as_string = $tags | to-prefix-string "--tag"
 
-  ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
+  let out = ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
+
+  if $out.exit_code != 0 {
+    log error $"Backup failed with exit code ($out.exit_code) and message:
+      ($out.stderr)
+    "
+  } else {
+    log debug $"Backup done successfully with message:
+      ($out.stdout)
+    "
+  }
+
+  $out
 }
