@@ -1,5 +1,5 @@
 const timeout = 10sec
-def url = {
+const url = {
   "scheme": "https",
   "host": "hc-ping.com",
   "path": $"($env.HC_PING_KEY)/($hc_slug)",
