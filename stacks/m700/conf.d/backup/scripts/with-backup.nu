@@ -27,9 +27,7 @@ export def main [app: string, op: closure] {
         rm -rf $export_dir
         mkdir $export_dir
 
-        print "a"
         do $op
-        print "b"
 
         with-healthcheck $ping_url {
             let tags = [
