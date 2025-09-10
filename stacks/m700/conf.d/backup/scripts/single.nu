@@ -41,8 +41,6 @@ def main [app: string = "vaultwarden"] {
             ]
             do $backup_cmd $include $exclude $tags
 
-            restic --quiet check --read-data-subset 33%
-
             rm -rf $export_dir
         }
     }
