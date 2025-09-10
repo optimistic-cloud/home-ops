@@ -24,7 +24,7 @@ export def assert_snapshot [threshold: duration = 1min]: string -> record {
 export def restic-backup [includes: list<path>, excludes: list<string>, tags: list<string>] {
   log debug $"Start restic backup command with 
     includes: ($includes) 
-    excludes: ($excludes) and
+    excludes: ($excludes)
     tags: ($tags)
   "
 
