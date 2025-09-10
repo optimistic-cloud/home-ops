@@ -24,7 +24,7 @@ def main [app: string = "vaultwarden"] {
             $"($source_dir)/appdata/db.sqlite3" | export-sqlite $"($export_dir)/db.sqlite3" | ignore 
         }
 
-        with-healthcheck $hc_slug $run_id {
+        with-healthcheck $run_id {
             let include = [
                 /opt/vaultwarden/.env
                 /opt/vaultwarden/appdata
