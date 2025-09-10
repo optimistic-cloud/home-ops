@@ -50,6 +50,7 @@ export def main [url: record, operation: closure] {
     send_start $url
     do $operation | process_exit_code $url
   } catch {|err|
+    # https://github.com/nushell/nushell/issues/15279
     send_fail $url
     error make $err
   }
