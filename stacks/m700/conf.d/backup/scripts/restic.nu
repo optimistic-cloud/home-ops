@@ -1,5 +1,15 @@
 export def restic-check [subset: string] {
-    ^restic check --read-data-subset $subset | complete
+  log debug $"Start restic check command with subset of ($subset)"
+
+  let out = ^restic check --read-data-subset $subset | complete
+
+  if $out.exit_code != 0 {
+    log error $"Check failed with exit code ($out.exit_code) and message: \n($out.stderr)"
+  } else {
+    log debug $"Check done successfully with message: \n($out.stdout)"
+  }
+
+  $out
 }
 
 def to-prefix-string [prefix: string]: list<string> -> string { $in | each { |it| $"($prefix)=($it)" } | str join " " }
