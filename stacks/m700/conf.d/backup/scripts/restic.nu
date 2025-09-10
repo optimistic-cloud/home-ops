@@ -1,8 +1,12 @@
 def do_logging [command: string]: record -> nothing {
-  if $out.exit_code != 0 {
-    log error $"($command) failed with exit code ($out.exit_code) and message: \n($out.stderr)"
+  let exit_code = $in.exit_code
+  let stdout = $in.stdout
+  let stderr = $in.stderr
+
+  if $exit_code != 0 {
+    log error $"($command) failed with exit code ($out.exit_code) and message: \n($stderr)"
   } else {
-    log debug $"($command) done successfully with message: \n($out.stdout)"
+    log debug $"($command) done successfully with message: \n($stdout)"
   }
 }
 
