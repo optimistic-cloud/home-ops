@@ -1,4 +1,4 @@
-def do_logging [command: string]: record -> nothing {
+def do_logging_for [command: string]: record -> nothing {
   let exit_code = $in.exit_code
   let stdout = $in.stdout
   let stderr = $in.stderr
@@ -14,7 +14,7 @@ export def restic-check [subset: string] {
   log debug $"Start restic check command with subset of ($subset)"
 
   let out = ^restic check --read-data-subset $subset | complete
-  $out | do_logging
+  $out | do_logging_for "Check"
   $out
 }
 
@@ -48,6 +48,6 @@ export def restic-backup [includes: list<path>, excludes: list<string>, tags: li
   let tags_as_string = $tags | to-prefix-string "--tag"
 
   let out = ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
-  $out | do_logging
+  $out | do_logging_for "Backup"
   $out
 }
