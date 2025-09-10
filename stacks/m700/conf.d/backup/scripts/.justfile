@@ -4,4 +4,5 @@ help:
 backup app:
     nu {{app}}-backup.nu
 
-backup-with-debug app $NU_LOG_LEVEL="debug": && (backup app)
+backup-with-debug app $NU_LOG_LEVEL="debug":
+    nu {{app}}-backup.nu
