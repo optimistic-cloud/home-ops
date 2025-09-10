@@ -1,13 +1,21 @@
+def process_exit_code [out: record, hc_slug: string, run_id: string]: record -> nothing {
+    let exit_code = $in.exit_code
+    let stdout = $in.stdout
+    let stderr = $in.stderr
+
+    $exit_code | exit-status-to-hc $hc_slug $run_id
+    if $exit_code != 0 {
+        $stderr | logs-to-hc $hc_slug $run_id
+        error make { msg: $stderr }
+    } else {
+        $stdout | logs-to-hc $hc_slug $run_id
+    }
+}
+
 export def create_restic_check_cmd [hc_slug: string, run_id: string]: nothing -> closure {
     {|subset: string|
         let out = ^restic check --read-data-subset $subset | complete
-    
-        $out.exit_code | exit-status-to-hc $hc_slug $run_id
-        if $out.exit_code != 0 {
-            $out.stderr | logs-to-hc $hc_slug $run_id
-        } else {
-            $out.stdout | logs-to-hc $hc_slug $run_id
-        }
+        $out | process_exit_code $hc_slug $run_id
     }
 }
 
@@ -27,13 +35,7 @@ export def create_restic_backup_cmd [hc_slug: string, run_id: string]: nothing -
         let tags_as_string = $tags | to-prefix-string "--tag"
 
         let out = ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
-
-        $out.exit_code | exit-status-to-hc $hc_slug $run_id
-        if $out.exit_code != 0 {
-            $out.stderr | logs-to-hc $hc_slug $run_id
-        } else {
-            $out.stdout | logs-to-hc $hc_slug $run_id
-        }
+        $out | process_exit_code $hc_slug $run_id
 
         let snapshot_id = $out.stdout | lines | last | parse "{_} {snapshot} {_}" | get snapshot
         $snapshot_id | assert_snapshot 5min
