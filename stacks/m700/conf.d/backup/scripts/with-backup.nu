@@ -49,7 +49,7 @@ export def main [app: string, operation: closure] {
   } catch {|err|
     log error $"($app) backup failed with message: ($err.msg)"
     send_fail $ping_url
-
+    error make $err
     exit 1
   }
 
