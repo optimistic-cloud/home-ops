@@ -1,5 +1,5 @@
 help:
-    just --list-all
+    just --list
 
 backup app:
     nu backup.nu {{app}}
