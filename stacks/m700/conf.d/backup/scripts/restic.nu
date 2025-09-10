@@ -36,16 +36,23 @@ export def assert_snapshot [threshold: duration = 1min]: string -> record {
     }
 }
 
-export def create_restic_backup_cmd [hc_slug: string, run_id: string]: nothing -> closure {
-    {|includes: list<path>, excludes: list<string>, tags: list<string>|
-        let exclude_as_string = $excludes | to-prefix-string "--exclude"
-        let tags_as_string = $tags | to-prefix-string "--tag"
+export def restic-backup [includes: list<path>, excludes: list<string>, tags: list<string>] {
+    let exclude_as_string = $excludes | to-prefix-string "--exclude"
+    let tags_as_string = $tags | to-prefix-string "--tag"
 
-        ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
-        #let out = ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
-        #$out
-
-        #let snapshot_id = $out.stdout | lines | last | parse "{_} {snapshot} {_}" | get snapshot
-        #$snapshot_id | assert_snapshot 5min
-    }
+    ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
 }
+
+#export def create_restic_backup_cmd [hc_slug: string, run_id: string]: nothing -> closure {
+#    {|includes: list<path>, excludes: list<string>, tags: list<string>|
+#        let exclude_as_string = $excludes | to-prefix-string "--exclude"
+#        let tags_as_string = $tags | to-prefix-string "--tag"
+#
+#        ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
+#        #let out = ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
+#        #$out
+#
+#        #let snapshot_id = $out.stdout | lines | last | parse "{_} {snapshot} {_}" | get snapshot
+#        #$snapshot_id | assert_snapshot 5min
+#    }
+#}
