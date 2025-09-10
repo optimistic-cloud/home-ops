@@ -1,0 +1,3 @@
+/opt/vaultwarden/.env
+/opt/vaultwarden/appdata
+/tmp/vaultwarden/export/db.sqlite3
