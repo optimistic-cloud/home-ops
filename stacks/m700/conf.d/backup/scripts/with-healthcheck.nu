@@ -34,7 +34,7 @@ def process_exit_code [url: record]: record -> nothing {
     }
 }
 
-let do_ping_with [ endpoint: string ]: record -> nothing {
+def do_ping_with [ endpoint: string ]: record -> nothing {
     let url = $in
     $url | update path { [ $in, $endpoint] | str join "/" } | url join | http get $in --max-time $timeout | ignore
 }
