@@ -1,7 +1,5 @@
 use std/log
 
-use sqlite-export.nu *
-use with-docker.nu *
 use with-lockfile.nu *
 use with-healthcheck.nu *
 use restic.nu *
