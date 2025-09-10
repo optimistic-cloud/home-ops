@@ -12,12 +12,16 @@ def process_exit_code [hc_slug: string, run_id: string]: record -> nothing {
     }
 }
 
-export def create_restic_check_cmd [hc_slug: string, run_id: string]: nothing -> closure {
-    {|subset: string|
-        ^restic check --read-data-subset $subset | complete
-        #let out = ^restic check --read-data-subset $subset | complete
-        #$out | process_exit_code $hc_slug $run_id
-    }
+#export def create_restic_check_cmd [hc_slug: string, run_id: string]: nothing -> closure {
+#    {|subset: string|
+#        ^restic check --read-data-subset $subset | complete
+#        #let out = ^restic check --read-data-subset $subset | complete
+#        #$out | process_exit_code $hc_slug $run_id
+#    }
+#}
+
+export def restic-check [subset: string] {
+    ^restic check --read-data-subset $subset | complete
 }
 
 def to-prefix-string [prefix: string]: list<string> -> string { $in | each { |it| $"($prefix)=($it)" } | str join " " }
