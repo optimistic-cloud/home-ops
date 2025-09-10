@@ -27,6 +27,20 @@ export def restic-check [subset: string] {
   $out
 }
 
+export def restic-backup2 [include_file: path, exclude_file: path, tags: list<string>] {
+  log debug $"Start restic backup command with 
+    includes: ($include_file) 
+    excludes: ($exclude_file)
+    tags: ($tags)
+  "
+
+  let tags_as_string = $tags | to-prefix-string "--tag"
+
+  let out = ^restic backup --files-from $include_file --exclude-file $exclude_file --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
+  $out | do_logging_for "Backup"
+  $out
+}
+
 export def restic-backup [includes: list<path>, excludes: list<string>, tags: list<string>] {
   log debug $"Start restic backup command with 
     includes: ($includes) 
