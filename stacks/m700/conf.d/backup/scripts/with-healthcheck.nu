@@ -38,7 +38,7 @@ def send_exit_code2 [url: record]: int -> nothing {
 
   #$url | to_url ($exit_code | into string) | do_get
 
-  $in | do_post $url
+  $in | do_post ($url | url join)
 }
 def send_log [url: record]: string -> nothing { $in | do_post ($url | to_url 'log') }
 
