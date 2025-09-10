@@ -40,3 +40,11 @@ export def restic-backup [include_file: path, exclude_file: path, tags: list<str
   $out | do_logging_for "Backup"
   $out
 }
+
+export def restic-restore [snapshot_id: string, target: path] {
+  log debug $"Start restic restore command for snapshotID ($snapshot_id)"
+
+  let out = ^restic restore latest --target $target | complete
+  $out | do_logging_for "Restore"
+  $out
+}
