@@ -46,7 +46,9 @@ def main [app: string = "vaultwarden"] {
                 $"git_commit=($git_commit)"
             ]
 
-            restic-backup $include $exclude $tags
+            #restic-backup $include $exclude $tags
+
+            restic-backup2 $"($app).include.txt" $"($app).exclude.txt" $tags
         }
 
         with-healthcheck $ping_url {
