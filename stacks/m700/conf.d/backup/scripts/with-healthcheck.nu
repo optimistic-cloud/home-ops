@@ -17,7 +17,7 @@ def to_url [endpoint: string]: record -> string { $in | update path { [ $in, $en
 def do_get []: string -> nothing { http get $in --max-time $timeout | ignore }
 def do_post [url: string]: string -> nothing { $in | http post $url --max-time $timeout | ignore }
 def send_start [url: record] { $url | to_url 'start' | do_get }
-def send_fail [url: record] { $ulr | to_url 'fail' | do_get }
+def send_fail [url: record] { $url | to_url 'fail' | do_get }
 def send_exit_code [url: record]: int -> nothing {
   let exit_code = $in
   $url | to_url ($exit_code | into string) | do_get 
