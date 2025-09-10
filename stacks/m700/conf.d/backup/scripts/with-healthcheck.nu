@@ -47,7 +47,8 @@ export def main [hc_slug: string, run_id: string, operation: closure] {
   #let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
 
   try {
-    $url | update path { [ $in, 'start'] | str join "/" } | merge { create: 1 } | url join | http get $in --max-time $timeout | ignore
+    $url | update path { [ $in, 'start'] | str join "/" } | update params { $in | merge { create: 1 } } | url join | print
+    $url | update path { [ $in, 'start'] | str join "/" } | update params { $in | merge { create: 1 } } | url join | http get $in --max-time $timeout | ignore
 
     let out = do $operation
     $out | process_exit_code $url
