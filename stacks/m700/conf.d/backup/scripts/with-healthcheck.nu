@@ -28,17 +28,16 @@ def process_exit_code [hc_slug: string, run_id: string]: record -> nothing {
 
 export def main [hc_slug: string, run_id: string, operation: closure] {
   let url = {
-        "scheme": "https",
-        "host": "hc-ping.com",
-        "path": $"($env.HC_PING_KEY)/($hc_slug)"
-    } | url join
-
+      "scheme": "https",
+      "host": "hc-ping.com",
+      "path": $"($env.HC_PING_KEY)/($hc_slug)"
+  }
 
   #let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
   let timeout = 10sec
 
   try {
-    url | update path { $in | str join "/start" } | insert params { create:1, rid:$run_id } | http get $in --max-time $timeout | ignore
+    $url | update path { $in | str join "/start" } | insert params { create:1, rid:$run_id } | url join | http get $in --max-time $timeout | ignore
     #http get $"($url)/start?create=1&rid=($run_id)" --max-time $timeout | ignore
 
     let out = do $operation
