@@ -15,7 +15,7 @@ def main [app: string = "vaultwarden"] {
   let ping_url = configure-ping-url $slug $run_id
 
   try {
-    $ping_url | send_start
+    send_start $ping_url
 
     log debug $"Start backup of ($app)."
     let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
@@ -57,7 +57,7 @@ def main [app: string = "vaultwarden"] {
     }
   } catch {|err|
     log error $"($app) backup failed with message: ($err.msg)"
-    $ping_url | send_fail
+    send_fail $ping_url
 
     exit 1
   }
