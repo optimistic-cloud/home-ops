@@ -9,8 +9,10 @@ def process_exit_code [url: record]: record -> nothing {
       $stderr | send_log $url
   } else {
       $stdout | send_log $url
+      $stdout | send_exit_code2 $url
   }
   $exit_code | send_exit_code $url
+  
 }
 
 def to_url [endpoint: string]: record -> string { $in | update path { [ $in, $endpoint] | str join "/" } | url join }
@@ -29,6 +31,14 @@ def send_exit_code [url: record]: int -> nothing {
   log debug $"Send exit code ($exit_code) to ($url.path) with run_id ($url.params.rid)"
 
   $url | to_url ($exit_code | into string) | do_get
+}
+def send_exit_code2 [url: record]: int -> nothing {
+  #let exit_code = $in
+  log debug $"Send exit code ($exit_code) to ($url.path) with run_id ($url.params.rid)"
+
+  #$url | to_url ($exit_code | into string) | do_get
+
+  $in | do_post $url
 }
 def send_log [url: record]: string -> nothing { $in | do_post ($url | to_url 'log') }
 
