@@ -1,3 +1,5 @@
+use utils.nu *
+
 export def "sqlite export" [target: path]: string -> path {
     let db = $in
 
@@ -9,8 +11,7 @@ export def "sqlite export" [target: path]: string -> path {
     }
 
     let out = ^sqlite3 $db $".backup '($target)'" | complete
-
-
+    $out | do_logging_for "SQLite database export"
 
     let integrity = (sqlite3 $"($target)" "PRAGMA integrity_check;")
     if $integrity != "ok" {
