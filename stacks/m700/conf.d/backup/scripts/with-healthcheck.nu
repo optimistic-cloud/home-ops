@@ -23,7 +23,7 @@ def do_post [ body: string ]: string -> nothing { $body | http post $in --max-ti
 
 def send_start []: record -> nothing { $in | to_url 'start' | do_get }
 def send_fail []: record -> nothing { $in | to_url 'fail' | do_get }
-def send_exit_code [ exit_code: int ]: record -> nothing { $in | to_url ($exit_code | into string) }
+def send_exit_code [ exit_code: int ]: record -> nothing { $in | to_url ($exit_code | into string) | do_get }
 def send_log [ log: string ]: record -> nothing { $in | to_url 'log' | do_post $log }
 
 export def main [hc_slug: string, run_id: string, operation: closure] {
