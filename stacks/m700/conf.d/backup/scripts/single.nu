@@ -7,21 +7,20 @@ use with-healthcheck.nu *
 use restic.nu *
 
 def main [app: string = "vaultwarden"] {
+  let source_dir = '/opt' | path join $app
+  let export_dir = '/tmp' | path join $app export
+
+  let slug = $"($app)-backup"
+  let run_id = (random uuid -v 4)
+  let ping_url = configure-ping-url $slug $run_id
+
   try {
     log debug $"Start backup of ($app)."
-
-    let source_dir = '/opt' | path join $app
-    let export_dir = '/tmp' | path join $app export
-
-    let slug = $"($app)-backup"
-    let run_id = (random uuid -v 4)
-    let ping_url = configure-ping-url $slug $run_id
-
     let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
     with-lockfile $app {
        
-        # Prepare export directory
+        # Prepare export directorye
         rm -rf $export_dir
         mkdir $export_dir
 
