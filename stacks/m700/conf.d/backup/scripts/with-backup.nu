@@ -47,7 +47,7 @@ export def main [app: string, operation: closure] {
         rm -rf $export_dir
     }
   } catch {|err|
-    log error $"($app) backup failed with message: ($err.msg)"
+    log error $"($app) backup failed with message: ($err)"
     send_fail $ping_url
     error make $err
     exit 1
