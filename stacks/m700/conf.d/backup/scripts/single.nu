@@ -21,7 +21,7 @@ def main [app: string = "vaultwarden"] {
 
         # Export database
         with-docker $app {
-            $"($source_dir)/appdata/db.sqlite3" | export-sqlite $"($export_dir)/db.sqlite3" | ignore 
+            $"($source_dir)/appdata/db.sqlite3" | export sqlite $"($export_dir)/db.sqlite3" | ignore 
         }
 
         with-healthcheck $slug $run_id {
