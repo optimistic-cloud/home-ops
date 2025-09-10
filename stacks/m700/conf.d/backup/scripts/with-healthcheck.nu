@@ -10,7 +10,7 @@ def process_exit_code [hc_slug: string, run_id: string]: record -> nothing {
         $in | http post $"($url)" --max-time $timeout | ignore
     }
     
-    def exit-status-to-hc [hc_slug: string, run_id: string] {
+    def exit-status-to-hc [] {
         let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
         let timeout = 10sec
     
