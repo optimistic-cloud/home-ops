@@ -166,7 +166,6 @@ services:
       
       - ./conf.d/backup/crontab:/etc/crontab
       - ./conf.d/backup/scripts:/opt/conf.d/backup/scripts
-      - ./conf.d/backup/providers:/opt/conf.d/backup/providers
 
       - ./.env:/opt/.env
 
