@@ -6,6 +6,17 @@ export def assert_snapshot [threshold: duration = 1min] {
     }
 }
 
+export def assert_repository [subset: duration = 1min] {
+    let out = ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
+
+    $out.exit_code | exit-status-to-hc $hc_slug $run_id
+    if $out.exit_code != 0 {
+        $out.stderr | logs-to-hc $hc_slug $run_id
+    } else {
+        $out.stdout | logs-to-hc $hc_slug $run_id
+    }
+}
+
 def to-prefix-string [prefix: string]: list<string> -> string { $in | each { |it| $"($prefix)=($it)" } | str join " " }
 
 export def create_restic_backup_cmd [hc_slug: string, run_id: string]: nothing -> closure {
