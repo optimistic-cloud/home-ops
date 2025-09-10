@@ -2,4 +2,4 @@ help:
     just --list-all
 
 backup app:
-    nu backup-{{app}}.nu
+    nu {{app}}-backup.nu
