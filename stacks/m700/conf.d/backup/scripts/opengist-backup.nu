@@ -16,3 +16,9 @@ def main [] {
     }
   }
 }
+
+def "main restore" [] {
+  const app = "opengist"
+
+  exit 1
+}
