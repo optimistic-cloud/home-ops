@@ -7,7 +7,9 @@ export def main [
   app: string
   op: closure
 ] {
-  
+  let working_dir = '/tmp' | path join $app restore
 
-do $op
+  restic-restore
+
+  do $op
 }
