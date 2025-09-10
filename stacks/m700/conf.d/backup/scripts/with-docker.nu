@@ -32,6 +32,7 @@ export def main [contaner_name: string, operation: closure] {
       do $operation
       $container_name | start_container
   } catch {|err|
+      # https://github.com/nushell/nushell/issues/15279
       $container_name | start_container
       error make $err
   }
