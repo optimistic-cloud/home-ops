@@ -4,10 +4,11 @@ use with-lockfile.nu *
 use with-healthcheck.nu *
 use restic.nu *
 
-export def main [app: string, op: closure] {
-  let source_dir = '/opt' | path join $app
-  let export_dir = '/tmp' | path join $app export
-
+export def main [
+  app: string
+  working_dir: path
+  op: closure
+] {
   let slug = $"($app)-backup"
   let run_id = (random uuid -v 4)
   let ping_url = configure-ping-url $slug $run_id
@@ -24,8 +25,8 @@ export def main [app: string, op: closure] {
     with-lockfile $app {
        
         # Prepare export directory
-        rm -rf $export_dir
-        mkdir $export_dir
+        rm -rf $working_dir
+        mkdir $working_dir
 
         do $op
 
@@ -40,7 +41,7 @@ export def main [app: string, op: closure] {
             restic-check 33%
         }
 
-        rm -rf $export_dir
+        rm -rf $working_dir
     }
   } catch {|err|
     log error $"($app) backup failed with message: ($err)"
