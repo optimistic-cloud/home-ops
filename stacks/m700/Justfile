@@ -24,7 +24,7 @@ init app:
 [group('restic')]
 [doc('Backup application')]
 backup app:
-    docker exec -it backup-toolkit bash -exuo pipefail backup.sh {{app}}
+    docker exec -it backup-toolkit bash -exuo pipefail just --dotenv-filename .vaultwarden.env backup vaultwarden
 
 [group('restic')]
 [doc('Restore backup for an application')]
