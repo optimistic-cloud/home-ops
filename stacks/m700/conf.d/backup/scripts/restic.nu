@@ -14,8 +14,9 @@ def process_exit_code [hc_slug: string, run_id: string]: record -> nothing {
 
 export def create_restic_check_cmd [hc_slug: string, run_id: string]: nothing -> closure {
     {|subset: string|
-        let out = ^restic check --read-data-subset $subset | complete
-        $out | process_exit_code $hc_slug $run_id
+        ^restic check --read-data-subset $subset | complete
+        #let out = ^restic check --read-data-subset $subset | complete
+        #$out | process_exit_code $hc_slug $run_id
     }
 }
 
@@ -34,8 +35,9 @@ export def create_restic_backup_cmd [hc_slug: string, run_id: string]: nothing -
         let exclude_as_string = $excludes | to-prefix-string "--exclude"
         let tags_as_string = $tags | to-prefix-string "--tag"
 
-        let out = ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
-        $out
+        ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
+        #let out = ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
+        #$out
 
         #let snapshot_id = $out.stdout | lines | last | parse "{_} {snapshot} {_}" | get snapshot
         #$snapshot_id | assert_snapshot 5min
