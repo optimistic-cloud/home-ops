@@ -17,12 +17,12 @@ def process_exit_code [hc_slug: string, run_id: string]: record -> nothing {
         http get $"($url)/($in)?rid=($run_id)" --max-time $timeout | ignore
     }
 
-    $exit_code | exit-status-to-hc $hc_slug $run_id
+    $exit_code | exit-status-to-hc
     if $exit_code != 0 {
-        $stderr | logs-to-hc $hc_slug $run_id
+        $stderr | logs-to-hc
         error make { msg: $stderr }
     } else {
-        $stdout | logs-to-hc $hc_slug $run_id
+        $stdout | logs-to-hc
     }
 }
 
