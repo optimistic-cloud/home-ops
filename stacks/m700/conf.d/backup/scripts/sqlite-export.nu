@@ -1,4 +1,4 @@
-export def main [target: path]: string -> path {
+export def "sqlite export" [target: path]: string -> path {
     let db = $in
     if not ($db | path exists) {
         error make {msg: $"Database file ($db) does not exist."}
