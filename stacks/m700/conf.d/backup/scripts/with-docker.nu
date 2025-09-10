@@ -1,3 +1,4 @@
+use std/assert
 use utils.nu *
 
 def run_docker_container_command [command: string, container_name: string] {
@@ -11,8 +12,11 @@ def run_docker_container_command [command: string, container_name: string] {
   }
 }
 
-def assert_action [container_name: string] {
-  ^docker container inspect $container_name | from json | get 0.State.Status | print
+def assert_action [expected: string] {
+  let container_name = $in
+  let isValue = ^docker container inspect $container_name | from json | get 0.State.Status
+
+  assert ($isValue == $expected)
 }
 
 def stop_container []: string -> nothing {
@@ -20,15 +24,15 @@ def stop_container []: string -> nothing {
   log debug $"Stop docker container ($container_name)"
 
   run_docker_container_command 'stop' $container_name
-  assert_action $container_name
+  $container_name | assert_action "exited"
 }
 
 def start_container []: string -> nothing {
   let container_name = $in
   log debug $"Start docker container ($container_name)"
 
-  run_docker_container_command 'stop' $container_name
-  assert_action $container_name
+  run_docker_container_command 'start' $container_name
+  $container_name | assert_action "running"
 }
 
 export def main [container_name: string, operation: closure] {
