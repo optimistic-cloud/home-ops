@@ -51,5 +51,8 @@ def main [app: string = "vaultwarden"] {
       }
     } catch {|err|
       log error $"($app) backup failed with message: ($err.msg)"
+      send_fail $slug $run_id
+
+      exit 1
     }
 }
