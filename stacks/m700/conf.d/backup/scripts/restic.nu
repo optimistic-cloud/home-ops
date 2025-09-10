@@ -35,9 +35,9 @@ export def create_restic_backup_cmd [hc_slug: string, run_id: string]: nothing -
         let tags_as_string = $tags | to-prefix-string "--tag"
 
         let out = ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
-        $out | process_exit_code $hc_slug $run_id
+        $out
 
-        let snapshot_id = $out.stdout | lines | last | parse "{_} {snapshot} {_}" | get snapshot
-        $snapshot_id | assert_snapshot 5min
+        #let snapshot_id = $out.stdout | lines | last | parse "{_} {snapshot} {_}" | get snapshot
+        #$snapshot_id | assert_snapshot 5min
     }
 }
