@@ -25,7 +25,7 @@ def process_exit_code [url: record]: record -> nothing {
     }
 
     #$exit_code | exit-status-to-hc
-    $url | do_ping_with $exit_code
+    $url | do_ping_with ($exit_code | into string)
     if $exit_code != 0 {
         $stderr | logs-to-hc
         error make { msg: $stderr }
