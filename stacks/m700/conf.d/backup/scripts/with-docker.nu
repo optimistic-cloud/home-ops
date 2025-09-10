@@ -15,6 +15,7 @@ def run_docker_container_command [command: string, container_name: string] {
 def assert_action [expected: string] {
   let container_name = $in
   let isValue = ^docker container inspect $container_name | from json | get 0.State.Status
+  print $isValue
 
   assert ($isValue == $expected)
 }
