@@ -39,7 +39,7 @@ export def configure-ping-url [slug: string, run_id: string] {
 }
 
 export def main [url: record, operation: closure] {
-  let out = do $operation | complete
+  let out = do $operation
 
   let url = $url | to_url ($out.exit_code | into string)
 
