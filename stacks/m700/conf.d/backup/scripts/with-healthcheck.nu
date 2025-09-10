@@ -6,7 +6,7 @@ def process_exit_code [url: record]: record -> nothing {
     let stderr = $in.stderr
 
     def logs-to-hc [] {
-        let url = $url | update path { [ $in, 'log'] | str join "/" } | insert params { rid:$run_id } | url join
+        let url = $url | update path { [ $in, 'log'] | str join "/" } | url join
         #let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)/log?rid=($run_id)"
 
 
@@ -17,7 +17,7 @@ def process_exit_code [url: record]: record -> nothing {
     def exit-status-to-hc [] {
         let exit_code = $in
 
-        $url | update path { [ $in, $exit_code ] | str join "/" } | insert params { rid:$run_id } | url join | http get $in --max-time $timeout | ignore
+        $url | update path { [ $in, $exit_code ] | str join "/" } | url join | http get $in --max-time $timeout | ignore
         #let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
         
     
@@ -37,18 +37,22 @@ export def main [hc_slug: string, run_id: string, operation: closure] {
   let url = {
       "scheme": "https",
       "host": "hc-ping.com",
-      "path": $"($env.HC_PING_KEY)/($hc_slug)"
+      "path": $"($env.HC_PING_KEY)/($hc_slug)",
+      "params":
+      {
+          "rid": $run_id
+      }
   }
 
   #let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
 
   try {
-    $url | update path { [ $in, 'start'] | str join "/" } | insert params { create:1, rid:$run_id } | url join | http get $in --max-time $timeout | ignore
+    $url | update path { [ $in, 'start'] | str join "/" } | merge { create: 1 } | url join | http get $in --max-time $timeout | ignore
 
     let out = do $operation
     $out | process_exit_code $url
   } catch {|err|
-    $url | update path { [ $in, 'fail'] | str join "/" } | insert params { rid:$run_id } | url join | http get $in --max-time $timeout | ignore
+    $url | update path { [ $in, 'fail'] | str join "/" } | url join | http get $in --max-time $timeout | ignore
 
     log error $"Error: ($err)"
     error make $err
