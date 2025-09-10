@@ -22,7 +22,9 @@ export def create_restic_check_cmd [hc_slug: string, run_id: string]: nothing ->
 
 def to-prefix-string [prefix: string]: list<string> -> string { $in | each { |it| $"($prefix)=($it)" } | str join " " }
 
-def assert_snapshot [threshold: duration = 1min] {
+export def assert_snapshot [threshold: duration = 1min]: string -> record {
+    let snapshot_id = $in.0
+
     let snapshot_time = (restic snapshots $in.0 --json | from json | get 0.time | into datetime)
 
     if not ((date now) < ($snapshot_time + $threshold)) {
