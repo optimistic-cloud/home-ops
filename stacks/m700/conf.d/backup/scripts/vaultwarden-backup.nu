@@ -1,6 +1,7 @@
 use std/log
 
 use with-backup.nu *
+use with-docker.nu *
 
 const app = "vaultwarden"
 
