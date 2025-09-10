@@ -30,7 +30,6 @@ export def main [app:string, operation: closure] {
         do $operation
         release-lock
     } catch {|err|
-        log error $"Error: ($err)"
         release-lock
         error make $err
     }
