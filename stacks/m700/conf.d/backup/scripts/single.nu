@@ -41,6 +41,9 @@ def main [app: string = "vaultwarden"] {
             ]
             do $backup_cmd $include $exclude $tags
 
+            let check_cmd = create_restic_check_cmd $hc_slug $run_id
+            do $check_cmd 33%
+
             rm -rf $export_dir
         }
     }
