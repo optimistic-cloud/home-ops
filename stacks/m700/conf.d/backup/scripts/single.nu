@@ -22,7 +22,7 @@ def main [app: string = "vaultwarden"] {
 
     with-lockfile $app {
        
-        # Prepare export directorye
+        # Prepare export directory
         rm -rf $export_dir
         mkdir $export_dir
 
