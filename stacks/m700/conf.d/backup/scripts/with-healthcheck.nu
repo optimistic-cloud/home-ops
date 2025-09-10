@@ -15,22 +15,28 @@ def process_exit_code [url: record]: record -> nothing {
     }
     
     def exit-status-to-hc [] {
-        let exit_code = $in
+        #let exit_code = $in
 
-        $url | update path { [ $in, $exit_code ] | str join "/" } | url join | http get $in --max-time $timeout | ignore
+        #$url | do_ping_with $exit_code
+
+        #$url | update path { [ $in, $exit_code ] | str join "/" } | url join | http get $in --max-time $timeout | ignore
         #let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
-        
-    
         #http get $url --max-time $timeout | ignore
     }
 
-    $exit_code | exit-status-to-hc
+    #$exit_code | exit-status-to-hc
+    $url | do_ping_with $exit_code
     if $exit_code != 0 {
         $stderr | logs-to-hc
         error make { msg: $stderr }
     } else {
         $stdout | logs-to-hc
     }
+}
+
+let do_ping_with [ endpoint: string ]: record -> nothing {
+    let url = $in
+    $url | update path { [ $in, $endpoint] | str join "/" } | url join | http get $in --max-time $timeout | ignore
 }
 
 export def main [hc_slug: string, run_id: string, operation: closure] {
@@ -40,20 +46,20 @@ export def main [hc_slug: string, run_id: string, operation: closure] {
       "path": $"($env.HC_PING_KEY)/($hc_slug)",
       "params":
       {
-          "rid": $run_id
+          create: 1,
+          rid: $run_id
       }
   }
 
   #let url = $"https://hc-ping.com/($env.HC_PING_KEY)/($hc_slug)"
 
   try {
-    $url | update path { [ $in, 'start'] | str join "/" } | update params { $in | merge { create: 1 } } | url join | print
-    $url | update path { [ $in, 'start'] | str join "/" } | update params { $in | merge { create: 1 } } | url join | http get $in --max-time $timeout | ignore
+    $url | do_ping_with 'start'
 
     let out = do $operation
     $out | process_exit_code $url
   } catch {|err|
-    $url | update path { [ $in, 'fail'] | str join "/" } | url join | http get $in --max-time $timeout | ignore
+    $url | do_ping_with 'fail'
 
     log error $"Error: ($err)"
     error make $err
