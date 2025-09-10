@@ -5,12 +5,12 @@ def process_exit_code [url: record]: record -> nothing {
   let stdout = $in.stdout
   let stderr = $in.stderr
 
-  $exit_code | send_exit_code $url
   if $exit_code != 0 {
       $stderr | send_log $url
   } else {
       $stdout | send_log $url
   }
+  $exit_code | send_exit_code $url
 }
 
 def to_url [endpoint: string]: record -> string { $in | update path { [ $in, $endpoint] | str join "/" } | url join }
