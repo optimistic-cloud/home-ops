@@ -8,11 +8,11 @@ def main [] {
   const app = "vaultwarden"
 
   let data_dir = '/opt' | path join $app
-  let export_dir = '/tmp' | path join $app export
+  let working_dir = '/tmp' | path join $app export
 
   with-backup $app $export_dir {
     with-docker $app {
-        $"($data_dir)/appdata/db.sqlite3" | sqlite export $"($export_dir)/db.sqlite3" | ignore 
+        $"($data_dir)/appdata/db.sqlite3" | sqlite export $"($working_dir)/db.sqlite3" | ignore 
     }
   }
 }
