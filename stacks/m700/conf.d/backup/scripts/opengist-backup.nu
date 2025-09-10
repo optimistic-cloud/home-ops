@@ -4,9 +4,9 @@ use with-backup.nu *
 use with-docker.nu *
 use sqlite-export.nu *
 
-def main [] {
-  const app = "opengist"
+const app = "opengist"
 
+def main [] {
   let data_dir = '/opt' | path join $app
   let working_dir = '/tmp' | path join $app export
 
@@ -18,7 +18,7 @@ def main [] {
 }
 
 def "main restore" [] {
-  const app = "opengist"
+  print $"Restoring ($app)"
 
   exit 1
 }
