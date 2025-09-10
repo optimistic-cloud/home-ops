@@ -20,7 +20,5 @@ def main [] {
 }
 
 def "main restore" [] {
-  with-restore $app {
-    print $"Restoring ($app)"
-  }
+  with-restore $app
 }
