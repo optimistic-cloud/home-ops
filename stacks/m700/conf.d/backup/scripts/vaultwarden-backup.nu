@@ -1,6 +1,8 @@
 use std/log
 
 use with-backup.nu *
+use with-restore.nu *
+
 use with-docker.nu *
 use sqlite-export.nu *
 
@@ -18,7 +20,8 @@ def main [] {
 }
 
 def "main restore" [] {
-  print $"Restoring ($app)"
-
+  with-restore $app "test" {
+    print $"Restoring ($app)"
+  }
   exit 1
 }
