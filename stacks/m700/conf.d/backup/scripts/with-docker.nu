@@ -11,11 +11,16 @@ def run_docker_container_command [command: string, container_name: string] {
   }
 }
 
+def assert_action [container_name: string] {
+  ^docker container inspect $container_name | from json | get 0.State.Status | print
+}
+
 def stop_container []: string -> nothing {
   let container_name = $in
   log debug $"Stop docker container ($container_name)"
 
   run_docker_container_command 'stop' $container_name
+  assert_action $container_name
 }
 
 def start_container []: string -> nothing {
@@ -23,6 +28,7 @@ def start_container []: string -> nothing {
   log debug $"Start docker container ($container_name)"
 
   run_docker_container_command 'stop' $container_name
+  assert_action $container_name
 }
 
 export def main [container_name: string, operation: closure] {
