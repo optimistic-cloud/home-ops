@@ -1,5 +1,5 @@
 export def create_restic_check_cmd [hc_slug: string, run_id: string]: nothing -> closure {
-    {|subset|
+    {|subset: string|
         $subset | describe | print
         let out = ^restic check --read-data-subset $subset | complete
     
