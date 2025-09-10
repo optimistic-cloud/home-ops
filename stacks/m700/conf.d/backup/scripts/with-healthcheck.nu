@@ -51,8 +51,6 @@ export def main [url: record, operation: closure] {
     do $operation | process_exit_code $url
   } catch {|err|
     send_fail $url
-
-    log error $"Error: ($err)"
     error make $err
   }
 }
