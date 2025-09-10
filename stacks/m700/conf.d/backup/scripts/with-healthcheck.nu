@@ -34,7 +34,7 @@ def send_exit_code [url: record]: int -> nothing {
 }
 def send_exit_code2 [url: record]: int -> nothing {
   #let exit_code = $in
-  log debug $"Send exit code ($exit_code) to ($url.path) with run_id ($url.params.rid)"
+  #log debug $"Send exit code ($exit_code) to ($url.path) with run_id ($url.params.rid)"
 
   #$url | to_url ($exit_code | into string) | do_get
 
