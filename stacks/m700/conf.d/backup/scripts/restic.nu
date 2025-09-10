@@ -1,7 +1,7 @@
 export def create_restic_check_cmd [hc_slug: string, run_id: string]: nothing -> closure {
     {|subset|
         $subset | describe | print
-        let out ^restic check --read-data-subset $subset | complete
+        let out = ^restic check --read-data-subset $subset | complete
     
         $out.exit_code | exit-status-to-hc $hc_slug $run_id
         if $out.exit_code != 0 {
