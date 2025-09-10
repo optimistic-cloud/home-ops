@@ -15,9 +15,11 @@ def main [app: string = "vaultwarden"] {
 
     with-lockfile $app {
         with-healthcheck $hc_slug $run_id {
+            # Prepare export directory
             rm -rf $export_dir
             mkdir $export_dir
 
+            # Export database
             with-docker $app {
                 $"($source_dir)/appdata/db.sqlite3" | export-sqlite $"($export_dir)/db.sqlite3" | ignore 
             }
