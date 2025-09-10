@@ -1,4 +1,4 @@
-def process_exit_code [out: record, hc_slug: string, run_id: string]: record -> nothing {
+def process_exit_code [hc_slug: string, run_id: string]: record -> nothing {
     let exit_code = $in.exit_code
     let stdout = $in.stdout
     let stderr = $in.stderr
