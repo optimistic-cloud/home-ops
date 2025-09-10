@@ -14,8 +14,14 @@ def process_exit_code [url: record]: record -> nothing {
 }
 
 def to_url [endpoint: string]: record -> string { $in | update path { [ $in, $endpoint] | str join "/" } | url join }
-def do_get []: string -> nothing { http get $in --max-time $timeout | ignore }
-def do_post [url: string]: string -> nothing { $in | http post $url --max-time $timeout | ignore }
+def do_get []: string -> nothing {
+  log debug $"Do HTTP GET on ($in) with timeout of ($timeout)"
+  http get $in --max-time $timeout | ignore
+}
+def do_post [url: string]: string -> nothing { 
+  log debug $"Do HTTP POST on ($url) with body ($in) and timeout of ($timeout)"
+  $in | http post $url --max-time $timeout | ignore 
+}
 def send_start [url: record] { $url | to_url 'start' | do_get }
 def send_fail [url: record] { $url | to_url 'fail' | do_get }
 def send_exit_code [url: record]: int -> nothing {
