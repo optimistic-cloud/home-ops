@@ -4,7 +4,7 @@ def do_logging [command: string]: record -> nothing {
   let stderr = $in.stderr
 
   if $exit_code != 0 {
-    log error $"($command) failed with exit code ($out.exit_code) and message: \n($stderr)"
+    log error $"($command) failed with exit code ($exit_code) and message: \n($stderr)"
   } else {
     log debug $"($command) done successfully with message: \n($stdout)"
   }
