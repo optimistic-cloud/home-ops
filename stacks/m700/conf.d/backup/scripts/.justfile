@@ -1,5 +1,5 @@
-vaultwarden-backup:
-    nu vaultwarden-backup.nu
+help:
+    just --list-all
 
-debug:
-    nu --log-level 'debug' vaultwarden-backup.nu
+backup app:
+    nu backup-{{app}}.nu
