@@ -6,7 +6,7 @@ use with-lockfile.nu *
 use with-healthcheck.nu *
 use restic.nu *
 
-def main [app: string, operation: closure] {
+export def main [app: string, operation: closure] {
   let source_dir = '/opt' | path join $app
   let export_dir = '/tmp' | path join $app export
 
