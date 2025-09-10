@@ -3,13 +3,17 @@ use std/log
 use with-lockfile.nu *
 use restic.nu *
 
-export def main [
-  app: string
-  op: closure
-] {
+export def main [app: string] {
   let working_dir = '/tmp' | path join $app restore
 
-  restic-restore
-
-  do $op
+  try {
+    # Prepare working directory
+    rm -rf $working_dir
+    mkdir $working_dir
+  
+    restic-restore
+  } catch {|err|
+    log error $"Error: ($err)"
+    exit 1
+  }
 }
