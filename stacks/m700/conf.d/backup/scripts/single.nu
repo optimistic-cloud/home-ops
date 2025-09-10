@@ -50,6 +50,6 @@ def main [app: string = "vaultwarden"] {
           rm -rf $export_dir
       }
     } catch {|err|
-      log error "Backup failed"
+      log error $"($app) backup failed with message: ($err.msg)"
     }
 }
