@@ -20,7 +20,9 @@ def main [] {
 }
 
 def "main restore" [] {
-  with-restore $app "test" {
+  let working_dir = '/tmp' | path join $app restore
+
+  with-restore $app $working_dir {
     print $"Restoring ($app)"
   }
   exit 1
