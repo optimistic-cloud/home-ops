@@ -10,7 +10,7 @@ def main [] {
   let data_dir = '/opt' | path join $app
   let working_dir = '/tmp' | path join $app export
 
-  with-backup $app $export_dir {
+  with-backup $app $working_dir {
     with-docker $app {
         $"($data_dir)/appdata/db.sqlite3" | sqlite export $"($working_dir)/db.sqlite3" | ignore 
     }
