@@ -38,7 +38,8 @@ export def main [hc_slug: string, run_id: string, operation: closure] {
   let timeout = 10sec
 
   try {
-    http get $"($url)/start?create=1&rid=($run_id)" --max-time $timeout | ignore
+    url | update path { $in | str join "/start" } | insert params { create:1, rid:$run_id } | http get --max-time $timeout | ignore
+    #http get $"($url)/start?create=1&rid=($run_id)" --max-time $timeout | ignore
 
     let out = do $operation
     $out | process_exit_code $hc_slug $run_id
