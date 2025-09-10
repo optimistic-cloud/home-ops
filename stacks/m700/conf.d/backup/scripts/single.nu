@@ -47,8 +47,7 @@ def main [app: string = "vaultwarden"] {
         }
 
         with-healthcheck $hc_slug $run_id {
-            let check_cmd = create_restic_check_cmd $hc_slug $run_id
-            do $check_cmd 33%
+            restic-check 33%
         }
 
         rm -rf $export_dir
