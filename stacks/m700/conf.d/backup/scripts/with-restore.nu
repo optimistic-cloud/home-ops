@@ -5,7 +5,7 @@ use restic.nu *
 
 export def main [app: string] {
   let working_dir = '/tmp' | path join $app restore
-  let snapshot_id = latest
+  let snapshot_id = 'latest'
 
   try {
     # Prepare working directory
