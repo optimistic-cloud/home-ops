@@ -10,7 +10,7 @@ def main [app: string = "vaultwarden"] {
     let source_dir = '/opt' | path join $app
     let export_dir = '/tmp' | path join $app export
     let run_id = (random uuid -v 4)
-    let hc_slug = $"($app)-backup"
+    let slug = $"($app)-backup"
     let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
     with-lockfile $app {
@@ -24,7 +24,7 @@ def main [app: string = "vaultwarden"] {
             $"($source_dir)/appdata/db.sqlite3" | export-sqlite $"($export_dir)/db.sqlite3" | ignore 
         }
 
-        with-healthcheck $run_id {
+        with-healthcheck $slug $run_id {
             let include = [
                 /opt/vaultwarden/.env
                 /opt/vaultwarden/appdata
