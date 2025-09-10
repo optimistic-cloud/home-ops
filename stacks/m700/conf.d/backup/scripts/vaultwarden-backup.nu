@@ -5,6 +5,7 @@ use with-restore.nu *
 
 use with-docker.nu *
 use sqlite-export.nu *
+use restic.nu *
 
 const app = "vaultwarden"
 
@@ -20,8 +21,7 @@ def main [] {
 }
 
 def "main restore" [] {
-  with-restore $app "test" {
+  with-restore $app {
     print $"Restoring ($app)"
   }
-  exit 1
 }
