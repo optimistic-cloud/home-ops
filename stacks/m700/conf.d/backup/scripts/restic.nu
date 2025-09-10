@@ -1,14 +1,16 @@
+def do_logging [command: string]: record -> nothing {
+  if $out.exit_code != 0 {
+    log error $"($command) failed with exit code ($out.exit_code) and message: \n($out.stderr)"
+  } else {
+    log debug $"($command) done successfully with message: \n($out.stdout)"
+  }
+}
+
 export def restic-check [subset: string] {
   log debug $"Start restic check command with subset of ($subset)"
 
   let out = ^restic check --read-data-subset $subset | complete
-
-  if $out.exit_code != 0 {
-    log error $"Check failed with exit code ($out.exit_code) and message: \n($out.stderr)"
-  } else {
-    log debug $"Check done successfully with message: \n($out.stdout)"
-  }
-
+  $out | do_logging
   $out
 }
 
@@ -42,12 +44,6 @@ export def restic-backup [includes: list<path>, excludes: list<string>, tags: li
   let tags_as_string = $tags | to-prefix-string "--tag"
 
   let out = ^restic backup ...($includes) $exclude_as_string --skip-if-unchanged --exclude-caches --one-file-system $tags_as_string | complete
-
-  if $out.exit_code != 0 {
-    log error $"Backup failed with exit code ($out.exit_code) and message: \n($out.stderr)"
-  } else {
-    log debug $"Backup done successfully with message: \n($out.stdout)"
-  }
-
+  $out | do_logging
   $out
 }
