@@ -10,7 +10,7 @@
 # │ │ │ │ │ │ │ ┌ Command
 # ┴ ┴ ┴ ┴ ┴ ┴ ┴ ┴
 # * * * * * * * printf '%s\n' 'Hello world!'
-@daily bar.sh backup vaultwarden ionos
+@hourly bar.sh backup vaultwarden ionos
 #@daily just --dotenv-filename .vaultwarden.env backup vaultwarden
 #@daily just --dotenv-filename .opengist.env backup opengist
 #@daily just --dotenv-filename .gitea.env backup gitea
