@@ -161,7 +161,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.youtrack.rule=Host(`youtrack.${DOMAIN}`)"
-      - "traefik.http.routers.youtrack.entrypoints=websecure"
+      - "traefik.http.routers.youtrack.entrypoints=https"
       - "traefik.http.routers.youtrack.tls.certresolver=letsencrypt"
       - "traefik.http.services.youtrack.loadbalancer.server.port=8080"
 
