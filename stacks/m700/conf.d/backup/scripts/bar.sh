@@ -4,8 +4,13 @@ help:
     just --list
 
 # Run restic backup
-backup app:
-    nu {{app}}.nu
+#backup app:
+#    nu {{app}}.nu
+
+[group('restic')]
+[doc('Backup application')]
+backup app provider:
+    source .env.{{app}}.{{provider}}; env
 
 # Run restic backup with debug logs
 backup-with-debug app $NU_LOG_LEVEL="debug":
