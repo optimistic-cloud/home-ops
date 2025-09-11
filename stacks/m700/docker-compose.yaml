@@ -144,8 +144,26 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.pocket-id.rule=Host(`id.${DOMAIN}`)"
       - "traefik.http.routers.pocket-id.entrypoints=https"
-      - "traefik.http.routers.pocket-id.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.pocket-id.tls.ap=letsencrypt"
       - "traefik.http.services.pocket-id.loadbalancer.server.port=1411"
+
+  youtrack:
+    image: jetbrains/youtrack:2025.2.94372
+    container_name: youtrack
+    restart: unless-stopped
+    volumes:
+      - ./youtrack/appdata/data:/opt/youtrack/data
+      - ./youtrack/appdata/conf:/opt/youtrack/conf
+      - ./youtrack/appdata/logs:/opt/youtrack/logs
+      - ./youtrack/appdata/backups:/opt/youtrack/backups
+    environment:
+      - YOUTRACK_JVM_OPTIONS=-Xmx2g
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.youtrack.rule=Host(`youtrack.${DOMAIN}`)"
+      - "traefik.http.routers.youtrack.entrypoints=websecure"
+      - "traefik.http.routers.youtrack.tls.certresolver=letsencrypt"
+      - "traefik.http.services.youtrack.loadbalancer.server.port=8080"
 
   backup:
     image: ghcr.io/optimistic-cloud/toolkit
