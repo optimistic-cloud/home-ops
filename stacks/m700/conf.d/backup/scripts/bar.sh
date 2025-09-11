@@ -12,7 +12,7 @@ help:
 backup app provider:
     #!/usr/bin/env sh
     set -euox pipefail
-    source .env.{{app}}.{{provider}} nu {{app}}.nu
+    source .env.{{app}}.{{provider}}; nu {{app}}.nu
 
 # Run restic backup with debug logs
 backup-with-debug app $NU_LOG_LEVEL="debug":
