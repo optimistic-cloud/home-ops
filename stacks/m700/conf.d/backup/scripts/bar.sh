@@ -10,11 +10,9 @@ help:
 [group('restic')]
 [doc('Backup application')]
 backup app provider:
-    #!/usr/bin/env bash
-    set -exuo pipefail
+    #!/usr/bin/env sh
     source .env.{{app}}.{{provider}}
-    ls -la .env.{{app}}.{{provider}}
-    env
+    nu {{app}}.nu
 
 # Run restic backup with debug logs
 backup-with-debug app $NU_LOG_LEVEL="debug":
