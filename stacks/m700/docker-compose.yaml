@@ -22,8 +22,11 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik/secrets/acme.json:/acme.json
-      - ./traefik/secrets/traefik.yml:/etc/traefik/traefik.yml:ro
+      #- ./traefik/secrets/acme.json:/acme.json
+      #- ./traefik/secrets/traefik.yml:/etc/traefik/traefik.yml:ro
+      - traefik-acme:/acme.json
+      - traefik-config:/etc/traefik/traefik.yml:ro
+
     labels:
       - "traefik.enable=true"
 
@@ -86,7 +89,8 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost/api/alive"]
       <<: *default-healthcheck
     volumes:
-      - ./vaultwarden/appdata:/data/
+      # - ./vaultwarden/appdata:/data/
+      - vaultwarden-data:/data/
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.${DOMAIN}`)"
@@ -126,8 +130,8 @@ services:
       # TODO: https://github.com/thomiceli/opengist/pull/490
 
     volumes:
-      - ./opengist/appdata:/opengist
-
+      # - ./opengist/appdata:/opengist
+      - opengist-data:/opengist
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.gist.rule=Host(`gist.${DOMAIN}`)"
@@ -178,8 +182,10 @@ services:
       GITEA__server__START_SSH_SERVER: false
       GITEA__server__DISABLE_SSH: true
     volumes:
-      - ./gitea/appdata/data:/var/lib/gitea
-      - ./gitea/appdata/config:/etc/gitea
+      - gitea-data:/var/lib/gitea
+      - gitea-config:/etc/gitea
+      # - ./gitea/appdata/data:/var/lib/gitea
+      # - ./gitea/appdata/config:/etc/gitea
       - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
@@ -234,8 +240,10 @@ services:
       ANALYTICS_DISABLED: true
 
     volumes:
-      - ./pocket-id/appdata:/app/data
-      - ./pocket-id/secrets/encfile:/app/secrets/pocket-id.encfile:ro
+      # - ./pocket-id/appdata:/app/data
+      # - ./pocket-id/secrets/encfile:/app/secrets/pocket-id.encfile:ro
+      - pocket-id-data:/app/data
+      - pocket-id-secrets:/app/secrets:ro
     healthcheck:
       test: [ "CMD", "/app/pocket-id", "healthcheck" ]
       <<: *default-healthcheck
@@ -251,10 +259,10 @@ services:
     container_name: youtrack
     restart: unless-stopped
     volumes:
-      - ./youtrack/appdata/data:/opt/youtrack/data
-      - ./youtrack/appdata/conf:/opt/youtrack/conf
-      - ./youtrack/appdata/logs:/opt/youtrack/logs
-      - ./youtrack/appdata/backups:/opt/youtrack/backups
+      - youtrack-data:/opt/youtrack/data
+      - youtrack-conf:/opt/youtrack/conf
+      - youtrack-logs:/opt/youtrack/logs
+      - youtrack-backups:/opt/youtrack/backups
     environment:
       - YOUTRACK_JVM_OPTIONS=-Xmx2g
     labels:
@@ -291,3 +299,17 @@ services:
       - ./gitea/:/opt/gitea/:ro
       - ./pocket-id/:/opt/pocket-id/:ro
       - ./traefik/:/opt/traefik/:ro
+
+volumes:
+  traefik-acme:
+  traefik-config:
+  vaultwarden-data:
+  opengist-data:
+  gitea-data:
+  gitea-config:
+  pocket-id-data:
+  pocket-id-secrets:
+  youtrack-data:
+  youtrack-conf:
+  youtrack-logs:
+  youtrack-backups:
