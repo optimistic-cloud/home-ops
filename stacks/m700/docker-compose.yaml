@@ -13,8 +13,10 @@ services:
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
       <<: *default-healthcheck
-    env_file:
-      - ./traefik/.env
+    environment:
+      TZ: Europe/Berlin
+
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
     ports:
       - "80:80"
       - "443:443"
@@ -66,8 +68,20 @@ services:
     container_name: vaultwarden
     restart: unless-stopped
     read_only: true
-    env_file:
-      - ./vaultwarden/.env
+    environment:
+      TZ: Europe/Berlin
+      
+      DOMAIN: https://vaultwarden.${DOMAIN}
+      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
+      SIGNUPS_ALLOWED: false
+      INVITATIONS_ALLOWED: false
+
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURITY: ${SMTP_SECURITY}
+      SMTP_USERNAME: ${VAULTWARDEN_SMTP_USERNAME}
+      SMTP_PASSWORD: ${VAULTWARDEN_SMTP_PASSWORD}
+      SMTP_FROM: ${VAULTWARDEN_SMTP_FROM}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/api/alive"]
       <<: *default-healthcheck
@@ -89,8 +103,28 @@ services:
     # ports:
     #   - "6157:6157" # HTTP port
     #   - "2222:2222" # SSH port, can be removed if you don't use SSH
-    env_file:
-      - ./opengist/.env
+    environment:
+      TZ: Europe/Berlin
+      # debug, info, warn, error, fatal
+      OG_LOG_LEVEL: info
+
+      UID: 1000
+      GID: 1000
+
+      OG_CUSTOM_NAME: Optimistic Cloud
+
+      OG_OIDC_CLIENT_KEY: ${OG_OIDC_CLIENT_KEY}
+      OG_OIDC_SECRET: ${OG_OIDC_SECRET}
+      OG_OIDC_ADMIN_GROUP: ${OG_OIDC_ADMIN_GROUP}
+
+      OG_EXTERNAL_URL: https://gist.${DOMAIN}
+      OG_SSH_GIT_ENABLED: false
+      OG_OIDC_PROVIDER_NAME: Optimistic Cloud
+      OG_OIDC_DISCOVERY_URL: https://id.${DOMAIN}/.well-known/openid-configuration
+      OG_OIDC_GROUP_CLAIM_NAME: groups
+      # TODO: request scopes missing in opengist https://github.com/thomiceli/opengist/issues/460
+      # TODO: https://github.com/thomiceli/opengist/pull/490
+
     volumes:
       - ./opengist/appdata:/opengist
 
@@ -107,8 +141,42 @@ services:
     restart: unless-stopped
     user: "1000:1000"
     #read_only: true
-    env_file:
-      - ./gitea/.env
+    environment:
+      TZ: Europe/Berlin
+
+      USER_UID: 1000
+      USER_GID: 1000
+
+      GITEA____APP_NAME: Optimistic Cloud
+
+      GITEA__mailer__ENABLED: true
+      GITEA__mailer__FROM: ${GITEA_MAILER_FROM}
+      GITEA__mailer__PROTOCOL: ${GITEA_MAILER_PROTOCOL}
+      GITEA__mailer__SMTP_ADDR: ${SMTP_HOST}
+      GITEA__mailer__SMTP_PORT: ${SMTP_PORT}
+      GITEA__mailer__USER: ${GITEA_MAILER_USER}
+      GITEA__mailer__PASSWD: ${GITEA_MAILER_PASSWD}
+
+      GITEA__server__ROOT_URL: https://git.${DOMAIN}
+      GITEA__server__DOMAIN: git.${DOMAIN}
+
+      GITEA__service__ENABLE_BASIC_AUTHENTICATION: false
+      GITEA__service__ENABLE_PASSWORD_SIGNIN_FORM: false
+      GITEA__service__DISABLE_REGISTRATION: false
+      GITEA__service__ALLOW_ONLY_EXTERNAL_REGISTRATION: true
+      GITEA__service__SHOW_REGISTRATION_BUTTON: false
+      GITEA__service__ENABLE_PASSKEY_AUTHENTICATION: false
+
+      GITEA__openid__ENABLE_OPENID_SIGNIN: false
+      GITEA__openid__ENABLE_OPENID_SIGNUP: false
+
+      GITEA__oauth2_client__UPDATE_AVATAR: true
+      GITEA__oauth2_client__USERNAME: preferred_username
+      GITEA__oauth2_client__OPENID_CONNECT_SCOPES: openid profile email
+      GITEA__oauth2_client__ACCOUNT_LINKING: login
+
+      GITEA__server__START_SSH_SERVER: false
+      GITEA__server__DISABLE_SSH: true
     volumes:
       - ./gitea/appdata/data:/var/lib/gitea
       - ./gitea/appdata/config:/etc/gitea
@@ -132,8 +200,39 @@ services:
     depends_on:
       traefik:
         condition: service_healthy
-    env_file:
-      - ./pocket-id/.env
+    environment:
+      TZ: Europe/Berlin
+
+      PUID: 1000
+      PGID: 1000
+
+      APP_NAME: Optimistic Cloud
+      APP_URL: https://id.${DOMAIN}
+
+      SESSION_DURATION: 480
+      UI_CONFIG_DISABLED: true
+
+      DB_PROVIDER: sqlite
+      DB_CONNECTION_STRING: file:/app/data/pocket-id.db?_pragma=journal_mode(WAL)&_pragma=busy_timeout(2500)&_txlock=immediate
+      TRUST_PROXY: true
+      MAXMIND_LICENSE_KEY:
+      KEYS_STORAGE: file
+      ENCRYPTION_KEY_FILE: /app/secrets/pocket-id.encfile
+
+      EMAIL_ONE_TIME_ACCESS_AS_UNAUTHENTICATED_ENABLED: true
+      EMAIL_LOGIN_NOTIFICATION_ENABLED: true
+      EMAILS_VERIFIED: true
+
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_FROM: ${POCKET_ID_SMTP_FROM}
+      SMTP_USER: ${POCKET_ID_SMTP_USER}
+      SMTP_PASSWORD: ${POCKET_ID_SMTP_PASSWORD}
+      SMTP_SKIP_CERT_VERIFY: false
+      SMTP_TLS: ${SMTP_SECURITY}
+
+      ANALYTICS_DISABLED: true
+
     volumes:
       - ./pocket-id/appdata:/app/data
       - ./pocket-id/secrets/encfile:/app/secrets/pocket-id.encfile:ro
