@@ -25,7 +25,7 @@ init app:
 [doc('Backup application')]
 backup app provider:
     # docker exec -it backup-toolkit just --dotenv-filename .env.{{app}}.{{provider}} backup {{app}}
-    bar.sh backup {{app}} {{provider}}
+    docker exec -it backup-toolkit bar.sh backup {{app}} {{provider}}
 
 
 [group('restic')]
