@@ -152,7 +152,7 @@ services:
     container_name: backup-toolkit
     restart: unless-stopped
     hostname: m700.optimistic.cloud
-    user: "root:root"
+    #user: "root:root"
     depends_on:
       - vaultwarden
       - opengist
