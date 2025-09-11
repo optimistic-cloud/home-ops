@@ -10,7 +10,9 @@ help:
 [group('restic')]
 [doc('Backup application')]
 backup app provider:
-    source .env.{{app}}.{{provider}}; env
+    #!/usr/bin/env sh
+    . .env.{{app}}.{{provider}}
+    env
 
 # Run restic backup with debug logs
 backup-with-debug app $NU_LOG_LEVEL="debug":
