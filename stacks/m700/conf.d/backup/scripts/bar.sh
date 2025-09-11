@@ -6,17 +6,17 @@ help:
 [group('restic')]
 [doc('Backup application')]
 backup app provider:
-    env $(cat .env.{{app}}.{{provider}} | xargs) nu {{app}}.nu
+    env $(cat {{app}}.{{provider}}.env | xargs) nu {{app}}.nu
 
 [group('restic')]
 [doc('Backup application with debug logs')]
 backup-with-debug app provider $NU_LOG_LEVEL="debug":
-    env $(cat .env.{{app}}.{{provider}} | xargs) nu {{app}}.nu
+    env $(cat {{app}}.{{provider}}.env | xargs) nu {{app}}.nu
 
 # Restore latest restic snapshot
 restore app provider:
-    env $(cat .env.{{app}}.{{provider}} | xargs) nu {{app}}.nu restore
+    env $(cat {{app}}.{{provider}}.env | xargs) nu {{app}}.nu restore
 
 # Restore latest restic snapshot with debug logs
 restore-with-debug app provider $NU_LOG_LEVEL="debug":
-    env $(cat .env.{{app}}.{{provider}} | xargs) nu {{app}}.nu restore
+    env $(cat {{app}}.{{provider}}.env | xargs) nu {{app}}.nu restore
