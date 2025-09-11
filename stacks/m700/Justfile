@@ -27,6 +27,11 @@ backup app provider:
     docker exec -it backup-toolkit just --dotenv-filename .env.{{app}}.{{provider}} backup {{app}}
 
 [group('restic')]
+[doc('Backup application')]
+test app provider:
+    docker exec -it backup-toolkit bar.sh backup {{app}}
+
+[group('restic')]
 [doc('Restore backup for an application')]
 restore app provider:
     exit 1
