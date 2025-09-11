@@ -1,4 +1,4 @@
-#!/usr/bin/env just --justfile
+#!/usr/bin/just --justfile
 
 help:
     just --list
