@@ -17,9 +17,9 @@ export def main [
   let exclude_file = $"($app).exclude.txt"
 
   try {
-    send_start $ping_url
-
     log debug $"Start backup of ($app)."
+
+    send_start $ping_url
     let git_commit = git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
 
     with-lockfile $app {
