@@ -10,7 +10,7 @@ help:
 [group('restic')]
 [doc('Backup application')]
 backup app provider:
-    #!/usr/bin/env sh
+    #!/usr/bin/env bash
     source .env.{{app}}.{{provider}}
     ls -la .env.{{app}}.{{provider}}
     env
