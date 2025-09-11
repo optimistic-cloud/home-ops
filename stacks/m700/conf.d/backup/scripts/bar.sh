@@ -11,6 +11,7 @@ help:
 [doc('Backup application')]
 backup app provider:
     #!/usr/bin/env sh
+    set -euox pipefail
     source .env.{{app}}.{{provider}}
     nu {{app}}.nu
 
