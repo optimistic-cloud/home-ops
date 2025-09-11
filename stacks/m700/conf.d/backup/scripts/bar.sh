@@ -11,7 +11,7 @@ help:
 [doc('Backup application')]
 backup app provider:
     #!/usr/bin/env sh
-    . .env.{{app}}.{{provider}}
+    source .env.{{app}}.{{provider}}
     env
 
 # Run restic backup with debug logs
