@@ -46,7 +46,7 @@ export def main [
   } catch {|err|
     log error $"($app) backup failed with message: ($err)"
     send_fail $ping_url
-    error make $err
+
     exit 1
   }
 
