@@ -195,6 +195,18 @@ services:
       - "traefik.http.routers.gitea.tls.certresolver=letsencrypt"
       - "traefik.http.services.gitea.loadbalancer.server.port=3000"
 
+  # Add init container to set permissions
+  pocket-id-init:
+    image: alpine
+    volumes:
+      - pocket-id-data:/app/data
+    command: |
+      sh -c "
+        chown -R 65532:65532 /app/data &&
+        chmod -R 700 /app/data
+      "
+    restart: "no"
+
   pocket-id:
     image: ghcr.io/pocket-id/pocket-id:v1.10.0-distroless
     container_name: pocket-id
@@ -305,12 +317,6 @@ volumes:
   gitea-data:
   gitea-config:
   pocket-id-data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind,uid=65532,gid=65532
-      device: /opt/docker/volumes/pocket-id-data
-
   youtrack-data:
   youtrack-conf:
   youtrack-logs:
