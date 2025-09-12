@@ -305,7 +305,12 @@ volumes:
   gitea-data:
   gitea-config:
   pocket-id-data:
-  pocket-id-secrets:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind,uid=65532,gid=65532
+      device: /opt/docker/volumes/pocket-id-data
+
   youtrack-data:
   youtrack-conf:
   youtrack-logs:
