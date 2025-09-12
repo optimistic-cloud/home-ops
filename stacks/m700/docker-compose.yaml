@@ -239,9 +239,8 @@ services:
 
     volumes:
       # - ./pocket-id/appdata:/app/data
-      # - ./pocket-id/secrets/encfile:/app/secrets/pocket-id.encfile:ro
       - pocket-id-data:/app/data
-      - pocket-id-secrets:/app/secrets:ro
+      - ./pocket-id.encfile:/app/secrets/pocket-id.encfile:ro
     healthcheck:
       test: [ "CMD", "/app/pocket-id", "healthcheck" ]
       <<: *default-healthcheck
