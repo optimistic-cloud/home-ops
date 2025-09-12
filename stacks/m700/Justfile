@@ -1,4 +1,5 @@
 alias u := update
+alias d := down
 
 help:
     just --list --list-submodules
