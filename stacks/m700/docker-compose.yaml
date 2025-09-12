@@ -286,16 +286,16 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       
-      - ./conf.d/backup/crontab:/etc/crontab
-      - ./conf.d/backup/scripts:/opt/conf.d/backup/scripts
+      # - ./conf.d/backup/crontab:/etc/crontab
+      # - ./conf.d/backup/scripts:/opt/conf.d/backup/scripts
 
-      - ./.env:/opt/.env
+      # - ./.env:/opt/.env
 
-      - ./vaultwarden/:/opt/vaultwarden/:ro
-      - ./opengist/:/opt/opengist/:ro
-      - ./gitea/:/opt/gitea/:ro
-      - ./pocket-id/:/opt/pocket-id/:ro
-      - ./traefik/:/opt/traefik/:ro
+      # - ./vaultwarden/:/opt/vaultwarden/:ro
+      # - ./opengist/:/opt/opengist/:ro
+      # - ./gitea/:/opt/gitea/:ro
+      # - ./pocket-id/:/opt/pocket-id/:ro
+      # - ./traefik/:/opt/traefik/:ro
 
 volumes:
   traefik-acme:
