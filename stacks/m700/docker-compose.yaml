@@ -200,7 +200,7 @@ services:
     container_name: pocket-id
     restart: unless-stopped
     #user: "1000:1000"
-    read_only: true
+    #read_only: true
     depends_on:
       traefik:
         condition: service_healthy
