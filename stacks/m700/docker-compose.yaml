@@ -274,6 +274,9 @@ services:
       - youtrack-backups:/opt/youtrack/backups
     environment:
       - YOUTRACK_JVM_OPTIONS=-Xmx2g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      <<: *default-healthcheck
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.youtrack.rule=Host(`youtrack.${DOMAIN}`)"
