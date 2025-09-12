@@ -1,5 +1,12 @@
+alias u := update
+
 help:
     just --list --list-submodules
+
+[group('docker')]
+[doc('Update the stack')]
+update: down && up
+    git pull origin main
 
 [group('docker')]
 [doc('Start the stack')]
