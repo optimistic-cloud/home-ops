@@ -22,10 +22,8 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      #- ./traefik/secrets/acme.json:/acme.json
-      #- ./traefik/secrets/traefik.yml:/etc/traefik/traefik.yml:ro
-      - traefik-acme:/acme.json
-      - traefik-config:/etc/traefik/traefik.yml:ro
+      - ./acme.json:/acme.json
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
 
     labels:
       - "traefik.enable=true"
