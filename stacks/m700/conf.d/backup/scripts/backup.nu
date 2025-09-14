@@ -73,7 +73,7 @@ def main [--provider: string] {
 
                 # Run backup with ping
                 with-ping $slug $run_id {
-                    (
+                    let out = (
                         ^docker run --rm -ti
                             --env-file $"($provider).env"
                             --env-file $"($app).env"
@@ -89,7 +89,8 @@ def main [--provider: string] {
                                     --exclude-caches
                                     --one-file-system
                                     --tag=test
-                    )
+                    ) | complete
+                    print $out
                 }
 
                 # Run check with ping
