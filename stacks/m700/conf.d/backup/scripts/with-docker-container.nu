@@ -6,7 +6,7 @@ def run_docker_container_command [command: string, container_name: string] {
     let out = ^docker container $command $container_name | complete
     $out | do_logging_for $"Docker container ($command)"
   } catch {|err|
-    log error $"Error: $(err)"
+    log error $"Error: ($err)"
     error make $err
   }
 }
@@ -20,7 +20,7 @@ def assert_docker_container_action [expected: string] {
 
 def stop_container []: string -> nothing {
   let container_name = $in
-  log debug $"Stop docker container ($container_name)"
+  log info $"Stop docker container ($container_name)"
 
   run_docker_container_command 'stop' $container_name
   $container_name | assert_docker_container_action "exited"
