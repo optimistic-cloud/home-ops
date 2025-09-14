@@ -36,6 +36,7 @@ def start_container []: string -> nothing {
 }
 
 export def main [--container_name: string, operation: closure] {
+  print $"Stopping docker container... ($container_name)"
   $container_name | stop_container
 
   try {
