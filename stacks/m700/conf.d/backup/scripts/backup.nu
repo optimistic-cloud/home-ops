@@ -75,7 +75,7 @@ def main [--provider: string] {
 
                 # Run backup with ping
                 with-ping $slug $run_id {
-                    let out = (
+                    (
                         ^docker run --rm -ti
                             --env-file $"($provider).env"
                             --env-file $"($app).env"
@@ -92,7 +92,6 @@ def main [--provider: string] {
                                     --one-file-system
                                     --tag=test
                     ) | complete
-                    print $out
                 }
 
                 # Run check with ping
@@ -103,7 +102,7 @@ def main [--provider: string] {
                             --env-file $"($app).env"
                             -v $"./($app).include.txt:/etc/restic/include.txt"
                             -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
-                            -v vaultwarden-data:/data:ro
+                            -v "vaultwarden-data:/data:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             restic/restic --json --quiet backup
                                     --files-from /etc/restic/include.txt
@@ -112,7 +111,7 @@ def main [--provider: string] {
                                     --exclude-caches
                                     --one-file-system
                                     --tag=test
-                    )
+                    ) | complete
                 }
             }
         }
