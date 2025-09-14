@@ -4,19 +4,6 @@ use with-healthcheck.nu *
 use sqlite-export.nu *
 use with-docker-container.nu *
 
-def export-sqlite-database []: string -> nothing {
-    let export_config = {
-        src_volume: 'vaultwarden-data',
-        dest_volume: $in,
-        src_db: ('/data' | path join 'db.sqlite3'),
-        dest_db: ('/export' | path join 'db.sqlite3'),
-    }
-
-    #let src_db_in_container = '/data' | path join 'db.sqlite3'
-    #let dest_db_in_container = '/export' | path join 'db.sqlite3'
-
-    $export_config | abc
-}
 
 def backup [provider: string, slug: string, run_id: string] {
     #-v ./vw-backup/db.sqlite3:/export/db.sqlite3 ??? working dir
@@ -61,24 +48,70 @@ def main [app = "vaultwarden", --provider: string] {
 
     with-healthcheck $slug $run_id {
 
-        let export_dir = '/tmp' | path join $app export
-
         with-docker-container --container_name $app {
+            
             with-docker-volume --volume_name vaultwarden-data-export {
 
-                print "====> Starting backup for $app <====="
-                let dv = $in
-                log info $"Exporting database to volume: ($dv)"
-                print "===================================="
-
                 # Export sqlite database
-                $in | export-sqlite-database 
+                let export_config = {
+                    src_volume: 'vaultwarden-data',
+                    dest_volume: $in,
+                    src_db: ('/data' | path join 'db.sqlite3'),
+                    dest_db: ('/export' | path join 'db.sqlite3'),
+                }
+                (
+                    ^docker run --rm 
+                        -v ($in.src_volume):/data:ro 
+                        -v ($in.dest_volume):/export:rw 
+                        alpine/sqlite ($in.src_db) $".backup '($in.dest_db)'"
+                )
+                (
+                    ^docker run --rm 
+                        -v ($in.dest_volume):/export:rw 
+                        alpine/sqlite $'($in.dest_db)' "PRAGMA integrity_check;"
+                )
 
-                # Run backup
-                #backup $provider $slug $run_id
+                # Run backup with ping
+                with-ping $slug $run_id {
+                    (
+                        ^docker run --rm -ti
+                            --env-file $"($provider).env"
+                            --env-file $"($app).env"
+                            -v $"./($app).include.txt:/etc/restic/include.txt"
+                            -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
+                            -v vaultwarden-data:/data:ro
+                            -v vaultwarden-data-export:/export:ro
+                            -v $env.HOME/.cache/restic:/root/.cache/restic
+                            restic/restic --json --quiet backup
+                                    --files-from /etc/restic/include.txt
+                                    --exclude-file /etc/restic/exclude.txt
+                                    --skip-if-unchanged
+                                    --exclude-caches
+                                    --one-file-system
+                                    --tag=test
+                    )
+                }
 
-                # Run check
-                #check $provider $slug $run_id
+                # Run check with ping
+                with-ping $slug $run_id {
+                    (
+                        ^docker run --rm -ti
+                            --env-file $"($provider).env"
+                            --env-file "vaultwarden.env"
+                            -v ./vaultwarden.include.txt:/etc/restic/include.txt
+                            -v ./vaultwarden.exclude.txt:/etc/restic/exclude.txt
+                            -v vaultwarden-data:/data:ro
+                            -v $env.HOME/.cache/restic:/root/.cache/restic
+                            -e TZ=Europe/Berlin
+                            restic/restic --json --quiet backup
+                                    --files-from /etc/restic/include.txt
+                                    --exclude-file /etc/restic/exclude.txt
+                                    --skip-if-unchanged
+                                    --exclude-caches
+                                    --one-file-system
+                                    --tag=test
+                    )
+                }
             }
         }
     }
