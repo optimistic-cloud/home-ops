@@ -25,7 +25,7 @@ export def abc [dest_db: path]: path -> nothing {
 
 
         let integrity = (sqlite3 $"($dest_db)" "PRAGMA integrity_check;")
-        if $out. != "ok" {
+        if $out1 != "ok" {
             error make {msg: $"Export database file ($dest_db) is corrupt."}
         }
         
