@@ -91,7 +91,7 @@ def main [--provider: string] {
                                     --exclude-caches
                                     --one-file-system
                                     --tag=test
-                    ) 
+                    ) | complete
                 }
 
                 # Run check with ping

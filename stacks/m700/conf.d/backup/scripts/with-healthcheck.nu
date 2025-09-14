@@ -40,13 +40,12 @@ export def with-ping [slug: string, run_id: string, operation: closure] {
 
   let url = $url | to_url ($out.exit_code | into string)
 
-  $out | from json | to json --indent 2 | do_post $url
 
-  #if $out.exit_code != 0 {
-  #    $out.stderr | do_post $url
-  #} else {
-  #    $out.stdout | do_post $url
-  #}
+  if $out.exit_code != 0 {
+      $out.stderr | from json | to json --indent 2 | do_post $url
+  } else {
+      $out.stdout | from json | to json --indent 2 | do_post $url
+  }
 }
 
 export def main [slug: string, run_id: string, operation: closure] {
