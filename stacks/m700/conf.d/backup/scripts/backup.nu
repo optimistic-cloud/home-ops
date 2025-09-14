@@ -47,10 +47,9 @@ def check [provider: string, slug: string, run_id: string] {
     }
 }
 
-const app = "vaultwarden"
-def main [--provider: string] {
-    const slug = $"($app)-backup"
-    const run_id = (random uuid -v 4)
+def main [app = "vaultwarden", --provider: string] {
+    let slug = $"($app)-backup"
+    let run_id = (random uuid -v 4)
 
     with-healthcheck $slug $run_id {
 
