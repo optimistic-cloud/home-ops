@@ -5,7 +5,6 @@ def run_docker_container_command [command: string, container_name: string] {
   try {
     let out = ^docker container $command $container_name | complete
     $out | do_logging_for $"Docker container ($command)"
-    ignore
   } catch {|err|
     log error $"Error: $(err)"
     error make $err
