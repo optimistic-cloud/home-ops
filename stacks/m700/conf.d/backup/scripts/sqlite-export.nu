@@ -1,6 +1,6 @@
 use utils.nu *
 
-export def "sqlite export2" [docker_volume: string, dest_db: path]: path -> nothing {
+export def abc [docker_volume: string, dest_db: path]: path -> nothing {
     print "Starting SQLite database export from Docker volume..."
     let src_db = $in
     
@@ -22,9 +22,9 @@ export def "sqlite export2" [docker_volume: string, dest_db: path]: path -> noth
         if $integrity != "ok" {
             error make {msg: $"Export database file ($dest_db) is corrupt."}
         }
-        docker volume rm vaultwarden-data-backup
+        docker volume rm vaultwarden-data-export
     } catch {|err|
-        docker volume rm vaultwarden-data-backup
+        docker volume rm vaultwarden-data-export
         log error $"Error: ($err)"
         error make $err
     }
