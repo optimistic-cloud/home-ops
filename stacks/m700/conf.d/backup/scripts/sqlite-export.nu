@@ -4,9 +4,9 @@ export def abc [dest_db: path]: path -> nothing {
     print "Starting SQLite database export from Docker volume..."
     let src_db = $in
 
-    try {
-        ^docker volume create vaultwarden-data-export
-        ^docker volume ls | print
+    #try {
+        #^docker volume create vaultwarden-data-export
+        #^docker volume ls | print
         (
             ^docker run --rm
                 -v vaultwarden-data:/data:ro
@@ -33,12 +33,12 @@ export def abc [dest_db: path]: path -> nothing {
         $out1 | do_logging_for "SQLite database export"
         
         
-        docker volume rm vaultwarden-data-export
-    } catch {|err|
-        docker volume rm vaultwarden-data-export
-        log error $"Error: ($err)"
-        error make $err
-    }
+        #docker volume rm vaultwarden-data-export
+    #} catch {|err|
+    #    docker volume rm vaultwarden-data-export
+    #    log error $"Error: ($err)"
+    #    error make $err
+    #}
 }
 
 export def "sqlite export" [target: path]: string -> path {
