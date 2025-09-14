@@ -47,7 +47,7 @@ def check [provider: string, slug: string, run_id: string] {
     }
 }
 
-def main [app: string = "vaultwarden", --provider: string] {
+def main [const app: string = "vaultwarden", --provider: string] {
     const slug = $"($app)-backup"
     const run_id = (random uuid -v 4)
 
