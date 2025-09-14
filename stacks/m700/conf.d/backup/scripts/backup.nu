@@ -59,8 +59,10 @@ def main [app = "vaultwarden", --provider: string] {
         with-docker-container --container_name $app {
             with-docker-volume --volume_name vaultwarden-data-export {
 
+                print "====> Starting backup for $app <====="
                 let dv = $in
                 log info $"Exporting database to volume: ($dv)"
+                print "===================================="
 
                 # Export sqlite database
                 export-sqlite-database 
