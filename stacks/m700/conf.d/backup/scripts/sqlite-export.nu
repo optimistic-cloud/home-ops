@@ -7,7 +7,9 @@ export def abc []: record -> nothing {
     ^docker run --rm -v ($in.src_volume):/data:ro -v ($in.dest_volume):/export:rw alpine ls -la /
     ^docker run --rm -v ($in.dest_volume):/export:rw alpine ls -la /export | print
     ^docker run --rm -v ($in.dest_volume):/export:rw alpine/sqlite $'($in.dest_db)' "PRAGMA integrity_check;"
-
+    ^docker run --rm -v ($in.dest_volume):/export:rw alpine rm -rf $"/export/($in.dest_db)"
+    ^docker run --rm -v ($in.dest_volume):/export:rw alpine echo "ascsacsasa" > $"/export/($in.dest_db)"
+    ^docker run --rm -v ($in.dest_volume):/export:rw alpine/sqlite $'($in.dest_db)' "PRAGMA integrity_check;"
     #try {
         #^docker volume create vaultwarden-data-export
         #^docker volume ls | print
