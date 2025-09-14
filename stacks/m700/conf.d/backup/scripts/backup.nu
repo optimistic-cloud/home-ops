@@ -57,15 +57,15 @@ def main [app = "vaultwarden", --provider: string] {
         let export_dir = '/tmp' | path join $app export
 
         with-docker-container --container_name $app {
-
+            print "test"
             # Export sqlite database
-            export-sqlite-database 
+            #export-sqlite-database 
 
             # Run backup
-            backup $provider $slug $run_id
+            #backup $provider $slug $run_id
 
             # Run check
-            check $provider $slug $run_id
+            #check $provider $slug $run_id
         }
     }
 }
