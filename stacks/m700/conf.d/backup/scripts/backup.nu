@@ -6,7 +6,7 @@ use with-docker-container.nu *
 
 def export-sqlite-database [] {
     let src_db_in_container = '/data' | path join 'db.sqlite3'
-    let dest_db_in_container = '/data/export' | path join 'db.sqlite3'
+    let dest_db_in_container = '/export' | path join 'db.sqlite3'
 
     src_db_in_container | sqlite export2 "vaultwarden-data" $dest_db_in_container
 }

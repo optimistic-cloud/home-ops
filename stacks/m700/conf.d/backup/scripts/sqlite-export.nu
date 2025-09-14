@@ -1,25 +1,30 @@
 use utils.nu *
 
 export def "sqlite export2" [docker_volume: string, dest_db: path]: path -> nothing {
-    print "test2"
     let src_db = $in
+    
+    try {
+        docker volume create vaultwarden-data-export
 
-    let out = (
-        #^docker run --rm
-        #    --user "1000:1000"
-        #    -v ($docker_volume):/data:ro
-        #    -e TZ=Europe/Berlin
-        #    alpine/sqlite $src_db ".backup '$dest_db'"
+        let out = (
+            ^docker run --rm
+                -v vaultwarden-data:/data:ro
+                -v vaultwarden-data-export:/export:rw
+                alpine/sqlite $src_db ".backup '$dest_db'"
+        ) | complete
 
-        cat vaultwarden.include.txt | complete
+        print $"test3 ($out)"
+        $out | do_logging_for "SQLite database export"
 
-    )
-    print $"test3 ($out)"
-    $out | do_logging_for "SQLite database export"
-
-    let integrity = (sqlite3 $"($dest_db)" "PRAGMA integrity_check;")
-    if $integrity != "ok" {
-        error make {msg: $"Export database file ($dest_db) is corrupt."}
+        let integrity = (sqlite3 $"($dest_db)" "PRAGMA integrity_check;")
+        if $integrity != "ok" {
+            error make {msg: $"Export database file ($dest_db) is corrupt."}
+        }
+        docker volume rm vaultwarden-data-backup
+    } catch {|err|
+        docker volume rm vaultwarden-data-backup
+        log error $"Error: ($err)"
+        error make $err
     }
 }
 
