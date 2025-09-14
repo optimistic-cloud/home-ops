@@ -16,7 +16,6 @@ export def "sqlite export2" [docker_volume: string, dest_db: path]: path -> noth
     if $integrity != "ok" {
         error make {msg: $"Export database file ($dest_db) is corrupt."}
     }
-    $dest_db
 }
 
 export def "sqlite export" [target: path]: string -> path {
