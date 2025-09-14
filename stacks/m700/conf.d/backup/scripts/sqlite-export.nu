@@ -5,23 +5,28 @@ export def abc [dest_db: path]: path -> nothing {
     let src_db = $in
 
     try {
-        print "1"
         ^docker volume create vaultwarden-data-export
-        print "2"
-        let out = (
+        (
             ^docker run --rm
                 -v vaultwarden-data:/data:ro
                 -v vaultwarden-data-export:/export:rw
                 alpine/sqlite $src_db ".backup '$dest_db'"
-        ) | complete
-        print "3"
-        print $"test3 ($out)"
-        $out | do_logging_for "SQLite database export"
+        )
+
+
+        let out = ^docker run --rm -v vaultwarden-data-export:/export:ro alpine/sqlite $"($dest_db)" "PRAGMA integrity_check;" | complete
+
+        print $"Integrity check result: ($out)"
+
 
         let integrity = (sqlite3 $"($dest_db)" "PRAGMA integrity_check;")
-        if $integrity != "ok" {
+        if $out. != "ok" {
             error make {msg: $"Export database file ($dest_db) is corrupt."}
         }
+        
+        $out | do_logging_for "SQLite database export"
+        
+        
         docker volume rm vaultwarden-data-export
     } catch {|err|
         docker volume rm vaultwarden-data-export
