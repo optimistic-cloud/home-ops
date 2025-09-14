@@ -4,9 +4,10 @@ export def abc [dest_db: path]: path -> nothing {
     print "Starting SQLite database export from Docker volume..."
     let src_db = $in
 
-
+    ^docker volume create vaultwarden-data-export
     ^docker run --rm -v vaultwarden-data:/data:ro -v vaultwarden-data-export:/export:rw alpine/sqlite /data/db.sqlite3 ".backup '/export/db.sqlite3'"
     ^docker run --rm -v vaultwarden-data-export:/export:ro alpine ls -la /export
+    ^docker volume rm vaultwarden-data-export
     #try {
         #^docker volume create vaultwarden-data-export
         #^docker volume ls | print
