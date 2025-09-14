@@ -19,8 +19,8 @@ def backup [provider: string, slug: string, run_id: string] {
             ^docker run --rm -ti
                 --env-file $"($provider).env"
                 --env-file "vaultwarden.env"
-                -v ./$"($app).include.txt":/etc/restic/include.txt
-                -v ./$"($app).exclude.txt":/etc/restic/exclude.txt
+                -v ./vaultwarden.include.txt:/etc/restic/include.txt
+                -v ./vaultwarden.exclude.txt:/etc/restic/exclude.txt
                 -v vaultwarden-data:/data:ro
                 -v $HOME/.cache/restic:/root/.cache/restic
                 -e TZ=Europe/Berlin
