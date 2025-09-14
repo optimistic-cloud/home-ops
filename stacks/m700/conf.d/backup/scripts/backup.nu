@@ -41,8 +41,8 @@ def check [provider: string, slug: string, run_id: string] {
         )
     }
 }
-
-def main [app = "vaultwarden", --provider: string] {
+const app = "vaultwarden"
+def main [--provider: string] {
     let slug = $"($app)-backup"
     let run_id = (random uuid -v 4)
 
@@ -97,7 +97,7 @@ def main [app = "vaultwarden", --provider: string] {
                     (
                         ^docker run --rm -ti
                             --env-file $"($provider).env"
-                            --env-file "vaultwarden.env"
+                            --env-file $"($app).env"
                             -v $"./($app).include.txt:/etc/restic/include.txt"
                             -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
                             -v vaultwarden-data:/data:ro
