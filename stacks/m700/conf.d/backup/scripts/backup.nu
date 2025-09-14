@@ -71,8 +71,6 @@ def main [--provider: string] {
                         alpine/sqlite $'($export_config.dest_db)' "PRAGMA integrity_check;"
                 )
 
-                print $"($provider).env" $"($app).env" $"./($app).include.txt:/etc/restic/include.txt" $"./($app).exclude.txt:/etc/restic/exclude.txt"
-
                 # Run backup with ping
                 with-ping $slug $run_id {
                     (
