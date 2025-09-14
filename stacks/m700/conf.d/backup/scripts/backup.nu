@@ -22,7 +22,7 @@ def backup [provider: string, slug: string, run_id: string] {
                 -v ./vaultwarden.include.txt:/etc/restic/include.txt
                 -v ./vaultwarden.exclude.txt:/etc/restic/exclude.txt
                 -v vaultwarden-data:/data:ro
-                -v $HOME/.cache/restic:/root/.cache/restic
+                -v $env.HOME/.cache/restic:/root/.cache/restic
                 -e TZ=Europe/Berlin
                 restic/restic --json --quiet backup
                         --files-from /etc/restic/include.txt
