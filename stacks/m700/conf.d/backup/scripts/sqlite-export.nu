@@ -1,11 +1,12 @@
 use utils.nu *
 
-export def abc [docker_volume: string, dest_db: path]: path -> nothing {
+export def abc [] {
     print "Starting SQLite database export from Docker volume..."
     let src_db = $in
   
     print $"Source DB: ($src_db)"
     print $"Destination DB: ($dest_db)"
+
     # try {
     #     print "1"
     #     ^docker volume create vaultwarden-data-export
