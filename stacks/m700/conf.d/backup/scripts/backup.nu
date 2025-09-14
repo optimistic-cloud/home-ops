@@ -57,15 +57,20 @@ def main [app = "vaultwarden", --provider: string] {
         let export_dir = '/tmp' | path join $app export
 
         with-docker-container --container_name $app {
-            print "test"
-            # Export sqlite database
-            export-sqlite-database 
+            with-docker-volume --volume_name vaultwarden-data-export {
 
-            # Run backup
-            #backup $provider $slug $run_id
+                let dv = $in
+                log info $"Exporting database to volume: ($dv)"
 
-            # Run check
-            #check $provider $slug $run_id
+                # Export sqlite database
+                export-sqlite-database 
+
+                # Run backup
+                #backup $provider $slug $run_id
+
+                # Run check
+                #check $provider $slug $run_id
+            }
         }
     }
 }

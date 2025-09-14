@@ -34,6 +34,21 @@ def start_container []: string -> nothing {
   $container_name | assert_docker_container_action "running"
 }
 
+export def with-docker-volume [--volume_name: string, operation: closure] {
+  print $"Creating temporary docker volume... ($volume_name)"
+  let volume_name = $volume_name
+
+  try {
+      ^docker volume create $volume_name
+      $volume_name | do $operation
+      ^docker volume rm $volume_name
+  } catch {|err|
+      ^docker volume rm $volume_name
+      log error $"Error: ($err)"
+      error make $err
+  }
+}
+
 export def main [--container_name: string, operation: closure] {
   print $"Stopping docker container... ($container_name)"
   $container_name | stop_container
