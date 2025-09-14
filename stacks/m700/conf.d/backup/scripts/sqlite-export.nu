@@ -6,7 +6,6 @@ export def abc [dest_db: path]: path -> nothing {
 
     ^docker run --rm -v vaultwarden-data:/data:ro -v vaultwarden-data-export:/export:rw alpine/sqlite /data/db.sqlite3 ".backup '/export/db.sqlite3'"
     ^docker run --rm -v vaultwarden-data-export:/export:rw alpine/sqlite '/export/corrupted.sqlite3' "PRAGMA integrity_check;"
-    ^docker volume rm vaultwarden-data-export
 
 
     #try {
