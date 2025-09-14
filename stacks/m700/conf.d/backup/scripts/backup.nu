@@ -8,8 +8,8 @@ def export-sqlite-database []: string -> nothing {
     let export_config = {
         src_volume: 'vaultwarden-data',
         dest_volume: $in,
-        src_path: '/data' | path join 'db.sqlite3',
-        db_path: '/export' | path join 'db.sqlite3',
+        src_path: ('/data' | path join 'db.sqlite3'),
+        db_path: ('/export' | path join 'db.sqlite3'),
     }
 
     #let src_db_in_container = '/data' | path join 'db.sqlite3'
