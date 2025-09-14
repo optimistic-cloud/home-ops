@@ -10,8 +10,8 @@ def export-sqlite-database []: string -> nothing {
     src_db_in_container | sqlite export2 $dest_db_in_container
 }
 
-def backup [--provider: string, --slug: string] {
-    with-ping --slug $slug {
+def backup [--provider: string, --slug: string, --run_id: string] {
+    with-ping --slug $slug $run_id {
         (
             ^docker run --rm -ti
                 --env-file $"($provider).env"
@@ -33,8 +33,8 @@ def backup [--provider: string, --slug: string] {
     }
 }
 
-def check [--provider: string, --slug: string] {
-    with-ping --slug $slug {
+def check [--provider: string, --slug: string, --run_id: string] {
+    with-ping --slug $slug $run_id {
         (
             ^docker run --rm -ti
                 --env-file $"($provider).env"
@@ -47,8 +47,9 @@ def check [--provider: string, --slug: string] {
 
 def main [app: string = "vaultwarden", --provider: string] {
     const slug = $"($app)-backup"
+    const run_id = (random uuid -v 4)
 
-    with-healthcheck --slug $slug {
+    with-healthcheck --slug $slug $run_id {
 
         let export_dir = '/tmp' | path join $app export
 

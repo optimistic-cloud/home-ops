@@ -20,7 +20,7 @@ export def send_fail [url: record] {
   $url | to_url 'fail' | do_get
 }
 
-def configure-ping-url [slug: string, run_id: string = (random uuid -v 4)] {
+def configure-ping-url [slug: string, run_id: string] {
   {
     "scheme": "https",
     "host": "hc-ping.com",
