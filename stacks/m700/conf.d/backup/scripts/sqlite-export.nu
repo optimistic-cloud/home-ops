@@ -9,8 +9,8 @@ export def "sqlite export2" [docker_volume: string, dest_db: path]: path -> noth
             --user "1000:1000"
             -v ($docker_volume):/data:ro
             -e TZ=Europe/Berlin
-            alpine/sqlite $src_db ".backup '$dest_db'" | complete
-    )
+            alpine/sqlite $src_db ".backup '$dest_db'"
+    ) | complete
     print $"test3 ($out)"
     $out | do_logging_for "SQLite database export"
 
