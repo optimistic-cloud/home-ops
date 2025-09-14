@@ -59,7 +59,7 @@ def main [app = "vaultwarden", --provider: string] {
         with-docker-container --container_name $app {
             print "test"
             # Export sqlite database
-            #export-sqlite-database 
+            export-sqlite-database 
 
             # Run backup
             #backup $provider $slug $run_id
