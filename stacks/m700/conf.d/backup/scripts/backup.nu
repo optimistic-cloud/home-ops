@@ -13,7 +13,7 @@ def export-sqlite-database [] {
     print $"Destination DB: ($dest_db_in_container)"
 
     #src_db_in_container | abc "vaultwarden-data" $dest_db_in_container
-    abc
+    src_db_in_container | abc
 }
 
 def backup [provider: string, slug: string, run_id: string] {

@@ -1,10 +1,10 @@
 use utils.nu *
 
-export def abc [] {
+export def abc []: path -> nothing {
     print "Starting SQLite database export from Docker volume..."
-    #et src_db = $in
+    let src_db = $in
   
-    #print $"Source DB: ($src_db)"
+    print $"Source DB: ($src_db)"
     #print $"Destination DB: ($dest_db)"
 
     # try {
