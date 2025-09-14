@@ -6,6 +6,7 @@ export def abc [dest_db: path]: path -> nothing {
 
     try {
         ^docker volume create vaultwarden-data-export
+        ^docker volume ls | print
         (
             ^docker run --rm
                 -v vaultwarden-data:/data:ro
