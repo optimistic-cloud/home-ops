@@ -29,7 +29,7 @@ export def abc [dest_db: path]: path -> nothing {
             error make {msg: $"Export database file ($dest_db) is corrupt."}
         }
         
-        $out | do_logging_for "SQLite database export"
+        $out1 | do_logging_for "SQLite database export"
         
         
         docker volume rm vaultwarden-data-export
