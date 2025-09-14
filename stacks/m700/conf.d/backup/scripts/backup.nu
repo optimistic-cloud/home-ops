@@ -71,6 +71,8 @@ def main [--provider: string] {
                         alpine/sqlite $'($export_config.dest_db)' "PRAGMA integrity_check;"
                 )
 
+                print $"($provider).env" $"($app).env" $"./($app).include.txt:/etc/restic/include.txt" $"./($app).exclude.txt:/etc/restic/exclude.txt"
+
                 # Run backup with ping
                 with-ping $slug $run_id {
                     let out = (
@@ -79,8 +81,8 @@ def main [--provider: string] {
                             --env-file $"($app).env"
                             -v $"./($app).include.txt:/etc/restic/include.txt"
                             -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
-                            -v vaultwarden-data:/data:ro
-                            -v vaultwarden-data-export:/export:ro
+                            -v "vaultwarden-data:/data:ro"
+                            -v "vaultwarden-data-export:/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             restic/restic --json --quiet backup
                                     --files-from /etc/restic/include.txt
