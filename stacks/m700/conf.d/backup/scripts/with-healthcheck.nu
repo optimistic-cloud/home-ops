@@ -55,7 +55,7 @@ export def main [slug: string, run_id: string, operation: closure] {
   try {
     let out = do $operation
   } catch {|err|
-      log error $"Error: $(err)"
+      log error $"Error: ($err)"
       send_fail $url
   }
 }
