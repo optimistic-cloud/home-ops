@@ -72,7 +72,7 @@ def main [app = "vaultwarden", --provider: string] {
                 print "===================================="
 
                 # Export sqlite database
-                export-sqlite-database 
+                $in | export-sqlite-database 
 
                 # Run backup
                 #backup $provider $slug $run_id
