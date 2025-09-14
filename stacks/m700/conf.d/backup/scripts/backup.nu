@@ -61,14 +61,14 @@ def main [app = "vaultwarden", --provider: string] {
                 }
                 (
                     ^docker run --rm 
-                        -v $"($in.src_volume):/data:ro"
-                        -v $"($in.dest_volume):/export:rw"
-                        alpine/sqlite ($in.src_db) $".backup '($in.dest_db)'"
+                        -v $"($export_config.src_volume):/data:ro"
+                        -v $"($export_config.dest_volume):/export:rw"
+                        alpine/sqlite $'($export_config.src_db)' $".backup '($export_config.dest_db)'"
                 )
                 (
                     ^docker run --rm 
-                        -v ($in.dest_volume):/export:rw 
-                        alpine/sqlite $'($in.dest_db)' "PRAGMA integrity_check;"
+                        -v $"($export_config.dest_volume):/export:rw"
+                        alpine/sqlite $'($export_config.dest_db)' "PRAGMA integrity_check;"
                 )
 
                 # Run backup with ping
