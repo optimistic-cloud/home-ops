@@ -59,17 +59,17 @@ def main [--provider: string] {
                     src_db: ('/data' | path join 'db.sqlite3'),
                     dest_db: ('/export' | path join 'db.sqlite3'),
                 }
-                (
-                    ^docker run --rm 
-                        -v $"($export_config.src_volume):/data:ro"
-                        -v $"($export_config.dest_volume):/export:rw"
-                        alpine/sqlite $'($export_config.src_db)' $".backup '($export_config.dest_db)'"
-                )
-                (
-                    ^docker run --rm 
-                        -v $"($export_config.dest_volume):/export:rw"
-                        alpine/sqlite $'($export_config.dest_db)' "PRAGMA integrity_check;"
-                )
+                # (
+                #     ^docker run --rm 
+                #         -v $"($export_config.src_volume):/data:ro"
+                #         -v $"($export_config.dest_volume):/export:rw"
+                #         alpine/sqlite $'($export_config.src_db)' $".backup '($export_config.dest_db)'"
+                # )
+                # (
+                #     ^docker run --rm 
+                #         -v $"($export_config.dest_volume):/export:rw"
+                #         alpine/sqlite $'($export_config.dest_db)' "PRAGMA integrity_check;"
+                # )
 
                 print $"($provider).env" $"($app).env" $"./($app).include.txt:/etc/restic/include.txt" $"./($app).exclude.txt:/etc/restic/exclude.txt"
 
