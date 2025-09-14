@@ -49,7 +49,7 @@ def main [app = "vaultwarden", --provider: string] {
     with-healthcheck $slug $run_id {
 
         with-docker-container --container_name $app {
-            
+
             with-docker-volume --volume_name vaultwarden-data-export {
 
                 # Export sqlite database
@@ -61,8 +61,8 @@ def main [app = "vaultwarden", --provider: string] {
                 }
                 (
                     ^docker run --rm 
-                        -v ($in.src_volume):/data:ro 
-                        -v ($in.dest_volume):/export:rw 
+                        -v $"($in.src_volume):/data:ro"
+                        -v $"($in.dest_volume):/export:rw"
                         alpine/sqlite ($in.src_db) $".backup '($in.dest_db)'"
                 )
                 (
