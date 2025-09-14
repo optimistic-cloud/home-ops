@@ -4,11 +4,18 @@ use with-healthcheck.nu *
 use sqlite-export.nu *
 use with-docker-container.nu *
 
-def export-sqlite-database [] {
-    let src_db_in_container = '/data' | path join 'db.sqlite3'
-    let dest_db_in_container = '/export' | path join 'db.sqlite3'
+def export-sqlite-database []: string -> nothing {
+    let export_config = {
+        src_volume: 'vaultwarden-data',
+        dest_volume: $in,
+        src_path: '/data' | path join 'db.sqlite3',
+        db_path: '/export' | path join 'db.sqlite3',
+    }
 
-    $src_db_in_container | abc $dest_db_in_container
+    #let src_db_in_container = '/data' | path join 'db.sqlite3'
+    #let dest_db_in_container = '/export' | path join 'db.sqlite3'
+
+    $export_config | abc
 }
 
 def backup [provider: string, slug: string, run_id: string] {

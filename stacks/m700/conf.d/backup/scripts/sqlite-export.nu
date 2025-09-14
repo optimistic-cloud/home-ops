@@ -1,11 +1,10 @@
 use utils.nu *
 
-export def abc [dest_db: path]: path -> nothing {
+export def abc [src_db: path, dest_db: path]: string -> nothing {
     print "Starting SQLite database export from Docker volume..."
-    let src_db = $in
 
-    ^docker run --rm -v vaultwarden-data:/data:ro -v vaultwarden-data-export:/export:rw alpine/sqlite /data/db.sqlite3 ".backup '/export/db.sqlite3'"
-    ^docker run --rm -v vaultwarden-data-export:/export:rw alpine/sqlite '/export/corrupted.sqlite3' "PRAGMA integrity_check;"
+    ^docker run --rm -v ($in.src_volume):/data:ro -v ($in.dest_volume):/export:rw alpine/sqlite ($in.src_db) ".backup '($in.dest_db)'"
+    ^docker run --rm -v ($in.src_volume):/export:rw alpine/sqlite '($in.dest_db)' "PRAGMA integrity_check;"
 
 
     #try {
