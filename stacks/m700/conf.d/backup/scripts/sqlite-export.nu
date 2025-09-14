@@ -1,6 +1,6 @@
 use utils.nu *
 
-export def abc [src_db: path, dest_db: path]: string -> nothing {
+export def abc []: string -> nothing {
     print "Starting SQLite database export from Docker volume..."
 
     ^docker run --rm -v ($in.src_volume):/data:ro -v ($in.dest_volume):/export:rw alpine/sqlite ($in.src_db) ".backup '($in.dest_db)'"
