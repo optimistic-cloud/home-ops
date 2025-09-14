@@ -81,7 +81,7 @@ def main [app = "vaultwarden", --provider: string] {
                             -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
                             -v vaultwarden-data:/data:ro
                             -v vaultwarden-data-export:/export:ro
-                            -v $env.HOME/.cache/restic:/root/.cache/restic
+                            -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             restic/restic --json --quiet backup
                                     --files-from /etc/restic/include.txt
                                     --exclude-file /etc/restic/exclude.txt
@@ -98,11 +98,10 @@ def main [app = "vaultwarden", --provider: string] {
                         ^docker run --rm -ti
                             --env-file $"($provider).env"
                             --env-file "vaultwarden.env"
-                            -v ./vaultwarden.include.txt:/etc/restic/include.txt
-                            -v ./vaultwarden.exclude.txt:/etc/restic/exclude.txt
+                            -v $"./($app).include.txt:/etc/restic/include.txt"
+                            -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
                             -v vaultwarden-data:/data:ro
-                            -v $env.HOME/.cache/restic:/root/.cache/restic
-                            -e TZ=Europe/Berlin
+                            -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             restic/restic --json --quiet backup
                                     --files-from /etc/restic/include.txt
                                     --exclude-file /etc/restic/exclude.txt
