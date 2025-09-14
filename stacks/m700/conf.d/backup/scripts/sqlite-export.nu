@@ -4,8 +4,9 @@ export def abc []: record -> nothing {
     print "Starting SQLite database export from Docker volume..."
 
     ^docker run --rm -v ($in.src_volume):/data:ro -v ($in.dest_volume):/export:rw alpine/sqlite ($in.src_db) ".backup '($in.dest_db)'"
-    ^docker run --rm -v ($in.dest_volume):/export:rw alpine/sqlite '($in.dest_db)' "PRAGMA integrity_check;"
+    ^docker run --rm -v ($in.src_volume):/data:ro -v ($in.dest_volume):/export:rw alpine ls -la /
     ^docker run --rm -v ($in.dest_volume):/export:rw alpine ls -la /export | print
+    ^docker run --rm -v ($in.dest_volume):/export:rw alpine/sqlite '($in.dest_db)' "PRAGMA integrity_check;"
 
     #try {
         #^docker volume create vaultwarden-data-export
