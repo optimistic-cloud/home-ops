@@ -13,10 +13,11 @@ export def abc [dest_db: path]: path -> nothing {
                 alpine/sqlite $src_db ".backup '$dest_db'"
         )
 
-
-        let out = ^docker run --rm -v vaultwarden-data-export:/export:ro alpine/sqlite $"($dest_db)" "PRAGMA integrity_check;" | complete
+        let out = ^docker run --rm -v vaultwarden-data-export:/export:ro alpine ls -la /export | complete
+        let integrity_check = ^docker run --rm -v vaultwarden-data-export:/export:ro alpine/sqlite $"($dest_db)" "PRAGMA integrity_check;" | complete
 
         print $"Integrity check result: ($out)"
+        print $"Integrity check result: ($integrity_check)"
 
 
         let integrity = (sqlite3 $"($dest_db)" "PRAGMA integrity_check;")
