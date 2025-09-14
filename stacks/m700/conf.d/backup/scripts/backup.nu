@@ -4,7 +4,7 @@ use with-healthcheck.nu *
 use sqlite-export.nu *
 use with-docker-container.nu *
 
-def export-sqlite-database []: string -> nothing {
+def export-sqlite-database [] {
     let src_db_in_container = '/data' | path join 'db.sqlite3'
     let dest_db_in_container = '/data/export' | path join 'db.sqlite3'
 
