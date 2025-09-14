@@ -11,9 +11,9 @@ export def "sqlite export2" [docker_volume: string, dest_db: path]: path -> noth
         #    -e TZ=Europe/Berlin
         #    alpine/sqlite $src_db ".backup '$dest_db'"
 
-        cat vaultwarden.include.txt
+        cat vaultwarden.include.txt | complete
 
-    ) | complete
+    )
     print $"test3 ($out)"
     $out | do_logging_for "SQLite database export"
 
