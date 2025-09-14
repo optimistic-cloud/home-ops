@@ -7,7 +7,6 @@ export def "sqlite export2" [docker_volume: string, dest_db: path]: path -> path
         ^docker run --rm
             --user "1000:1000"
             -v ($docker_volume):/data:ro
-            -v ($target):/export
             -e TZ=Europe/Berlin
             alpine/sqlite $src_db ".backup '$dest_db'"
     )
