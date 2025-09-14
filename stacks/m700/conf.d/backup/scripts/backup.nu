@@ -7,18 +7,20 @@ def export-sqlite-database []: string -> nothing {
     let src_db_in_container = '/data' | path join 'db.sqlite3'
     let dest_db_in_container = '/export' | path join 'db.sqlite3'
 
-    src_db_in_container | sqlite export2 $dest_db_in_container
+    src_db_in_container | sqlite export2 "vaultwarden-data" $dest_db_in_container
 }
 
 def backup [provider: string, slug: string, run_id: string] {
+    #-v ./vw-backup/db.sqlite3:/export/db.sqlite3 ??? working dir
+
+    # try to export database and leave it in volume for backup
     with-ping $slug $run_id {
         (
             ^docker run --rm -ti
                 --env-file $"($provider).env"
                 --env-file "vaultwarden.env"
-                -v ./($app).include.txt:/etc/restic/include.txt
-                -v ./($app).exclude.txt:/etc/restic/exclude.txt
-                -v ./vw-backup/db.sqlite3:/export/db.sqlite3 ??? working dir
+                -v ./$"($app).include.txt":/etc/restic/include.txt
+                -v ./$"($app).exclude.txt":/etc/restic/exclude.txt
                 -v vaultwarden-data:/data:ro
                 -v $HOME/.cache/restic:/root/.cache/restic
                 -e TZ=Europe/Berlin

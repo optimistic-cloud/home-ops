@@ -1,9 +1,6 @@
 use utils.nu *
 
-export def "sqlite export2" [
-    docker_volume: string, 
-    dest_db: path
-]: path -> path {
+export def "sqlite export2" [docker_volume: string, dest_db: path]: path -> path {
     let src_db = $in
 
     let out = (
