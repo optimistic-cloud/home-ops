@@ -19,7 +19,7 @@ def backup [--provider: string, --slug: string] {
                 -v ./($app).include.txt:/etc/restic/include.txt
                 -v ./($app).exclude.txt:/etc/restic/exclude.txt
                 -v ./vw-backup/db.sqlite3:/export/db.sqlite3 ??? working dir
-                -v m700_vaultwarden-data:/data:ro
+                -v vaultwarden-data:/data:ro
                 -v $HOME/.cache/restic:/root/.cache/restic
                 -e TZ=Europe/Berlin
                 restic/restic --json --quiet backup
