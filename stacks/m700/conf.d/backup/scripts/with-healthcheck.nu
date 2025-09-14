@@ -20,7 +20,7 @@ export def send_fail [url: record] {
   $url | to_url 'fail' | do_get
 }
 
-export def configure-ping-url [slug: string, run_id: string] {
+def configure-ping-url [slug: string, run_id: string = (random uuid -v 4)] {
   {
     "scheme": "https",
     "host": "hc-ping.com",
@@ -33,7 +33,7 @@ export def configure-ping-url [slug: string, run_id: string] {
   }
 }
 
-export def main [url: record, operation: closure] {
+export def with-ping [--slug: string, operation: closure] {
   let out = do $operation
 
   let url = $url | to_url ($out.exit_code | into string)
@@ -42,5 +42,18 @@ export def main [url: record, operation: closure] {
       $out.stderr | do_post $url
   } else {
       $out.stdout | do_post $url
+  }
+}
+
+export def main [--slug: string, operation: closure] {
+  let url = configure-ping-url $slug
+  
+  send_start $url
+
+  try {
+    let out = do $operation
+  } catch {|err|
+      log error $"Error: $(err)"
+      send_fail $url
   }
 }

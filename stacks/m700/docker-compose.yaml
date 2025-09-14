@@ -316,6 +316,7 @@ volumes:
   traefik-acme:
   traefik-config:
   vaultwarden-data:
+    name: vaultwarden-data
   opengist-data:
   gitea-data:
   gitea-config:

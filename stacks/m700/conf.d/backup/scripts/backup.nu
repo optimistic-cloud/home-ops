@@ -1,0 +1,67 @@
+use std/log
+
+use with-healthcheck.nu *
+use sqlite-export.nu *
+
+def export-sqlite-database []: string -> nothing {
+    let src_db_in_container = '/data' | path join 'db.sqlite3'
+    let dest_db_in_container = '/export' | path join 'db.sqlite3'
+
+    src_db_in_container | sqlite export2 $dest_db_in_container
+}
+
+def backup [--provider: string, --slug: string] {
+    with-ping --slug $slug {
+        (
+            ^docker run --rm -ti
+                --env-file $"($provider).env"
+                --env-file "vaultwarden.env"
+                -v ./($app).include.txt:/etc/restic/include.txt
+                -v ./($app).exclude.txt:/etc/restic/exclude.txt
+                -v ./vw-backup/db.sqlite3:/export/db.sqlite3 ??? working dir
+                -v m700_vaultwarden-data:/data:ro
+                -v $HOME/.cache/restic:/root/.cache/restic
+                -e TZ=Europe/Berlin
+                restic/restic --json --quiet backup
+                        --files-from /etc/restic/include.txt
+                        --exclude-file /etc/restic/exclude.txt
+                        --skip-if-unchanged
+                        --exclude-caches
+                        --one-file-system
+                        --tag=test
+        )
+    }
+}
+
+def check [--provider: string, --slug: string] {
+    with-ping --slug $slug {
+        (
+            ^docker run --rm -ti
+                --env-file $"($provider).env"
+                --env-file "vaultwarden.env"
+                -e TZ=Europe/Berlin
+                restic/restic --json --quiet check --read-data-subset 33%
+        )
+    }
+}
+
+def main [app: string = "vaultwarden", --provider: string] {
+    const slug = $"($app)-backup"
+
+    with-healthcheck --slug $slug {
+
+        let export_dir = '/tmp' | path join $app export
+
+        with-docker-container --container_name $app {
+
+            # Export sqlite database
+            export-sqlite-database 
+
+            # Run backup
+            backup --provider $provider --slug $slug
+
+            # Run check
+            check --provider $provider --slug $slug
+        }
+    }
+}

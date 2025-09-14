@@ -35,7 +35,7 @@ def start_container []: string -> nothing {
   $container_name | assert_docker_container_action "running"
 }
 
-export def main [container_name: string, operation: closure] {
+export def main [--container_name: string, operation: closure] {
   $container_name | stop_container
 
   try {
