@@ -40,6 +40,7 @@ export def with-ping [slug: string, run_id: string, operation: closure] {
 
   let url = $url | to_url ($out.exit_code | into string)
 
+  print $out
 
   if $out.exit_code != 0 {
       $out.stderr | from json | to json --indent 2 | do_post $url
