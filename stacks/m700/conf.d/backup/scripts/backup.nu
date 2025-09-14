@@ -94,25 +94,25 @@ def main [--provider: string] {
                     ) | complete
                 }
 
-                # Run check with ping
-                with-ping $slug $run_id {
-                    (
-                        ^docker run --rm -ti
-                            --env-file $"($provider).env"
-                            --env-file $"($app).env"
-                            -v $"./($app).include.txt:/etc/restic/include.txt"
-                            -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
-                            -v "vaultwarden-data:/data:ro"
-                            -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-                            restic/restic --json --quiet backup
-                                    --files-from /etc/restic/include.txt
-                                    --exclude-file /etc/restic/exclude.txt
-                                    --skip-if-unchanged
-                                    --exclude-caches
-                                    --one-file-system
-                                    --tag=test
-                    ) | complete
-                }
+                # # Run check with ping
+                # with-ping $slug $run_id {
+                #     (
+                #         ^docker run --rm -ti
+                #             --env-file $"($provider).env"
+                #             --env-file $"($app).env"
+                #             -v $"./($app).include.txt:/etc/restic/include.txt"
+                #             -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
+                #             -v "vaultwarden-data:/data:ro"
+                #             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
+                #             restic/restic --json --quiet backup
+                #                     --files-from /etc/restic/include.txt
+                #                     --exclude-file /etc/restic/exclude.txt
+                #                     --skip-if-unchanged
+                #                     --exclude-caches
+                #                     --one-file-system
+                #                     --tag=test
+                #     ) | complete
+                # }
             }
         }
     }
