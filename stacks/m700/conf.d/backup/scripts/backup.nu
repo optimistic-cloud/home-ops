@@ -91,7 +91,7 @@ def main [--provider: string] {
                                     --exclude-caches
                                     --one-file-system
                                     --tag=test
-                    ) | from json | to json --indent 2
+                    ) 
                 }
 
                 # Run check with ping
