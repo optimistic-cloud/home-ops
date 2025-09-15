@@ -29,6 +29,7 @@ def main [--provider: string] {
         with-docker-container --name $app {
 
             with-tmp-docker-volume {
+                print $"==> Using temporary docker volume ($in) for export"
 
                 # Export sqlite database
                 {
