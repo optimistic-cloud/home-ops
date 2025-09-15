@@ -66,8 +66,6 @@ def main [--provider: string] {
                                     --one-file-system
                                     --tag=test
                     ) | complete
-                    print $out
-                    $out
                 }
 
                 # Run check with ping
