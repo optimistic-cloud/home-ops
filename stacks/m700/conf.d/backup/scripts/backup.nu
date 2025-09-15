@@ -27,7 +27,6 @@ def configure-hc-url [app: string] {
     configure-ping-url $slug $run_id
 }
 
-
 const app = "vaultwarden"
 def main [--provider: string] {
     let ping_url = configure-hc-url $app
