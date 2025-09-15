@@ -14,10 +14,6 @@ def main [--provider: string] {
 
     $slug | configure-hc-api $config.hc.ping_key
 
-    # docker exec -it gitea sh
-    #docker exec -u git gitea /usr/local/bin/gitea dump --work-path /tmp --file gitea-dump.tar.gz --config /etc/gitea/app.ini --database sqlite3 --type tar.gz
-    #docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/gitea-dump.tar.gz
-
     with-healthcheck {
         with-tmp-docker-volume {
             let export_docker_volume = $in
@@ -28,7 +24,6 @@ def main [--provider: string] {
 
             ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)"
             ^docker exec -u git gitea mkdir -p $dump_location
-            print "1"
             (
                 ^docker exec -u git gitea /usr/local/bin/gitea
                     dump --work-path /tmp
@@ -38,27 +33,17 @@ def main [--provider: string] {
                     --type tar.gz
             )
 
-            print "2"
             mkdir $working_dir
-            print $working_dir $dump_location $dump_name
-            ls -la $working_dir | print
             ^docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/ | complete | print
-            ls -la $working_dir | print
 
-            print "3" 
             (
                 ^docker run --rm -ti
                     -v $"($working_dir):/export:ro"
                     -v $"($export_docker_volume):/data:rw"
                     alpine sh -c $"cd /data && tar -xvzf /export/($dump_name)"
             )
-            print "3.5"
             ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | complete | print
-            print "4"
             rm -rf $working_dir
-            print "5"
-            ^docker run --rm -ti -v $"($export_docker_volume):/data:rw" alpine ls -la /data | complete | print
-            print "6"  
 
             let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
