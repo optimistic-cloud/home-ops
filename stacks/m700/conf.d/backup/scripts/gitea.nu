@@ -9,6 +9,8 @@ const hc_slug = "gitea-backup"
 const restic_docker_image = "restic/restic:0.18.0"
 
 def main [--provider: string] {
+    open env.toml | load-env
+    
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
     with-healthcheck {
