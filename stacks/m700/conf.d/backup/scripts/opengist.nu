@@ -9,6 +9,8 @@ const data_docker_volume = "opengist-data"
 const restic_image = "restic/restic:0.18.0"
 
 def main [--provider: string] {
+    open .env | from toml | load-env
+
     [$app, 'backup'] | str join '-' | configure-hc-api
 
     with-healthcheck {
