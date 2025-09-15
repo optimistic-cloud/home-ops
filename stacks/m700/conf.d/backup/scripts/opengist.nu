@@ -38,8 +38,7 @@ def main [--provider: string] {
                 with-ping {
                     (
                         ^docker run --rm -ti
-                            --env-file $"($provider).env"
-                            --env-file $"($app).env"
+                            --env-file $"($app).($provider).restic.env"
                             -v $"($data_docker_volume):/data:ro"
                             -v $"($export_docker_volume):/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
@@ -56,8 +55,7 @@ def main [--provider: string] {
                 with-ping {
                     (
                         ^docker run --rm -ti
-                            --env-file $"($provider).env"
-                            --env-file $"($app).env"
+                            --env-file $"($app).($provider).restic.env"
                             $config.restic.docker_image --json --quiet check --read-data-subset 33%
                     ) | complete
                 }
