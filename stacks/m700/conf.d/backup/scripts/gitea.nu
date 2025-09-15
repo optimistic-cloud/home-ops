@@ -22,7 +22,7 @@ def main [--provider: string] {
         with-tmp-docker-volume {
             let export_docker_volume = $in
 
-            let working_dir = '/tmp' | path join $app export
+            let working_dir = '/tmp'
             let dump_location = '/var/lib/gitea'
             let dump_name = 'gitea-dump.tar.gz'
 
