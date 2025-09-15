@@ -41,6 +41,7 @@ def main [--provider: string] {
 
             print "2"
             mkdir $working_dir
+            print $working_dir $dump_location $dump_name
             ^docker cp $"gitea:($dump_location)/($dump_name)" $working_dir | ignore
             print "3"
             (
