@@ -40,10 +40,8 @@ export def --env configure-hc-api []: string -> nothing {
 
 export def with-ping [operation: closure] {
   let url = $env.BACKUP_CONFIG
-  
 
   let out = do $operation
-  print $"==>($out)"
 
   let url = $url | to_url ($out.exit_code | into string)
 
