@@ -43,7 +43,7 @@ def main [--provider: string] {
                     src_volume: "vaultwarden-data",
                     src_db: "/data/db.sqlite3",
                     dest_volume: $docker_volume_for_export,
-                    dest_db: "/export/db-backup-($hc_config.run_id).sqlite3"
+                    dest_db: "/export/db.sqlite3"
                 } | export-sqlite-db
 
 
