@@ -21,7 +21,7 @@ export def send_fail [url: record] {
 }
 
 export def --env configure-ping-url [slug: string, run_id: string] {
-  {
+  let config = {
     "scheme": "https",
     "host": "hc-ping.com",
     "path": $"($env.HC_PING_KEY)/($slug)",
