@@ -35,8 +35,8 @@ def start_container []: string -> nothing {
 }
 
 export def with-tmp-docker-volume [operation: closure] {
+  let name = (random chars --length 4)
   try {
-      let name = (random chars --length 4)
       ^docker volume create $name
       $name | do $operation
       ^docker volume rm $name
