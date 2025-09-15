@@ -35,7 +35,7 @@ def main [--provider: string] {
                 | ignore
             )
             print "2"
-            ^docker cp gitea:$"($dump_location)/($dump_name)" $working_dir | ignore
+            ^docker cp $"gitea:($dump_location)/($dump_name)" $working_dir | ignore
             print "3"
             ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | ignore
             print "4"
