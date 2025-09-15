@@ -21,6 +21,7 @@ def export-sqlite-db []: record -> nothing {
 }
 
 const app = "vaultwarden"
+const restic_image = "restic/restic:0.18.0"
 
 def main [--provider: string] {
     [$app, 'backup'] | str join '-' | configure-hc-api
@@ -51,7 +52,7 @@ def main [--provider: string] {
                             -v "vaultwarden-data:/data:ro"
                             -v $"($tmp_docker_volume):/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-                            restic/restic --json --quiet backup
+                            $restic_image --json --quiet backup
                                     --files-from /etc/restic/include.txt
                                     --exclude-file /etc/restic/exclude.txt
                                     --skip-if-unchanged
@@ -67,7 +68,7 @@ def main [--provider: string] {
                         ^docker run --rm -ti
                             --env-file $"($provider).env"
                             --env-file $"($app).env"
-                            restic/restic --json --quiet check --read-data-subset 33%
+                            $restic_image --json --quiet check --read-data-subset 33%
                     ) | complete
                 }
             }
