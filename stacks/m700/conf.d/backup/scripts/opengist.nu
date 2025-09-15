@@ -9,9 +9,9 @@ const app = "opengist"
 def main [--provider: string] {
     let config = open backup.toml
 
-    const data_docker_volume = $config.($app).data_volume
+    const data_docker_volume = $config.$"($app)".data_volume
 
-    $config.($app).hc_slug | configure-hc-api $config.hc.ping_key
+    $config.$"($app)".hc_slug | configure-hc-api $config.hc.ping_key
 
     with-healthcheck {
         with-docker-container --name $app {
