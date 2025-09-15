@@ -20,12 +20,17 @@ def export-sqlite-db []: record -> nothing {
     )
 }
 
-const app = "vaultwarden"
-def main [--provider: string] {
+def configure-hc-url [] {
     let slug = $"($app)-backup"
     let run_id = (random uuid -v 4)
 
-    let ping_url = configure-ping-url $slug $run_id
+    configure-ping-url $slug $run_id
+}
+
+
+const app = "vaultwarden"
+def main [--provider: string] {
+    let ping_url = configure-hc-url
 
     $ping_url | with-healthcheck {
 
