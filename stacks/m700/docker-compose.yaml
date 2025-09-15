@@ -323,6 +323,7 @@ volumes:
     name: gitea-data
   gitea-config:
   pocket-id-data:
+    name: pocket-id-data
   youtrack-data:
   youtrack-conf:
   youtrack-logs:
