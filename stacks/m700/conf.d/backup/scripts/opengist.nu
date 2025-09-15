@@ -9,8 +9,8 @@ const app = "opengist"
 def main [--provider: string] {
     let config = open backup.toml
 
-    const slug = $config | get $app | get hc_slug
-    const data_docker_volume = $config | get $app | get data_volume
+    let slug = $config | get $app | get hc_slug
+    let data_docker_volume = $config | get $app | get data_volume
 
     $slug | configure-hc-api $config.hc.ping_key
 
