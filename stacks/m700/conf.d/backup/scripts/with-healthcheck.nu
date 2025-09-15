@@ -33,8 +33,8 @@ def configure-ping-url [slug: string, run_id: string] {
   }
 }
 
-export def with-ping [slug: string, run_id: string, operation: closure] {
-  let url = configure-ping-url $slug $run_id
+export def with-ping [operation: closure]: string -> nothing {
+  let url = $in
 
   let out = do $operation
 
@@ -47,8 +47,8 @@ export def with-ping [slug: string, run_id: string, operation: closure] {
   }
 }
 
-export def main [slug: string, run_id: string, operation: closure] {
-  let url = configure-ping-url $slug $run_id
+export def main [operation: closure]: record -> nothing {
+  let url = $in
   
   send_start $url
 

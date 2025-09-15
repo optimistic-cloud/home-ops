@@ -34,31 +34,27 @@ def start_container []: string -> nothing {
   $container_name | assert_docker_container_action "running"
 }
 
-export def with-docker-volume [--volume_name: string, operation: closure] {
-  print $"Creating temporary docker volume... ($volume_name)"
-  let volume_name = $volume_name
-
+export def with-docker-volume [--name: string, operation: closure] {
   try {
-      ^docker volume create $volume_name
-      $volume_name | do $operation
-      ^docker volume rm $volume_name
+      ^docker volume create $name
+      $name | do $operation
+      ^docker volume rm $name
   } catch {|err|
-      ^docker volume rm $volume_name
+      ^docker volume rm $name
       log error $"Error: ($err)"
       error make $err
   }
 }
 
-export def main [--container_name: string, operation: closure] {
-  print $"Stopping docker container... ($container_name)"
-  $container_name | stop_container
+export def main [--name: string, operation: closure] {
+  $name | stop_container
 
   try {
       do $operation
-      $container_name | start_container
+      $name | start_container
   } catch {|err|
       # https://github.com/nushell/nushell/issues/15279
-      $container_name | start_container
+      $name | start_container
       error make $err
   }
 }

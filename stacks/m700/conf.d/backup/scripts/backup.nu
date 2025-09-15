@@ -4,75 +4,48 @@ use with-healthcheck.nu *
 use sqlite-export.nu *
 use with-docker-container.nu *
 
+def export-sqlite-db []: record -> nothing {
+    let config = $in
 
-def backup [provider: string, slug: string, run_id: string] {
-    #-v ./vw-backup/db.sqlite3:/export/db.sqlite3 ??? working dir
-
-    # try to export database and leave it in volume for backup
-    with-ping $slug $run_id {
-        (
-            ^docker run --rm -ti
-                --env-file $"($provider).env"
-                --env-file "vaultwarden.env"
-                -v ./vaultwarden.include.txt:/etc/restic/include.txt
-                -v ./vaultwarden.exclude.txt:/etc/restic/exclude.txt
-                -v vaultwarden-data:/data:ro
-                -v $env.HOME/.cache/restic:/root/.cache/restic
-                -e TZ=Europe/Berlin
-                restic/restic --json --quiet backup
-                        --files-from /etc/restic/include.txt
-                        --exclude-file /etc/restic/exclude.txt
-                        --skip-if-unchanged
-                        --exclude-caches
-                        --one-file-system
-                        --tag=test
-        )
-    }
+    (
+        ^docker run --rm 
+            -v $"($config.src_volume):/data:ro"
+            -v $"($config.dest_volume):/export:rw"
+            alpine/sqlite $'($config.src_db)' $".backup '($config.dest_db)'"
+    )
+    (
+        ^docker run --rm 
+            -v $"($config.dest_volume):/export:rw"
+            alpine/sqlite $'($config.dest_db)' "PRAGMA integrity_check;"
+    )
 }
 
-def check [provider: string, slug: string, run_id: string] {
-    with-ping $slug $run_id {
-        (
-            ^docker run --rm -ti
-                --env-file $"($provider).env"
-                --env-file "vaultwarden.env"
-                -e TZ=Europe/Berlin
-                restic/restic --json --quiet check --read-data-subset 33%
-        )
-    }
-}
 const app = "vaultwarden"
 def main [--provider: string] {
-    let slug = $"($app)-backup"
-    let run_id = (random uuid -v 4)
+    let hc_config = {
+        slug: $"($app) backup",
+        run_id: (random uuid -v 4)
+    }
+    let ping_url = $hc_config | configure-ping-url
 
-    with-healthcheck $slug $run_id {
+    $ping_url | with-healthcheck {
 
-        with-docker-container --container_name $app {
+        with-docker-container --name $app {
 
-            with-docker-volume --volume_name vaultwarden-data-export {
+            const docker_volume_for_export = "vaultwarden-data-export" # could be random uuid
+            with-docker-volume --name $docker_volume_for_export {
 
                 # Export sqlite database
-                let export_config = {
-                    src_volume: 'vaultwarden-data',
-                    dest_volume: $in,
-                    src_db: ('/data' | path join 'db.sqlite3'),
-                    dest_db: ('/export' | path join 'db.sqlite3'),
-                }
-                (
-                    ^docker run --rm 
-                        -v $"($export_config.src_volume):/data:ro"
-                        -v $"($export_config.dest_volume):/export:rw"
-                        alpine/sqlite $'($export_config.src_db)' $".backup '($export_config.dest_db)'"
-                )
-                (
-                    ^docker run --rm 
-                        -v $"($export_config.dest_volume):/export:rw"
-                        alpine/sqlite $'($export_config.dest_db)' "PRAGMA integrity_check;"
-                )
+                {
+                    src_volume: "vaultwarden-data",
+                    src_db: "/data/db.sqlite3",
+                    dest_volume: $docker_volume_for_export,
+                    dest_db: "/export/db-backup-($hc_config.run_id).sqlite3"
+                } | export-sqlite-db
+
 
                 # Run backup with ping
-                with-ping $slug $run_id {
+                $ping_url | with-ping {
                     (
                         ^docker run --rm -ti
                             --env-file $"($provider).env"
@@ -80,7 +53,7 @@ def main [--provider: string] {
                             -v $"./($app).include.txt:/etc/restic/include.txt"
                             -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
                             -v "vaultwarden-data:/data:ro"
-                            -v "vaultwarden-data-export:/export:ro"
+                            -v $"($docker_volume_for_export):/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             restic/restic --json --quiet backup
                                     --files-from /etc/restic/include.txt
@@ -93,7 +66,7 @@ def main [--provider: string] {
                 }
 
                 # Run check with ping
-                with-ping $slug $run_id {
+                $ping_url | with-ping {
                     (
                         ^docker run --rm -ti
                             --env-file $"($provider).env"
