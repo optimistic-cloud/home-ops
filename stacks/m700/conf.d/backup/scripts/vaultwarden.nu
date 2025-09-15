@@ -4,18 +4,13 @@ use with-healthcheck.nu *
 use with-docker-container.nu *
 
 const app = "vaultwarden"
+const hc_slug = "vaultwarden-backup"
+const data_docker_volume = "vaultwarden-data"
 
-# nu vaultwarden.nu --provider blaze
-#   blaze.env
-#   vaultwarden.blaze.restic.env
-# nu vaultwarden.nu --provider aws
+const restic_docker_image = "restic/restic:0.18.0"
+
 def main [--provider: string] {
-    let config = open backup.toml
-
-    let slug = $config | get $app | get hc_slug
-    let data_docker_volume = $config | get $app | get data_volume
-
-    $slug | configure-hc-api $config.hc.ping_key
+    $hc_slug | configure-hc-api $config.hc.ping_key
 
     with-healthcheck {
         with-docker-container --name $app {
@@ -47,7 +42,7 @@ def main [--provider: string] {
                             -v $"($export_docker_volume):/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             -e TZ=Europe/Berlin
-                            $config.restic.docker_image --json --quiet backup /data /export
+                            $restic_docker_image --json --quiet backup /data /export
                                     --skip-if-unchanged
                                     --exclude-caches
                                     --one-file-system
@@ -60,7 +55,7 @@ def main [--provider: string] {
                     (
                         ^docker run --rm -ti
                             --env-file $"($app).($provider).restic.env"
-                            $config.restic.docker_image --json --quiet check --read-data-subset 33%
+                            $restic_docker_image --json --quiet check --read-data-subset 33%
                     ) | complete
                 }
             }

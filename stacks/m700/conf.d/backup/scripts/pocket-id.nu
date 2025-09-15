@@ -3,14 +3,15 @@ use std/log
 use with-healthcheck.nu *
 use with-docker-container.nu *
 
-const app = "opengist"
-const hc_slug = "opengist-backup"
-const data_docker_volume = "opengist-data"
-
-const restic_docker_image = "restic/restic:0.18.0"
+const app = "pocket-id"
 
 def main [--provider: string] {
-    $hc_slug | configure-hc-api $config.hc.ping_key
+    let config = open backup.toml
+
+    let slug = $config | get $app | get hc_slug
+    let data_docker_volume = $config | get $app | get data_volume
+
+    $slug | configure-hc-api $config.hc.ping_key
 
     with-healthcheck {
         with-docker-container --name $app {
@@ -23,12 +24,12 @@ def main [--provider: string] {
                     ^docker run --rm 
                         -v $"($data_docker_volume):/data:ro"
                         -v $"($export_docker_volume):/export:rw"
-                        alpine/sqlite $"/data/($app).db" $".backup '/export/($app).db'"
+                        alpine/sqlite /data/db.sqlite3 ".backup '/export/db.sqlite3'"
                 )
                 (
                     ^docker run --rm 
                         -v $"($export_docker_volume):/export:rw"
-                        alpine/sqlite $"/export/($app).db" "PRAGMA integrity_check;" | ignore
+                        alpine/sqlite /export/db.sqlite3 "PRAGMA integrity_check;" | ignore
                 )
 
                 let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
@@ -42,7 +43,7 @@ def main [--provider: string] {
                             -v $"($export_docker_volume):/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             -e TZ=Europe/Berlin
-                            $restic_docker_image --json --quiet backup /data /export
+                            $config.restic.docker_image --json --quiet backup /data /export
                                     --skip-if-unchanged
                                     --exclude-caches
                                     --one-file-system
@@ -55,7 +56,7 @@ def main [--provider: string] {
                     (
                         ^docker run --rm -ti
                             --env-file $"($app).($provider).restic.env"
-                            $restic_docker_image --json --quiet check --read-data-subset 33%
+                            $config.restic.docker_image --json --quiet check --read-data-subset 33%
                     ) | complete
                 }
             }
