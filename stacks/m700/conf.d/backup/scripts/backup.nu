@@ -28,14 +28,13 @@ def main [--provider: string] {
     with-healthcheck {
         with-docker-container --name $app {
 
-            let tmp_docker_volume_for_export = (random chars --length 4)
-            with-docker-volume --name $tmp_docker_volume_for_export {
+            with-tmp-docker-volume {
 
                 # Export sqlite database
                 {
                     src_volume: "vaultwarden-data",
                     src_db: "/data/db.sqlite3",
-                    dest_volume: $tmp_docker_volume_for_export,
+                    dest_volume: $in,
                     dest_db: "/export/db.sqlite3"
                 } | export-sqlite-db
 
@@ -49,7 +48,7 @@ def main [--provider: string] {
                             -v $"./($app).include.txt:/etc/restic/include.txt"
                             -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
                             -v "vaultwarden-data:/data:ro"
-                            -v $"($tmp_docker_volume_for_export):/export:ro"
+                            -v $"($in):/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             restic/restic --json --quiet backup
                                     --files-from /etc/restic/include.txt
