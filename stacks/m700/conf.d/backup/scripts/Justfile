@@ -1,5 +1,3 @@
-#!/usr/bin/just --justfile
-
 set dotenv-load
 
 help:
