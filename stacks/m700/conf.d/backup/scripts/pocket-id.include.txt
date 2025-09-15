@@ -1,3 +1,0 @@
-/opt/pocket-id/.env
-/opt/pocket-id/appdata
-/tmp/pocket-id/export/pocket-id.db
