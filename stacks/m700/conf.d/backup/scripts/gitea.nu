@@ -42,7 +42,7 @@ def main [--provider: string] {
             mkdir $working_dir
             print $working_dir $dump_location $dump_name
             ls -la $working_dir | print
-            ^docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/gitea-dump.tar.gz | complete | print
+            ^docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/ | complete | print
             ls -la $working_dir | print
 
             # print "3" 
