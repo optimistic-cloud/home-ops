@@ -49,7 +49,7 @@ def main [--provider: string] {
 
                 # Run backup with ping
                 $ping_url | with-ping {
-                    (
+                    let out = (
                         ^docker run --rm -ti
                             --env-file $"($provider).env"
                             --env-file $"($app).env"
@@ -66,6 +66,8 @@ def main [--provider: string] {
                                     --one-file-system
                                     --tag=test
                     ) | complete
+                    pritn $out
+                    $out
                 }
 
                 # Run check with ping
