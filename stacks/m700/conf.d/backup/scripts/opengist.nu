@@ -20,7 +20,7 @@ def main [--provider: string] {
                 # Export sqlite database
                 {
                     src_volume: $data_docker_volume,
-                    src_db: $"/opengist/($app).db",
+                    src_db: $"/data/($app).db",
                     dest_volume: $tmp_docker_volume,
                     dest_db: $"/export/($app).db"
                 } | export-sqlite-db
