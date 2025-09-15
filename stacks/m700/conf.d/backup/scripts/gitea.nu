@@ -31,18 +31,18 @@ def main [--provider: string] {
                     --config /etc/gitea/app.ini
                     --database sqlite3
                     --type tar.gz
-            )
+            ) | ignore
 
             mkdir $working_dir
-            ^docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/
+            ^docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/ | ignore
 
             (
                 ^docker run --rm -ti
                     -v $"($working_dir):/export:ro"
                     -v $"($export_docker_volume):/data:rw"
                     alpine sh -c $"cd /data && tar -xvzf /export/($dump_name)"
-            )
-            ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)"
+            ) | ignore
+            ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | ignore
             rm -rf $working_dir
 
             let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
