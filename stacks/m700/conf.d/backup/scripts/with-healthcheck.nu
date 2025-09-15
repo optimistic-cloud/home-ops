@@ -20,14 +20,14 @@ export def send_fail [url: record] {
   $url | to_url 'fail' | do_get
 }
 
-export def --env configure-hc-api []: string -> nothing {
+export def --env configure-hc-api [ping_key: string]: string -> nothing {
   let slug = $in
   let run_id = (random uuid -v 4)
 
   let config = {
     "scheme": "https",
     "host": "hc-ping.com",
-    "path": $"($env.HC_PING_KEY)/($slug)",
+    "path": $"($ping_key)/($slug)",
     "params":
     {
       create: 1,

@@ -6,12 +6,11 @@ use with-docker-container.nu *
 
 const app = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
-const restic_image = "restic/restic:0.18.0"
 
 def main [--provider: string] {
-    open .env | from toml | load-env
+    let config = open backup.toml | from toml
     
-    [$app, 'backup'] | str join '-' | configure-hc-api
+    $config.vaultwarden.hc_slug | configure-hc-api $config.hc.ping_key
 
     with-healthcheck {
         with-docker-container --name $app {
@@ -39,7 +38,7 @@ def main [--provider: string] {
                             -v $"($export_docker_volume):/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             -e TZ=Europe/Berlin
-                            $restic_image --json --quiet backup /data /export
+                            $config.restic.docker_image --json --quiet backup /data /export
                                     --skip-if-unchanged
                                     --exclude-caches
                                     --one-file-system
@@ -53,7 +52,7 @@ def main [--provider: string] {
                         ^docker run --rm -ti
                             --env-file $"($provider).env"
                             --env-file $"($app).env"
-                            $restic_image --json --quiet check --read-data-subset 33%
+                            $config.restic.docker_image --json --quiet check --read-data-subset 33%
                     ) | complete
                 }
             }
