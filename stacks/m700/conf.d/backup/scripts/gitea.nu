@@ -26,8 +26,8 @@ def main [--provider: string] {
             let dump_location = '/var/lib/gitea'
             let dump_name = 'gitea-dump.tar.gz'
 
-            ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | ignore
-            ^docker exec -u git gitea mkdir -p $dump_location | ignore
+            ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)"
+            ^docker exec -u git gitea mkdir -p $dump_location
             print "1"
             (
                 ^docker exec -u git gitea /usr/local/bin/gitea
@@ -36,13 +36,14 @@ def main [--provider: string] {
                     --config /etc/gitea/app.ini
                     --database sqlite3
                     --type tar.gz
-                    | ignore
             )
 
             print "2"
             mkdir $working_dir
             print $working_dir $dump_location $dump_name
-            ^docker cp $"gitea:($dump_location)/($dump_name)" $working_dir | ignore
+            ls -la $working_dir
+            ^docker cp $"gitea:($dump_location)/($dump_name)" $working_dir
+            ls -la $working_dir
             print "3"
             (
                 ^docker run --rm -ti
