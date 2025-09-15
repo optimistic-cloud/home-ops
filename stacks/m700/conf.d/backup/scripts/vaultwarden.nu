@@ -5,12 +5,14 @@ use sqlite-export.nu *
 use with-docker-container.nu *
 
 const app = "vaultwarden"
-const data_docker_volume = "vaultwarden-data"
 
 def main [--provider: string] {
     let config = open backup.toml
-    
-    $config.vaultwarden.hc_slug | configure-hc-api $config.hc.ping_key
+
+    let slug = $config | get $app | get hc_slug
+    let data_docker_volume = $config | get $app | get data_volume
+
+    $slug | configure-hc-api $config.hc.ping_key
 
     with-healthcheck {
         with-docker-container --name $app {
