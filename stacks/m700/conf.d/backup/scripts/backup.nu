@@ -27,6 +27,8 @@ def configure-hc-url [app: string] {
     configure-ping-url $slug $run_id
 }
 
+# export-env { $env.SPAM = 'eggs' }
+
 const app = "vaultwarden"
 def main [--provider: string] {
     let ping_url = configure-hc-url $app
