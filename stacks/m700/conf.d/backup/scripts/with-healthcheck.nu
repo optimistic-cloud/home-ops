@@ -20,7 +20,7 @@ export def send_fail [url: record] {
   $url | to_url 'fail' | do_get
 }
 
-export def --env configure-ping-url [slug: string, run_id: string] -> record {
+export def --env configure-ping-url [slug: string, run_id: string]: -> record {
   let config = {
     "scheme": "https",
     "host": "hc-ping.com",
