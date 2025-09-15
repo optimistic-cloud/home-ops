@@ -29,13 +29,13 @@ def main [--provider: string] {
         with-docker-container --name $app {
 
             with-tmp-docker-volume {
-                print $"==> Using temporary docker volume ($in) for export"
+                let tmp_docker_volume = $in
 
                 # Export sqlite database
                 {
                     src_volume: "vaultwarden-data",
                     src_db: "/data/db.sqlite3",
-                    dest_volume: $in,
+                    dest_volume: $tmp_docker_volume,
                     dest_db: "/export/db.sqlite3"
                 } | export-sqlite-db
 
@@ -49,7 +49,7 @@ def main [--provider: string] {
                             -v $"./($app).include.txt:/etc/restic/include.txt"
                             -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
                             -v "vaultwarden-data:/data:ro"
-                            -v $"($in):/export:ro"
+                            -v $"($tmp_docker_volume):/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             restic/restic --json --quiet backup
                                     --files-from /etc/restic/include.txt
