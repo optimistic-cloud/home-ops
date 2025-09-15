@@ -55,7 +55,7 @@ def main [--provider: string] {
             print "3.5"
             ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | complete | print
             print "4"
-            rm -f $working_dir
+            rm -rf $working_dir
             print "5"
             ^docker run --rm -ti -v $"($export_docker_volume):/data:rw" alpine ls -la /data | complete | print
             print "6"  
