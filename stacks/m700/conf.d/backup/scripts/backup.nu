@@ -66,7 +66,7 @@ def main [--provider: string] {
                                     --one-file-system
                                     --tag=test
                     ) | complete
-                    pritn $out
+                    print $out
                     $out
                 }
 
