@@ -10,7 +10,7 @@ const data_docker_volume = "opengist-data"
 const restic_docker_image = "restic/restic:0.18.0"
 
 def main [--provider: string] {
-    $hc_slug | configure-hc-api $config.hc.ping_key
+    $hc_slug | configure-hc-api $env.HC_PING_KEY
 
     with-healthcheck {
         with-docker-container --name $app {
