@@ -20,7 +20,6 @@ def assert_docker_container_action [expected: string] {
 
 def stop_container []: string -> nothing {
   let container_name = $in
-  log info $"Stop docker container ($container_name)"
 
   run_docker_container_command 'stop' $container_name
   $container_name | assert_docker_container_action "exited"
@@ -28,7 +27,6 @@ def stop_container []: string -> nothing {
 
 def start_container []: string -> nothing {
   let container_name = $in
-  log debug $"Start docker container ($container_name)"
 
   run_docker_container_command 'start' $container_name
   $container_name | assert_docker_container_action "running"

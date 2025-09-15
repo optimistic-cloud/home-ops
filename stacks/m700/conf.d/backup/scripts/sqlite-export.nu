@@ -17,7 +17,7 @@ export def export-sqlite-db []: record -> nothing {
     (
         ^docker run --rm 
             -v $"($config.dest_volume):/export:rw"
-            alpine/sqlite $'($config.dest_db)' "PRAGMA integrity_check;"
+            alpine/sqlite $'($config.dest_db)' "PRAGMA integrity_check;" | ignore
     )
 }
 
