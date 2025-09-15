@@ -5,6 +5,7 @@ use sqlite-export.nu *
 use with-docker-container.nu *
 
 const app = "vaultwarden"
+const data_docker_volume = "vaultwarden-data"
 const restic_image = "restic/restic:0.18.0"
 
 def main [--provider: string] {
@@ -18,7 +19,7 @@ def main [--provider: string] {
 
                 # Export sqlite database
                 {
-                    src_volume: "vaultwarden-data",
+                    src_volume: $data_docker_volume,
                     src_db: "/data/db.sqlite3",
                     dest_volume: $tmp_docker_volume,
                     dest_db: "/export/db.sqlite3"
@@ -34,7 +35,7 @@ def main [--provider: string] {
                             --env-file $"($app).env"
                             -v $"./($app).include.txt:/etc/restic/include.txt"
                             -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
-                            -v "vaultwarden-data:/data:ro"
+                            -v $"($data_docker_volume):/data:ro"
                             -v $"($tmp_docker_volume):/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             $restic_image --json --quiet backup
