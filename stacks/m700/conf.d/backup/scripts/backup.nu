@@ -20,20 +20,10 @@ def export-sqlite-db []: record -> nothing {
     )
 }
 
-def --env configure-hc-url [app: string] {
-    let slug = $"($app)-backup"
-    let run_id = (random uuid -v 4)
-
-    configure-ping-url $slug $run_id
-    #$env.BACKUP_CONFIG = $config
-}
-
-# export-env { $env.SPAM = 'eggs' }
-
 const app = "vaultwarden"
+
 def main [--provider: string] {
-    configure-hc-url $app
-    print $"==> ($env.BACKUP_CONFIG)"
+    [$app, 'backup'] | str join '-' | configure-hc-api
 
     with-healthcheck {
 
