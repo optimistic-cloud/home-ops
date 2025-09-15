@@ -47,7 +47,7 @@ export def with-ping [operation: closure] {
 
   if $out.exit_code != 0 {
       $out.stderr | from json | to json --indent 2 | do_post $url
-      log error $out
+      print $out
       error make { msg: $"Operation failed with exit code ($out.exit_code)"}
   } else {
       $out.stdout | from json | to json --indent 2 | do_post $url
