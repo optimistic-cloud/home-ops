@@ -15,21 +15,13 @@ def main [--provider: string] {
         with-docker-container --name $app {
 
             with-tmp-docker-volume {
-                let backup_docker_volume = $in
-
-                # Prepare data for backup
-                (
-                    ^docker run --rm -ti
-                        -v $"($data_docker_volume):/app:ro"
-                        -v $"($backup_docker_volume):/data:rw"
-                        alpine cp -r /app/ /data/
-                )
+                let export_docker_volume = $in
 
                 # Export sqlite database
                 {
                     src_volume: $data_docker_volume,
                     src_db: $"/data/($app).db",
-                    dest_volume: $backup_docker_volume,
+                    dest_volume: $export_docker_volume,
                     dest_db: $"/export/($app).db"
                 } | export-sqlite-db
 
@@ -41,10 +33,11 @@ def main [--provider: string] {
                         ^docker run --rm -ti
                             --env-file $"($provider).env"
                             --env-file $"($app).env"
-                            -v $"($backup_docker_volume):/data:ro"
+                            -v $"($data_docker_volume):/data:ro"
+                            -v $"($export_docker_volume):/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             -e TZ=Europe/Berlin
-                            $restic_image --json --quiet backup /data
+                            $restic_image --json --quiet backup /data /export
                                     --skip-if-unchanged
                                     --exclude-caches
                                     --one-file-system
