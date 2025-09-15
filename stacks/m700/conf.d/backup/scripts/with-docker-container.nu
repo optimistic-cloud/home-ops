@@ -35,11 +35,11 @@ def start_container []: string -> nothing {
 export def with-tmp-docker-volume [operation: closure]: nothing -> string {
   let name = (random chars --length 4)
   try {
-      ^docker volume create $name
+      ^docker volume create $name | ignore
       $name | do $operation
-      ^docker volume rm $name
+      ^docker volume rm $name | ignore
   } catch {|err|
-      ^docker volume rm $name
+      ^docker volume rm $name | ignore
       log error $"Error: ($err)"
       error make $err
   }
