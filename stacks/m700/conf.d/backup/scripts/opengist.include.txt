@@ -1,2 +1,2 @@
-/opt/opengist/appdata/*
-/tmp/opengist/export/*
+/opengist
+/export/opengist.db

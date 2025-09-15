@@ -318,6 +318,7 @@ volumes:
   vaultwarden-data:
     name: vaultwarden-data
   opengist-data:
+    name: opengist-data
   gitea-data:
   gitea-config:
   pocket-id-data:
