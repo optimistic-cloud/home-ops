@@ -320,6 +320,7 @@ volumes:
   opengist-data:
     name: opengist-data
   gitea-data:
+    name: gitea-data
   gitea-config:
   pocket-id-data:
   youtrack-data:

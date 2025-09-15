@@ -1,2 +1,0 @@
-/opengist
-/export/opengist.db

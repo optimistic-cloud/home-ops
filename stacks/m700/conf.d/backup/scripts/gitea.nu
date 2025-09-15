@@ -1,38 +1,81 @@
 use std/log
 
-use with-backup.nu *
-use with-restore.nu *
-
-use with-docker.nu *
+use with-healthcheck.nu *
 use sqlite-export.nu *
-use restic.nu *
+use with-docker-container.nu *
 
 const app = "gitea"
 
-def main [] {
-  let data_dir = '/opt' | path join $app
-  let working_dir = '/tmp' | path join $app export
+def main [--provider: string] {
+    let config = open backup.toml
 
-  with-backup $app $working_dir {
-    let dump_location = '/var/lib/gitea'
-    let dump_name = 'gitea-dump.tar.gz'
+    let slug = $config | get $app | get hc_slug
+    let data_docker_volume = $config | get $app | get data_volume
 
-    ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | ignore
-    ^docker exec -u git gitea mkdir -p $dump_location | ignore
-    (
-      ^docker exec -u git gitea /usr/local/bin/gitea
-        dump --work-path /tmp
-          --file $dump_name
-          --config /etc/gitea/app.ini
-          --database sqlite3
-          --type tar.gz
-          | ignore
-    )
-    ^docker cp gitea:$"($dump_location)/($dump_name)" $working_dir | ignore
-    ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | ignore
-  }
-}
- 
-def "main restore" [] {
-  with-restore $app
+    $slug | configure-hc-api $config.hc.ping_key
+
+    with-healthcheck {
+        with-docker-container --name $app {
+
+            with-tmp-docker-volume {
+                let export_docker_volume = $in
+
+                let working_dir = '/tmp' | path join $app export
+                let dump_location = '/var/lib/gitea'
+                let dump_name = 'gitea-dump.tar.gz'
+
+                ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | ignore
+                ^docker exec -u git gitea mkdir -p $dump_location | ignore
+                (
+                ^docker exec -u git gitea /usr/local/bin/gitea
+                    dump --work-path /tmp
+                    --file $dump_name
+                    --config /etc/gitea/app.ini
+                    --database sqlite3
+                    --type tar.gz
+                    | ignore
+                )
+                ^docker cp gitea:$"($dump_location)/($dump_name)" $working_dir | ignore
+                ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | ignore
+
+                (
+                    ^docker run --rm -ti
+                        -v $"($working_dir):/export:ro"
+                        -v $"($export_docker_volume):/data:rw"
+                        alpine sh -c "cd /data && tar -xvzf /export/($dump_name)"
+                )
+
+                rm -rf $working_dir
+
+                let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
+
+                # Run backup with ping
+                with-ping {
+                    (
+                        ^docker run --rm -ti
+                            --env-file $"($provider).env"
+                            --env-file $"($app).env"
+                            -v $"($export_docker_volume):/export:ro"
+                            -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
+                            -e TZ=Europe/Berlin
+                            $config.restic.docker_image --json --quiet backup /data
+                                    --skip-if-unchanged
+                                    --exclude-caches
+                                    --one-file-system
+                                    --tag=$"git_commit=($git_commit)"
+                    ) | complete
+                }
+
+                # Run check with ping
+                with-ping {
+                    (
+                        ^docker run --rm -ti
+                            --env-file $"($provider).env"
+                            --env-file $"($app).env"
+                            $config.restic.docker_image --json --quiet check --read-data-subset 33%
+                    ) | complete
+                }
+            }
+        }
+    }
 }

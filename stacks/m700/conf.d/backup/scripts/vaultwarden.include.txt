@@ -1,2 +1,0 @@
-/data
-/export/db.sqlite3
