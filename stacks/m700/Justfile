@@ -1,7 +1,3 @@
-mod ops 'conf.d/backup/scripts'
-
-set dotenv-load
-
 alias u := update
 alias d := down
 
@@ -35,10 +31,10 @@ init app provider:
 
 [group('restic')]
 [doc('Backup application')]
-abackup app provider:
-    docker exec -it backup-toolkit bar.sh backup {{app}} {{provider}}
+backup app provider:
+    just --justfile conf.d/backup/scripts/.justfile backup {{app}} {{provider}}
 
 [group('restic')]
 [doc('Restore backup for an application')]
-arestore app provider:
-    docker exec -it backup-toolkit bar.sh restore {{app}} {{provider}}
+restore app provider:
+    just --justfile conf.d/backup/scripts/.justfile backup {{app}} {{provider}}
