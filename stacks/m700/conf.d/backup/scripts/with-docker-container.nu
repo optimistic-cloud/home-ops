@@ -34,7 +34,7 @@ def start_container []: string -> nothing {
   $container_name | assert_docker_container_action "running"
 }
 
-export def with-tmp-docker-volume [operation: closure] {
+export def with-tmp-docker-volume [operation: closure]: nothing -> string {
   let name = (random chars --length 4)
   try {
       ^docker volume create $name
