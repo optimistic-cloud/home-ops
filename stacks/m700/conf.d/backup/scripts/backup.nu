@@ -24,8 +24,8 @@ def --env configure-hc-url [app: string] {
     let slug = $"($app)-backup"
     let run_id = (random uuid -v 4)
 
-    let config = configure-ping-url $slug $run_id
-    $env.BACKUP_CONFIG = $config
+    configure-ping-url $slug $run_id
+    #$env.BACKUP_CONFIG = $config
 }
 
 # export-env { $env.SPAM = 'eggs' }
@@ -33,6 +33,7 @@ def --env configure-hc-url [app: string] {
 const app = "vaultwarden"
 def main [--provider: string] {
     configure-hc-url $app
+    print $"==> ($env.BACKUP_CONFIG)"
 
     with-healthcheck {
 
