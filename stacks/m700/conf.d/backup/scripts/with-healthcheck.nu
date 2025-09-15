@@ -34,7 +34,7 @@ export def configure-ping-url [slug: string, run_id: string] {
 }
 
 export def with-ping [operation: closure]: record -> nothing {
-  let url = $in
+  let url = $env.BACKUP_CONFIG
 
   let out = do $operation
 
