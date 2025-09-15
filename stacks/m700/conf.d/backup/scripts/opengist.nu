@@ -5,13 +5,13 @@ use sqlite-export.nu *
 use with-docker-container.nu *
 
 const app = "opengist"
-const data_docker_volume = "opengist-data"
-const restic_image = "restic/restic:0.18.0"
 
 def main [--provider: string] {
     let config = open backup.toml
 
-    $config.vaultwarden.hc_slug | configure-hc-api $config.hc.ping_key
+    const data_docker_volume = $config.($app).data_volume
+
+    $config.($app).hc_slug | configure-hc-api $config.hc.ping_key
 
     with-healthcheck {
         with-docker-container --name $app {
