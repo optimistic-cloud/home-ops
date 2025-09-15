@@ -15,13 +15,13 @@ def main [--provider: string] {
         with-docker-container --name $app {
 
             with-tmp-docker-volume {
-                let backup_docker_volume = $in
+                let export_docker_volume = $in
 
                 # Export sqlite database
                 {
                     src_volume: $data_docker_volume,
                     src_db: "/data/db.sqlite3",
-                    dest_volume: $backup_docker_volume,
+                    dest_volume: $export_docker_volume,
                     dest_db: "/export/db.sqlite3"
                 } | export-sqlite-db
 
