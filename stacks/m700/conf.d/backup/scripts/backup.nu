@@ -20,11 +20,12 @@ def export-sqlite-db []: record -> nothing {
     )
 }
 
-def configure-hc-url [app: string] {
+def --env configure-hc-url [app: string] {
     let slug = $"($app)-backup"
     let run_id = (random uuid -v 4)
 
-    configure-ping-url $slug $run_id
+    let config = configure-ping-url $slug $run_id
+    $env.BACKUP_CONFIG = $config
 }
 
 # export-env { $env.SPAM = 'eggs' }
