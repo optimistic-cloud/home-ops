@@ -53,11 +53,11 @@ def main [--provider: string] {
                     alpine sh -c $"cd /data && tar -xvzf /export/($dump_name)"
             )
             print "3.5"
-            ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | ignore
+            ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | complete | print
             print "4"
             rm -f $working_dir
             print "5"
-            ^docker run --rm -ti -v $"($export_docker_volume):/data:rw" alpine ls -la /data
+            ^docker run --rm -ti -v $"($export_docker_volume):/data:rw" alpine ls -la /data | complete | print
             print "6"  
 
             # let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
