@@ -34,7 +34,7 @@ def main [--provider: string] {
             )
 
             mkdir $working_dir
-            ^docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/ | complete | print
+            ^docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/
 
             (
                 ^docker run --rm -ti
@@ -42,7 +42,7 @@ def main [--provider: string] {
                     -v $"($export_docker_volume):/data:rw"
                     alpine sh -c $"cd /data && tar -xvzf /export/($dump_name)"
             )
-            ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | complete | print
+            ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)"
             rm -rf $working_dir
 
             let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
