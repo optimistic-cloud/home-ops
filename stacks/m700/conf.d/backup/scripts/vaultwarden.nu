@@ -8,7 +8,7 @@ const app = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
 
 def main [--provider: string] {
-    let config = open backup.toml | from toml
+    let config = open backup.toml
     
     $config.vaultwarden.hc_slug | configure-hc-api $config.hc.ping_key
 
