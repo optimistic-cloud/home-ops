@@ -21,7 +21,9 @@ export def send_fail [url: record] {
 }
 
 export def --env configure-hc-api []: string -> nothing {
+  let slug = $in
   let run_id = (random uuid -v 4)
+
   let config = {
     "scheme": "https",
     "host": "hc-ping.com",
