@@ -10,14 +10,14 @@ const restic_docker_image = "restic/restic:0.18.0"
 
 def main [--provider: string] {
     open env.toml | load-env
-    
+
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
     with-healthcheck {
         with-tmp-docker-volume {
             let export_docker_volume = $in
 
-            let working_dir = '/tmp' | path join $app
+            
             let dump_location = '/var/lib/gitea'
             let dump_name = 'gitea-dump.tar.gz'
 
@@ -32,6 +32,7 @@ def main [--provider: string] {
                     --type tar.gz
             ) | ignore
 
+            let working_dir = '/tmp' | path join $app
             mkdir $working_dir
             ^docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/ | ignore
 

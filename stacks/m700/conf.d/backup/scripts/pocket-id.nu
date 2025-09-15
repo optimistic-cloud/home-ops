@@ -15,9 +15,10 @@ def main [--provider: string] {
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
     with-healthcheck {
-        with-docker-container --name $app {
+        with-tmp-docker-volume {
+            # Stop and start container to ensure a clean state
+            with-docker-container --name $app {
 
-            with-tmp-docker-volume {
                 let export_docker_volume = $in
 
                 # Export sqlite database
@@ -32,34 +33,48 @@ def main [--provider: string] {
                         -v $"($export_docker_volume):/export:rw"
                         alpine/sqlite $"/export/($app).db" "PRAGMA integrity_check;" | ignore
                 )
+            }
 
-                let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
+            # TODO: refactor
+            # Copy /app/secrets/pocket-id.encfile to export volume
+            # let working_dir = '/tmp' | path join $app
+            # mkdir $working_dir
+            # ^docker cp pocket-id:/app/secrets/pocket-id.encfile /tmp/pocket-id/ | ignore
 
-                # Run backup with ping
-                with-ping {
-                    (
-                        ^docker run --rm -ti
-                            --env-file $"($app).($provider).restic.env"
-                            -v $"($data_docker_volume):/data:ro"
-                            -v $"($export_docker_volume):/export:ro"
-                            -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-                            -e TZ=Europe/Berlin
-                            $restic_docker_image --json --quiet backup /data /export
-                                    --skip-if-unchanged
-                                    --exclude-caches
-                                    --one-file-system
-                                    --tag=$"git_commit=($git_commit)"
-                    ) | complete
-                }
 
-                # Run check with ping
-                with-ping {
-                    (
-                        ^docker run --rm -ti
-                            --env-file $"($app).($provider).restic.env"
-                            $restic_docker_image --json --quiet check --read-data-subset 33%
-                    ) | complete
-                }
+            (
+                ^docker run --rm 
+                    -v $"($data_docker_volume):/data:ro"
+                    -v $"($export_docker_volume):/export:rw"
+                    alpine sh -c "cp /data/secrets/pocket-id.encfile /export/pocket-id.encfile"
+            ) | ignore
+
+            let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
+
+            # Run backup with ping
+            with-ping {
+                (
+                    ^docker run --rm -ti
+                        --env-file $"($app).($provider).restic.env"
+                        -v $"($data_docker_volume):/data:ro"
+                        -v $"($export_docker_volume):/export:ro"
+                        -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
+                        -e TZ=Europe/Berlin
+                        $restic_docker_image --json --quiet backup /data /export
+                                --skip-if-unchanged
+                                --exclude-caches
+                                --one-file-system
+                                --tag=$"git_commit=($git_commit)"
+                ) | complete
+            }
+
+            # Run check with ping
+            with-ping {
+                (
+                    ^docker run --rm -ti
+                        --env-file $"($app).($provider).restic.env"
+                        $restic_docker_image --json --quiet check --read-data-subset 33%
+                ) | complete
             }
         }
     }
