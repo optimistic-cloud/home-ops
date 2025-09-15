@@ -22,8 +22,8 @@ def export-sqlite-db []: record -> nothing {
 
 const app = "vaultwarden"
 def main [--provider: string] {
-    slug: $"($app) backup"
-    run_id: (random uuid -v 4)
+    let slug = $"($app) backup"
+    let run_id = (random uuid -v 4)
 
     let ping_url = configure-ping-url $slug $run_id
 
