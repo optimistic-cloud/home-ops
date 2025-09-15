@@ -33,14 +33,10 @@ def main [--provider: string] {
                         ^docker run --rm -ti
                             --env-file $"($provider).env"
                             --env-file $"($app).env"
-                            -v $"./($app).include.txt:/etc/restic/include.txt"
-                            -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
                             -v $"($data_docker_volume):/data:ro"
                             -v $"($tmp_docker_volume):/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-                            $restic_image --json --quiet backup
-                                    --files-from /etc/restic/include.txt
-                                    --exclude-file /etc/restic/exclude.txt
+                            $restic_image --json --quiet backup /data /export
                                     --skip-if-unchanged
                                     --exclude-caches
                                     --one-file-system
