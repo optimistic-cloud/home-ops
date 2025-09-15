@@ -1,5 +1,3 @@
-set dotenv-load
-
 help:
     just --list
 

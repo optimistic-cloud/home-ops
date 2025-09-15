@@ -1,5 +1,7 @@
 mod ops 'conf.d/backup/scripts'
 
+set dotenv-load
+
 alias u := update
 alias d := down
 
