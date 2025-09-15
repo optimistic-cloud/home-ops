@@ -17,6 +17,14 @@ def main [--provider: string] {
             with-tmp-docker-volume {
                 let backup_docker_volume = $in
 
+                # Prepare data for backup
+                (
+                    ^docker run --rm -ti
+                        -v $"($data_docker_volume):/app:ro"
+                        -v $"($backup_docker_volume):/data:rw"
+                        alpine cp -r /app/ /data/
+                )
+
                 # Export sqlite database
                 {
                     src_volume: $data_docker_volume,
@@ -24,13 +32,6 @@ def main [--provider: string] {
                     dest_volume: $backup_docker_volume,
                     dest_db: "/export/db.sqlite3"
                 } | export-sqlite-db
-
-                (
-                    ^docker run --rm -ti
-                        -v $"($data_docker_volume):/app:ro"
-                        -v $"($backup_docker_volume):/data:rw"
-                        alpine cp -r /app/ /data/
-                )
 
                 let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
