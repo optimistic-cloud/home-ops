@@ -26,31 +26,30 @@ def main [--provider: string] {
     [$app, 'backup'] | str join '-' | configure-hc-api
 
     with-healthcheck {
-
         with-docker-container --name $app {
 
-            const docker_volume_for_export = "vaultwarden-data-export" # could be random uuid
-            with-docker-volume --name $docker_volume_for_export {
+            const tmp_docker_volume_for_export = (random chars --length 4)
+            with-docker-volume --name $tmp_docker_volume_for_export {
 
                 # Export sqlite database
                 {
                     src_volume: "vaultwarden-data",
                     src_db: "/data/db.sqlite3",
-                    dest_volume: $docker_volume_for_export,
+                    dest_volume: $tmp_docker_volume_for_export,
                     dest_db: "/export/db.sqlite3"
                 } | export-sqlite-db
 
 
                 # Run backup with ping
                 with-ping {
-                    let out = (
+                    (
                         ^docker run --rm -ti
                             --env-file $"($provider).env"
                             --env-file $"($app).env"
                             -v $"./($app).include.txt:/etc/restic/include.txt"
                             -v $"./($app).exclude.txt:/etc/restic/exclude.txt"
                             -v "vaultwarden-data:/data:ro"
-                            -v $"($docker_volume_for_export):/export:ro"
+                            -v $"($tmp_docker_volume_for_export):/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             restic/restic --json --quiet backup
                                     --files-from /etc/restic/include.txt
