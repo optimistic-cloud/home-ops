@@ -4,22 +4,6 @@ use with-healthcheck.nu *
 use sqlite-export.nu *
 use with-docker-container.nu *
 
-def export-sqlite-db []: record -> nothing {
-    let config = $in
-
-    (
-        ^docker run --rm 
-            -v $"($config.src_volume):/data:ro"
-            -v $"($config.dest_volume):/export:rw"
-            alpine/sqlite $'($config.src_db)' $".backup '($config.dest_db)'"
-    )
-    (
-        ^docker run --rm 
-            -v $"($config.dest_volume):/export:rw"
-            alpine/sqlite $'($config.dest_db)' "PRAGMA integrity_check;"
-    )
-}
-
 const app = "vaultwarden"
 const restic_image = "restic/restic:0.18.0"
 

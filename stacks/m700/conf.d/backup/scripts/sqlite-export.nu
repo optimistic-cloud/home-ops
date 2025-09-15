@@ -5,6 +5,22 @@ export def abc []: record -> nothing {
     ^docker run --rm -v ($in.dest_volume):/export:rw alpine/sqlite $'($in.dest_db)' "PRAGMA integrity_check;"
 }
 
+export def export-sqlite-db []: record -> nothing {
+    let config = $in
+
+    (
+        ^docker run --rm 
+            -v $"($config.src_volume):/data:ro"
+            -v $"($config.dest_volume):/export:rw"
+            alpine/sqlite $'($config.src_db)' $".backup '($config.dest_db)'"
+    )
+    (
+        ^docker run --rm 
+            -v $"($config.dest_volume):/export:rw"
+            alpine/sqlite $'($config.dest_db)' "PRAGMA integrity_check;"
+    )
+}
+
 export def "sqlite export" [target: path]: string -> path {
     let db = $in
 
