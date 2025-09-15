@@ -14,6 +14,10 @@ def main [--provider: string] {
 
     $slug | configure-hc-api $config.hc.ping_key
 
+
+    #docker exec -u git gitea /usr/local/bin/gitea dump --work-path /tmp --file gitea-dump.tar.gz --config /etc/gitea/app.ini --database sqlite3 --type tar.gz
+    #docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/gitea-dump.tar.gz
+
     with-healthcheck {
         with-tmp-docker-volume {
             let export_docker_volume = $in
@@ -26,14 +30,15 @@ def main [--provider: string] {
             ^docker exec -u git gitea mkdir -p $dump_location | ignore
             print "1"
             (
-            ^docker exec -u git gitea /usr/local/bin/gitea
-                dump --work-path /tmp
-                --file $dump_name
-                --config /etc/gitea/app.ini
-                --database sqlite3
-                --type tar.gz
-                | ignore
+                ^docker exec -u git gitea /usr/local/bin/gitea
+                    dump --work-path /tmp
+                    --file $dump_name
+                    --config /etc/gitea/app.ini
+                    --database sqlite3
+                    --type tar.gz
+                    | ignore
             )
+
             print "2"
             ^docker cp $"gitea:($dump_location)/($dump_name)" $working_dir | ignore
             print "3"
