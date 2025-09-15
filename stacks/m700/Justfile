@@ -1,3 +1,5 @@
+mod ops 'conf.d/backup/scripts'
+
 alias u := update
 alias d := down
 
@@ -31,10 +33,10 @@ init app provider:
 
 [group('restic')]
 [doc('Backup application')]
-backup app provider:
+abackup app provider:
     docker exec -it backup-toolkit bar.sh backup {{app}} {{provider}}
 
 [group('restic')]
 [doc('Restore backup for an application')]
-restore app provider:
+arestore app provider:
     docker exec -it backup-toolkit bar.sh restore {{app}} {{provider}}
