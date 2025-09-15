@@ -24,12 +24,17 @@ def main [--provider: string] {
                 let export_docker_volume = $in
 
                 # Export sqlite database
-                {
-                    src_volume: $data_docker_volume,
-                    src_db: "/data/db.sqlite3",
-                    dest_volume: $export_docker_volume,
-                    dest_db: "/export/db.sqlite3"
-                } | export-sqlite-db
+                (
+                    ^docker run --rm 
+                        -v $"($data_docker_volume):/data:ro"
+                        -v $"($export_docker_volume):/export:rw"
+                        alpine/sqlite /data/db.sqlite3 ".backup '/export/db.sqlite3'"
+                )
+                (
+                    ^docker run --rm 
+                        -v $"($export_docker_volume):/export:rw"
+                        alpine/sqlite /export/db.sqlite3 "PRAGMA integrity_check;" | ignore
+                )
 
                 let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
