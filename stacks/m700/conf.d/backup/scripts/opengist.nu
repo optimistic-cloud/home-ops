@@ -37,8 +37,6 @@ def main [--provider: string] {
                             -v $"($tmp_docker_volume):/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             $restic_image --json --quiet backup /data /export
-                                    --files-from /etc/restic/include.txt
-                                    --exclude-file /etc/restic/exclude.txt
                                     --skip-if-unchanged
                                     --exclude-caches
                                     --one-file-system
