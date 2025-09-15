@@ -60,34 +60,34 @@ def main [--provider: string] {
             ^docker run --rm -ti -v $"($export_docker_volume):/data:rw" alpine ls -la /data | complete | print
             print "6"  
 
-            # let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
+            let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
-            # # Run backup with ping
-            # with-ping {
-            #     (
-            #         ^docker run --rm -ti
-            #             --env-file $"($provider).env"
-            #             --env-file $"($app).env"
-            #             -v $"($export_docker_volume):/export:ro"
-            #             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-            #             -e TZ=Europe/Berlin
-            #             $config.restic.docker_image --json --quiet backup /data
-            #                     --skip-if-unchanged
-            #                     --exclude-caches
-            #                     --one-file-system
-            #                     --tag=$"git_commit=($git_commit)"
-            #     ) | complete
-            # }
+            # Run backup with ping
+            with-ping {
+                (
+                    ^docker run --rm -ti
+                        --env-file $"($provider).env"
+                        --env-file $"($app).env"
+                        -v $"($export_docker_volume):/export:ro"
+                        -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
+                        -e TZ=Europe/Berlin
+                        $config.restic.docker_image --json --quiet backup /export
+                                --skip-if-unchanged
+                                --exclude-caches
+                                --one-file-system
+                                --tag=$"git_commit=($git_commit)"
+                ) | complete
+            }
 
-            # # Run check with ping
-            # with-ping {
-            #     (
-            #         ^docker run --rm -ti
-            #             --env-file $"($provider).env"
-            #             --env-file $"($app).env"
-            #             $config.restic.docker_image --json --quiet check --read-data-subset 33%
-            #     ) | complete
-            # }
+            # Run check with ping
+            with-ping {
+                (
+                    ^docker run --rm -ti
+                        --env-file $"($provider).env"
+                        --env-file $"($app).env"
+                        $config.restic.docker_image --json --quiet check --read-data-subset 33%
+                ) | complete
+            }
         }
     }
 }
