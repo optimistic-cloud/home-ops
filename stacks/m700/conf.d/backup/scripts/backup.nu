@@ -28,7 +28,7 @@ def main [--provider: string] {
     with-healthcheck {
         with-docker-container --name $app {
 
-            const tmp_docker_volume_for_export = (random chars --length 4)
+            let tmp_docker_volume_for_export = (random chars --length 4)
             with-docker-volume --name $tmp_docker_volume_for_export {
 
                 # Export sqlite database
