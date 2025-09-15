@@ -42,6 +42,7 @@ def main [--provider: string] {
                             --env-file $"($app).env"
                             -v $"($backup_docker_volume):/data:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
+                            -e TZ=Europe/Berlin
                             $restic_image --json --quiet backup /data
                                     --skip-if-unchanged
                                     --exclude-caches
