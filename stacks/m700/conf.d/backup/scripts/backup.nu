@@ -32,11 +32,9 @@ def --env configure-hc-url [app: string] {
 
 const app = "vaultwarden"
 def main [--provider: string] {
-    let ping_url = configure-hc-url $app
+    configure-hc-url $app
 
-    print $env.BACKUP_CONFIG
-
-    $ping_url | with-healthcheck {
+    with-healthcheck {
 
         with-docker-container --name $app {
 

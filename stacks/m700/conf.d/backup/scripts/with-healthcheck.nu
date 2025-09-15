@@ -48,7 +48,7 @@ export def with-ping [operation: closure]: record -> nothing {
 }
 
 export def main [operation: closure]: record -> nothing {
-  let url = $in
+  let url = $env.BACKUP_CONFIG | from record
   
   send_start $url
 
