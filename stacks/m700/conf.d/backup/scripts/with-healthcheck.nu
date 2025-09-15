@@ -38,7 +38,7 @@ export def with-ping [operation: closure] {
   
 
   let out = do $operation
-  print $out
+  print $"==>($out)"
 
   let url = $url | to_url ($out.exit_code | into string)
 
