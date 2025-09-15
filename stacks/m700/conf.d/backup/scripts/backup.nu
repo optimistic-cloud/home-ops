@@ -20,7 +20,7 @@ def export-sqlite-db []: record -> nothing {
     )
 }
 
-def configure-hc-url [app: string]: record {
+def configure-hc-url [app: string] {
     let slug = $"($app)-backup"
     let run_id = (random uuid -v 4)
 
