@@ -1,7 +1,6 @@
 use std/log
 
 use with-healthcheck.nu *
-use sqlite-export.nu *
 use with-docker-container.nu *
 
 const app = "opengist"
