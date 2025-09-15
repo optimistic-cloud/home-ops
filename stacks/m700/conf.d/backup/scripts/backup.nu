@@ -24,6 +24,7 @@ def main [--provider: string] {
                     dest_db: "/export/db.sqlite3"
                 } | export-sqlite-db
 
+                let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
                 # Run backup with ping
                 with-ping {
@@ -42,7 +43,7 @@ def main [--provider: string] {
                                     --skip-if-unchanged
                                     --exclude-caches
                                     --one-file-system
-                                    --tag=test
+                                    --tag=$"git_commit=($git_commit)"
                     ) | complete
                 }
 
