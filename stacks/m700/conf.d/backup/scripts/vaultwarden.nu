@@ -35,6 +35,14 @@ def main [--provider: string] {
 
                 let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
+                (
+                    docker run --rm -ti
+                        -v vaultwarden-data:/backup/data:ro
+                        -v $"($export_docker_volume):/backup/export:ro"
+                        restic/restic:0.18.0 sh -c "ls -laR /backup"
+                ) | complete | print
+            
+
                 # Run backup with ping
                 with-ping {
                     let out = (
