@@ -81,15 +81,21 @@ export def export-env-from-container-to-volume []: record -> nothing {
   let dest_volume = $in.dest_volume
 
   let env_file = mktemp env_file.XXX
-  ^docker exec $in.container printenv | save --force $env_file | ignore
 
-  (
-    ^docker run --rm -ti 
-      -v $"($dest_volume):/data:rw"
-      -v $"($env_file):/import/env:ro"
-      alpine sh -c $'cp /import/env /data/env' | ignore
-  )
-  rm $env_file | ignore
+  try {
+    ^docker exec $in.container printenv | save --force $env_file | ignore
+
+    (
+      ^docker run --rm -ti 
+        -v $"($dest_volume):/data:rw"
+        -v $"($env_file):/import/env:ro"
+        alpine sh -c $'cp /import/env /data/env' | ignore
+    )
+    rm $env_file | ignore
+  } catch {|err|
+    rm $env_file | ignore
+    error make $err
+  }
 }
 
 export def get-current-git-commit []: nothing -> string {
