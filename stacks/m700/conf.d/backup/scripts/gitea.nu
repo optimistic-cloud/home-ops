@@ -61,35 +61,45 @@ def main [--provider: string] {
             rm -rf $working_dir
 
             # Export env from container
-            {
-                container: $container
-                dest_volume: $backup_docker_volume
-            } | export-env-from-container-to-volume
+            $container_name | export-env-from-container --volume $backup_docker_volume
 
             # Run backup with ping
             with-ping {
-                (
-                    ^docker run --rm -ti
-                        --env-file $"($app).($provider).restic.env"
-                        -v $"($backup_docker_volume):/export:ro"
-                        -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-                        -e TZ=Europe/Berlin
-                        $restic_docker_image --json --quiet backup /export
-                                --skip-if-unchanged
-                                --exclude-caches
-                                --one-file-system
-                                --tag=$"git_commit=(get-current-git-commit)"
-                )
+                let volumes = {
+                    config: $backup_docker_volume
+                }
+                $"($app).($provider).restic.env" | restic-backup $volumes
             }
 
             # Run check with ping
             with-ping {
-                (
-                    ^docker run --rm -ti
-                        --env-file $"($app).($provider).restic.env"
-                        $restic_docker_image --json --quiet check --read-data-subset 33%
-                )
+                $"($app).($provider).restic.env" | restic-check
             }
+
+            # # Run backup with ping
+            # with-ping {
+            #     (
+            #         ^docker run --rm -ti
+            #             --env-file $"($app).($provider).restic.env"
+            #             -v $"($backup_docker_volume):/export:ro"
+            #             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
+            #             -e TZ=Europe/Berlin
+            #             $restic_docker_image --json --quiet backup /export
+            #                     --skip-if-unchanged
+            #                     --exclude-caches
+            #                     --one-file-system
+            #                     --tag=$"git_commit=(get-current-git-commit)"
+            #     )
+            # }
+
+            # # Run check with ping
+            # with-ping {
+            #     (
+            #         ^docker run --rm -ti
+            #             --env-file $"($app).($provider).restic.env"
+            #             $restic_docker_image --json --quiet check --read-data-subset 33%
+            #     )
+            # }
         }
     }
 }
