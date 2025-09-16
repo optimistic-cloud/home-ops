@@ -120,12 +120,17 @@ export def restic-backup [volumes: record]: path -> nothing {
     | flatten
   )
 
+  echo "vol_flags to json:"
+  echo ($vol_flags | to json)
+  echo "vol_flags items:"
+  $vol_flags | each {|k| echo $"ITEM: ($k)" }
+
   (
     ^docker run --rm -ti 
       --env-file $env_file ...$vol_flags
       -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
       -e TZ=Europe/Berlin
-      $restic_docker_image --json --quiet backup /backup
+      $restic_docker_image --json --quiet backup $backup_path
               --skip-if-unchanged
               --exclude-caches
               --tag=$"git_commit=(get-current-git-commit)"
