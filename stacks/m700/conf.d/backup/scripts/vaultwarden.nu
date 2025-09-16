@@ -1,5 +1,6 @@
 use std/log
 
+use with-lockfile.nu *
 use with-healthcheck.nu *
 use with-docker-container.nu *
 use utils.nu *
@@ -20,7 +21,7 @@ def main [--provider: string] {
     
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
-    #with-lockfile {
+    with-lockfile {
         with-healthcheck {
             with-backup-docker-volume {
                 let backup_docker_volume = $in
@@ -68,5 +69,5 @@ def main [--provider: string] {
                 }
             }
         }
-    #}
+    }
 }
