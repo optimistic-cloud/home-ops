@@ -5,7 +5,7 @@ use with-docker-container.nu *
 
 const app = "pocket-id"
 const hc_slug = "pocket-id-backup"
-const contaner = "pocket-id"
+const container = "pocket-id"
 const data_docker_volume = "pocket-id-data"
 
 
