@@ -155,6 +155,12 @@ export def restic-ls [--env-file: path]: nothing -> nothing {
   ^docker run --rm -ti --env-file $envs $restic_docker_image ls latest
 }
 
+export def restic-snapshots [--env-file: path]: nothing -> nothing {
+  let envs = $env_file | path expand
+
+  ^docker run --rm -ti --env-file $envs $restic_docker_image snapshots latest -n 5
+}
+
 # backup is done for a single volume
 
 # usecases:

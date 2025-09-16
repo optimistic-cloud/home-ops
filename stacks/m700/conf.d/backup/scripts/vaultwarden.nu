@@ -56,3 +56,9 @@ def "main ls" [--provider: string] {
 
     restic-ls --env-file $env_file
 }
+
+def "main snapshots" [--provider: string] {
+    let env_file = $"($app).($provider).restic.env"
+
+    restic-snapshots --env-file $env_file
+}
