@@ -35,7 +35,7 @@ def main [--provider: string] {
 
                 let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
-                ^docker run --rm -ti -v $"($data_docker_volume):/backup/data:ro" -v $"($export_docker_volume):/backup/export:ro" alpine ls -laR /backup | complete | print
+                #^docker run --rm -ti -v $"($data_docker_volume):/backup/data:ro" -v $"($export_docker_volume):/backup/export:ro" alpine ls -laR /backup | complete | print
             
 
                 # Run backup with ping
@@ -47,15 +47,17 @@ def main [--provider: string] {
                             -v $"($export_docker_volume):/backup/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             -e TZ=Europe/Berlin
-                            $restic_docker_image --json --verbose=2 backup /backup
+                            $restic_docker_image --json --verbose=2 backup /backup/data
                                     --one-file-system
+                                    --skip-if-unchanged
+                                    --exclude-caches
                                     --tag=$"git_commit=($git_commit)"
                     ) | complete
                     print $out
                     $out
                 }
-                                                    #--skip-if-unchanged
-                                    #--exclude-caches
+                                                    #
+                                    #
                 
                 # Run check with ping
                 with-ping {
