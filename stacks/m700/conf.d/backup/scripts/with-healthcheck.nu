@@ -20,6 +20,10 @@ export def send_fail [url: record] {
   $url | to_url 'fail' | do_get
 }
 
+def is-json [data: string] {
+    do -i { $data | from json } | complete | get success
+}
+
 export def --env configure-hc-api [ping_key: string]: string -> nothing {
   let slug = $in
   let run_id = (random uuid -v 4)
@@ -42,6 +46,10 @@ export def with-ping [operation: closure] {
   let url = $env.BACKUP_CONFIG
 
   let out = do $operation
+
+  if not is-json $out {
+      error make { msg: "Not valid JSON: ($out)" }
+  }
 
   let url = $url | to_url ($out.exit_code | into string)
 
