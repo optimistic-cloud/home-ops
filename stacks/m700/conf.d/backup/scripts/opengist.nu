@@ -2,7 +2,7 @@ use std/log
 
 use with-lockfile.nu *
 use with-healthcheck.nu *
-use with-docker-container.nu *
+use with-stopped-docker-container.nu *
 use utils.nu *
 
 const app = "opengist"
@@ -27,7 +27,7 @@ def main [--provider: string] {
             with-backup-docker-volume {
                 let backup_docker_volume = $in
 
-                with-docker-container --name $app {
+                with-stopped-docker-container --name $app {
                     # Export sqlite database
                     {
                         src_volume: $data_docker_volume

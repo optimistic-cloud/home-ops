@@ -2,7 +2,7 @@ use std/log
 
 use with-lockfile.nu *
 use with-healthcheck.nu *
-use with-docker-container.nu *
+use with-stopped-docker-container.nu *
 use utils.nu *
 
 const app = "vaultwarden"
@@ -27,7 +27,7 @@ def main [--provider: string] {
                 let backup_docker_volume = $in
 
                 # Stops the container if it is running, and starts it again afterwards
-                with-docker-container --name $app {
+                with-stopped-docker-container --name $app {
                     # Export sqlite database
                     {
                         src_volume: $data_docker_volume

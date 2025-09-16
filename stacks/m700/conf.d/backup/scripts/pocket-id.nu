@@ -1,7 +1,7 @@
 use std/log
 
 use with-healthcheck.nu *
-use with-docker-container.nu *
+use with-stopped-docker-container.nu *
 use utils.nu *
 
 const app = "pocket-id"
@@ -28,7 +28,7 @@ def main [--provider: string] {
             let backup_docker_volume = $in
 
             # Stop and start container to ensure a clean state
-            with-docker-container --name $app {
+            with-stopped-docker-container --name $app {
                 # Export sqlite database
                 let config = {
                     src_volume: $data_docker_volume
