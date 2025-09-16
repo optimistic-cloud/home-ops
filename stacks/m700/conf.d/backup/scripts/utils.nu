@@ -130,9 +130,10 @@ export def restic-backup [--env-file: path]: record -> nothing {
       -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
       -e TZ=Europe/Berlin
       $restic_docker_image --json --quiet backup $backup_path
-              --skip-if-unchanged
-              --exclude-caches
-              --tag=$"git_commit=(get-current-git-commit)"
+        --skip-if-unchanged
+        --exclude-caches
+        --tag=$"git_commit=(get-current-git-commit)"
+      | complete
   )
 }
 
@@ -140,9 +141,10 @@ export def restic-check [--env-file: path, --subset: string = "33%"] {
   let envs = $env_file | path expand
 
   (
-    ^docker run --rm -ti
-        --env-file $envs
-        $restic_docker_image --json --quiet check --read-data-subset $subset
+    ^docker run --rm -ti 
+      --env-file $envs 
+      $restic_docker_image --json --quiet check --read-data-subset $subset
+      | complete
   )
 }
 
