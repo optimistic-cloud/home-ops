@@ -54,7 +54,7 @@ def main [--provider: string] {
             # Export env from container
             {
                 container: $container
-                dest_volume: $config_docker_volume
+                dest_volume: $backup_docker_volume
             } | export-env-from-container-to-volume
 
             # Run backup with ping
