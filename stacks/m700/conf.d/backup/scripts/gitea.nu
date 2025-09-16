@@ -80,19 +80,19 @@ def main [--provider: string] {
 }
 
 def "main init" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic init 
+    $"($app).($provider).restic.env" | with-restic ["init"]
 }
 
 def "main stats" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic stats 
+    $"($app).($provider).restic.env" | with-restic ["stats"] 
 }
 
 def "main ls" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic "ls latest" 
+    $"($app).($provider).restic.env" | with-restic ["ls", "latest"] 
 }
 
 def "main snapshots" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic "snapshots --latest 5" 
+    $"($app).($provider).restic.env" | with-restic ["snapshots", "--latest", "5"] 
 }
 
 def "main restore" [--provider: string] { 
