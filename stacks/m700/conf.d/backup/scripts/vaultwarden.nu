@@ -53,7 +53,7 @@ def main [--provider: string] {
                                     --exclude-caches
                                     --tag=$"git_commit=($git_commit)"
                     ) | complete
-                    print $out
+                    print $out.stdout
                     $out
                 }
                                                     #
