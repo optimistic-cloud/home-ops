@@ -24,10 +24,12 @@ def main [--provider: string] {
     with-healthcheck {
 
         with-backup-docker-volume {
+            print 11
             let backup_docker_volume = $in
-
+print 22
             # Stop and start container to ensure a clean state
             with-docker-container --name $app {
+                print 33
                 # Export sqlite database
                 {
                     src_volume: $data_docker_volume
@@ -35,8 +37,9 @@ def main [--provider: string] {
                     src_path: "/data/pocket-id.db"
                     dest_path: "/export/pocket-id.db"
                 } | export-sqlite-database-in-volume
+                print 44
             }
-
+print 55
             # TODO: refactor
             # Copy /app/secrets/pocket-id.encfile to export volume
             # let working_dir = '/tmp' | path join $app
@@ -50,7 +53,7 @@ def main [--provider: string] {
                     -v $"($backup_docker_volume):/export:rw"
                     alpine sh -c "cp /data/secrets/pocket-id.encfile /export/pocket-id.encfile"
             ) | ignore
-
+print 66
             # Export env from container
             {
                 container: $container
