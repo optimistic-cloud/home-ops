@@ -24,14 +24,14 @@ def main [--provider: string] {
     with-healthcheck {
 
         with-backup-docker-volume {
-            let export_docker_volume = $in
+            let backup_docker_volume = $in
 
             # Stop and start container to ensure a clean state
             with-docker-container --name $app {
                 # Export sqlite database
                 {
                     src_volume: $data_docker_volume
-                    dest_volume: $export_docker_volume
+                    dest_volume: $backup_docker_volume
                     src_path: "/data/pocket-id.db"
                     dest_path: "/export/pocket-id.db"
                 } | export-sqlite-database-in-volume
@@ -47,7 +47,7 @@ def main [--provider: string] {
             (
                 ^docker run --rm 
                     -v $"($data_docker_volume):/data:ro"
-                    -v $"($export_docker_volume):/export:rw"
+                    -v $"($backup_docker_volume):/export:rw"
                     alpine sh -c "cp /data/secrets/pocket-id.encfile /export/pocket-id.encfile"
             ) | ignore
 
@@ -63,7 +63,7 @@ def main [--provider: string] {
                     ^docker run --rm -ti
                         --env-file $"($app).($provider).restic.env"
                         -v $"($data_docker_volume):/data:ro"
-                        -v $"($export_docker_volume):/export:ro"
+                        -v $"($backup_docker_volume):/export:ro"
                         -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                         -e TZ=Europe/Berlin
                         $restic_docker_image --json --quiet backup /data /export

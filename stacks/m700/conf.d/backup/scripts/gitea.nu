@@ -21,7 +21,7 @@ def main [--provider: string] {
     with-healthcheck {
 
         with-backup-docker-volume {
-            let export_docker_volume = $in
+            let backup_docker_volume = $in
 
             
             let dump_location = '/var/lib/gitea'
@@ -41,7 +41,7 @@ def main [--provider: string] {
             # not ready to use
             #{
             #    container: gitea
-            #    dest_volume: $export_docker_volume
+            #    dest_volume: $backup_docker_volume
             #    src_path: $in.src_path
             #    dest_path: $in.dest_path
             #} | copy-file-from-container-to-volume
@@ -54,7 +54,7 @@ def main [--provider: string] {
             (
                 ^docker run --rm -ti
                     -v $"($working_dir):/export:ro"
-                    -v $"($export_docker_volume):/data:rw"
+                    -v $"($backup_docker_volume):/data:rw"
                     alpine sh -c $"cd /data && tar -xvzf /export/($dump_name)"
             ) | ignore
             ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | ignore
@@ -71,7 +71,7 @@ def main [--provider: string] {
                 (
                     ^docker run --rm -ti
                         --env-file $"($app).($provider).restic.env"
-                        -v $"($export_docker_volume):/export:ro"
+                        -v $"($backup_docker_volume):/export:ro"
                         -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                         -e TZ=Europe/Berlin
                         $restic_docker_image --json --quiet backup /export
