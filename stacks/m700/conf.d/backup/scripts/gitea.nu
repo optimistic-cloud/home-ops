@@ -22,11 +22,13 @@ def main [--provider: string] {
             with-backup-docker-volume {
                 let backup_docker_volume = $in
 
+                let dump_location = '/var/lib/gitea'
+                let gitea_archive = 'gitea-dump.tar.gz'
+
                 # Create gitea-dump.tar.gz
                 # https://docs.gitea.com/administration/backup-and-restore
                 do {
-                    let dump_location = '/var/lib/gitea'
-                    let gitea_archive = 'gitea-dump.tar.gz'
+
 
                     # remove old dump, create new dump 
                     ^docker exec -u git gitea rm -f $"($dump_location)/($gitea_archive)"
