@@ -53,12 +53,11 @@ def main [--provider: string] {
                 # Export env from container
                 $container_name | export-env-from-container --volume $backup_docker_volume
 
-
                 let env_file = $"($app).($provider).restic.env"
 
                 # Run backup with ping
                 with-ping {
-                    let volumes = {
+                    {
                         data: $data_docker_volume
                         config: $backup_docker_volume
                     } | restic-backup --env-file $env_file

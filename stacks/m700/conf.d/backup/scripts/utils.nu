@@ -115,13 +115,9 @@ export def restic-backup [--env-file: path]: record -> record {
 
   const backup_path = "/backup"
   
-  def trasform-volumes-to-docker-flags []: record -> list<string> {
-    $volumes
+  let vol_flags = $volumes
     | items {|key, value| [ "-v" ($value + $":($backup_path)/" + ($key | str trim)) ] }
     | flatten
-  }
-
-  let vol_flags = $volumes | trasform-volumes-to-docker-flags
 
   # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
   (
