@@ -40,11 +40,11 @@ def main [--provider: string] {
                     (
                         ^docker run --rm -ti
                             --env-file $"($app).($provider).restic.env"
-                            -v $"($data_docker_volume):/data:ro"
-                            -v $"($export_docker_volume):/export:ro"
+                            -v $"($data_docker_volume):/backup/data:ro"
+                            -v $"($export_docker_volume):/backup/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             -e TZ=Europe/Berlin
-                            $restic_docker_image --json --quiet backup /data /export
+                            $restic_docker_image --json --quiet backup /backup
                                     --skip-if-unchanged
                                     --exclude-caches
                                     --one-file-system
