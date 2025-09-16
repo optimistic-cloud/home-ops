@@ -23,10 +23,10 @@ def main [--provider: string] {
 
                 # Export sqlite database
                 {
-                    src_volume = "vaultwarden-data"
-                    dest_volume = $in
-                    src_path = "/data/db.sqlite3"
-                    dest_path = "/export/db.sqlite3"
+                    src_volume: "vaultwarden-data"
+                    dest_volume: $in
+                    src_path: "/data/db.sqlite3"
+                    dest_path: "/export/db.sqlite3"
                 } | export-sqlite-database-in-volume
 
                 "example.env.toml" | add-file-to-volume $config_docker_volume
