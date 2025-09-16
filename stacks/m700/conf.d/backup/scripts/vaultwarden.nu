@@ -41,6 +41,8 @@ def main [--provider: string] {
                     dest_volume: $backup_docker_volume
                 } | export-env-from-container-to-volume
 
+                print $backup_docker_volume
+
                 # Run backup with ping
                 # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
                 with-ping {
