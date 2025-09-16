@@ -31,16 +31,12 @@ def main [--provider: string] {
                     # Export sqlite database
                     {
                         src_volume: $data_docker_volume
-                        dest_volume: $backup_docker_volume
                         src_path: "/data/db.sqlite3"
-                    } | export-sqlite-database-in-volume
+                    } | export-sqlite-database-in-volume --volume $backup_docker_volume
                 }
 
                 # Export env from container
-                {
-                    container_name: $container_name
-                    dest_volume: $backup_docker_volume
-                } | export-env-from-container-to-volume
+                $container_name | export-env-from-container-to-volume --volume $backup_docker_volume
 
                 # Run backup with ping
                 # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)

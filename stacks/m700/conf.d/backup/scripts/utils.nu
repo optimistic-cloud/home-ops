@@ -32,9 +32,8 @@ export def add-file-to-volume [volume: string]: path -> nothing {
   )
 }
 
-export def export-sqlite-database-in-volume []: record -> nothing {
+export def export-sqlite-database-in-volume [volume: string]: record -> nothing {
   let src_volume = $in.src_volume
-  let dest_volume = $in.dest_volume
   let src_path = $in.src_path
 
   let db_name = ($src_path | path basename)
@@ -42,13 +41,13 @@ export def export-sqlite-database-in-volume []: record -> nothing {
   (
     ^docker run --rm 
         -v $"($src_volume):/data:ro"
-        -v $"($dest_volume):/export:rw"
+        -v $"($volume):/export:rw"
         alpine/sqlite $src_path $".backup '/export/($db_name)'"
   )
 
   (
     ^docker run --rm 
-        -v $"($dest_volume):/export:rw"
+        -v $"($volume):/export:rw"
         alpine/sqlite $"/export/($db_name)" "PRAGMA integrity_check;"
   ) | ignore
 
@@ -80,9 +79,8 @@ export def copy-file-from-container-to-volume []: record -> nothing {
    }
 }
 
-export def export-env-from-container-to-volume []: record -> nothing {
-  let container_name = $in.container_name
-  let dest_volume = $in.dest_volume
+export def export-env-from-container-to-volume [--volume: string]: string -> nothing {
+  let container_name = $in
 
   let env_file = mktemp env_file.XXX
 
@@ -91,7 +89,7 @@ export def export-env-from-container-to-volume []: record -> nothing {
 
     (
       ^docker run --rm -ti 
-        -v $"($dest_volume):/data:rw"
+        -v $"($volume):/data:rw"
         -v $"($env_file):/import/env:ro"
         alpine sh -c 'cp /import/env /data/env'
     )
