@@ -7,7 +7,7 @@ use utils.nu *
 
 const app = "vaultwarden"
 const hc_slug = "vaultwarden-backup"
-const container = "vaultwarden"
+const container_name = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
 
 const restic_docker_image = "restic/restic:0.18.0"
@@ -38,7 +38,7 @@ def main [--provider: string] {
 
                 # Export env from container
                 {
-                    container: $container
+                    container_name: $container_name
                     dest_volume: $backup_docker_volume
                 } | export-env-from-container-to-volume
 

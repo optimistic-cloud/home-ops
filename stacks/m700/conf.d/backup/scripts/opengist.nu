@@ -7,7 +7,7 @@ use utils.nu *
 
 const app = "opengist"
 const hc_slug = "opengist-backup"
-const container = "opengist"
+const container_name = "opengist"
 const data_docker_volume = "opengist-data"
 
 const restic_docker_image = "restic/restic:0.18.0"
@@ -38,7 +38,7 @@ def main [--provider: string] {
 
                 # Export env from container
                 {
-                    container: $container
+                    container_name: $container_name
                     dest_volume: $backup_docker_volume
                 } | export-env-from-container-to-volume
 

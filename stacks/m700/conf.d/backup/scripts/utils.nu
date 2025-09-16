@@ -81,13 +81,13 @@ export def copy-file-from-container-to-volume []: record -> nothing {
 }
 
 export def export-env-from-container-to-volume []: record -> nothing {
-  let container = $in.container
+  let container_name = $in.container_name
   let dest_volume = $in.dest_volume
 
   let env_file = mktemp env_file.XXX
 
   try {
-    ^docker exec $container printenv | save --force $env_file
+    ^docker exec $container_name printenv | save --force $env_file
 
     (
       ^docker run --rm -ti 
