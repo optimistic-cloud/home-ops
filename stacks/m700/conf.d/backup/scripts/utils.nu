@@ -40,7 +40,7 @@ export def export-sqlite-database-in-volume []: record -> nothing {
 
   let db_name = ($src_path | path basename)
 
-  print a
+  print $db_name
   (
     ^docker run --rm 
         -v $"($src_volume):/data:ro"
