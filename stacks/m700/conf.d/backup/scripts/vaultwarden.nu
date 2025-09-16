@@ -19,22 +19,22 @@ def main [--provider: string] {
         with-docker-container --name $app {
 
             with-tmp-docker-volume {
-                let export_docker_volume = $in
+                let config_docker_volume = $in
 
                 # Export sqlite database
                 (
                     ^docker run --rm 
                         -v $"($data_docker_volume):/data:ro"
-                        -v $"($export_docker_volume):/export:rw"
+                        -v $"($config_docker_volume):/export:rw"
                         alpine/sqlite /data/db.sqlite3 ".backup '/export/db.sqlite3'"
                 )
                 (
                     ^docker run --rm 
-                        -v $"($export_docker_volume):/export:rw"
+                        -v $"($config_docker_volume):/export:rw"
                         alpine/sqlite /export/db.sqlite3 "PRAGMA integrity_check;" | ignore
                 )
 
-                "example.env.toml" | add-file-to-volume $export_docker_volume
+                "example.env.toml" | add-file-to-volume $config_docker_volume
 
                 let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
@@ -45,7 +45,7 @@ def main [--provider: string] {
                         ^docker run --rm -ti
                             --env-file $"($app).($provider).restic.env"
                             -v $"($data_docker_volume):/backup/data:ro"
-                            -v $"($export_docker_volume):/backup/export:ro"
+                            -v $"($config_docker_volume):/backup/config:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             -e TZ=Europe/Berlin
                             $restic_docker_image --json --quiet backup /backup
