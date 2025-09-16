@@ -113,14 +113,14 @@ export def restic-backup [volumes: record]: path -> nothing {
   let env_file = $in | path expand
 
   # build -v flags where keys are docker volume names and values are mount paths
-  let vol_flags = $volumes | items {|key, value| $'-v ($value):/backup/($key):ro' } | str join " "
+  let vol_flags = $volumes | items {|key, value| $'-v ($value):/backup/($key):ro' }
 
   print $vol_flags
 
   (
     ^docker run --rm -ti 
       --env-file $env_file 
-      $vol_flags
+      $vol_flags...
       -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
       -e TZ=Europe/Berlin
       $restic_docker_image --json --quiet backup /backup
