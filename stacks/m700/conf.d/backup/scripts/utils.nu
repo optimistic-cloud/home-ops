@@ -120,7 +120,7 @@ export def restic-backup [volumes: record]: path -> nothing {
   (
     ^docker run --rm -ti
         --env-file $env_file
-        $vol_flags
+        ($vol_flags)
         -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
         -e TZ=Europe/Berlin
         $restic_docker_image --json --quiet backup /backup
