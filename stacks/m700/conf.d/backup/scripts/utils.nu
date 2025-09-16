@@ -109,21 +109,24 @@ export def get-current-git-commit []: nothing -> string {
 
 const restic_docker_image = "restic/restic:0.18.0"
 
-export def restic-backup [volumes: record]: path -> nothing {
-  let env_file = $in | path expand
+export def restic-backup [--env-file: path]: record -> nothing {
+  let envs = $env_file | path expand
+  let volumes = $in.volumes
 
   const backup_path = "/backup"
   
-  let vol_flags = (
+  def trasform-volumes-to-docker-flags [volumes: record]: record {
     $volumes
     | items {|key, value| [ "-v" ($value + $":($backup_path)/" + ($key | str trim)) ] }
     | flatten
-  )
+  }
+
+  let vol_flags = $volumes | trasform-volumes-to-docker-flags
 
   # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
   (
     ^docker run --rm -ti 
-      --env-file $env_file ...$vol_flags
+      --env-file $envs ...$vol_flags
       -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
       -e TZ=Europe/Berlin
       $restic_docker_image --json --quiet backup $backup_path
@@ -133,12 +136,12 @@ export def restic-backup [volumes: record]: path -> nothing {
   )
 }
 
-export def restic-check [--subset: string = "33%"]: path -> nothing {
-  let env_file = $in | path expand
+export def restic-check [--env-file: path, --subset: string = "33%"] {
+  let envs = $env_file | path expand
 
   (
     ^docker run --rm -ti
-        --env-file $env_file
+        --env-file $envs
         $restic_docker_image --json --quiet check --read-data-subset $subset
   )
 }
