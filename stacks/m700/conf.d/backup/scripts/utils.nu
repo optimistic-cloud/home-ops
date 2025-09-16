@@ -33,6 +33,7 @@ export def add-file-to-volume [volume: string]: path -> nothing {
 }
 
 export def export-sqlite-database-in-volume []: record -> nothing {
+  print qq
   let src_volume = $in.src_volume
   let dest_volume = $in.dest_volume
   let src_path = $in.src_path

@@ -31,12 +31,14 @@ print 22
             with-docker-container --name $app {
                 print 33
                 # Export sqlite database
-                {
+                let config = {
                     src_volume: $data_docker_volume
                     dest_volume: $backup_docker_volume
                     src_path: "/app/data/pocket-id.db"
                     dest_path: "/export/pocket-id.db"
-                } | export-sqlite-database-in-volume
+                } 
+                print 34
+                $config | export-sqlite-database-in-volume
                 print 44
             }
 print 55
