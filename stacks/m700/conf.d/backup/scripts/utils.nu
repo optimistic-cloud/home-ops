@@ -54,14 +54,14 @@ export def export-sqlite-database-in-volume [--volume: string]: record -> nothin
   ignore
 }
 
-export def copy-file-from-container-to-volume [--volume: string, --sub-path: path = 'import', operation: closure]: record -> nothing {
-  let container = $in.container
-  let src_path = $in.src_path
+export def extract-file-from-container [--volume: string, --sub-path: path = 'import', operation: closure]: record -> nothing {
+  let from_container = $in.from_container
+  let file_to_extract = $in.file_to_extract
 
   let tmp_dir = (mktemp -d)
 
   try { 
-    ^docker cp $"($container):($src_path)" $tmp_dir
+    ^docker cp $"($from_container):($file_to_extract)" $tmp_dir
 
     $tmp_dir | do $operation
 
