@@ -53,7 +53,7 @@ print 55
                 ^docker run --rm 
                     -v $"($data_docker_volume):/data:ro"
                     -v $"($backup_docker_volume):/export:rw"
-                    alpine sh -c "cp /data/secrets/pocket-id.encfile /export/pocket-id.encfile"
+                    alpine sh -c "cp /app/secrets/pocket-id.encfile /export/pocket-id.encfile"
             ) | ignore
 print 66
             # Export env from container
