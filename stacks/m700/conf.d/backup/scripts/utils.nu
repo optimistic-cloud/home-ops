@@ -67,6 +67,7 @@ export def extract-file-from-container [--volume: string, --sub-path: path = '/'
       $tmp_dir | do $operation
     }
 
+    print 1
     let target_path = /data | path join $sub_path
     print $target_path    
 
