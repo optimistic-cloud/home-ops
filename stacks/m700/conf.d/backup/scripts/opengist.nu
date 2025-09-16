@@ -48,7 +48,6 @@ def main [--provider: string] {
                             $restic_docker_image --json --quiet backup /backup
                                     --skip-if-unchanged
                                     --exclude-caches
-                                    --one-file-system
                                     --tag=$"git_commit=($git_commit)"
                     ) | complete
                 }
