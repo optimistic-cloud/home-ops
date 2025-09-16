@@ -30,7 +30,7 @@ def main [--provider: string] {
                 }
 
                 # Export env from container
-                $container_name | export-env-from-container-to-volume --volume $backup_docker_volume
+                $container_name | export-env-from-container --volume $backup_docker_volume
 
                 # Run backup with ping
                 with-ping {
