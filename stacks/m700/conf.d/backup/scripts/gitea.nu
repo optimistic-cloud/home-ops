@@ -9,9 +9,6 @@ const app = "gitea"
 const hc_slug = "gitea-backup"
 const container_name = "gitea"
 
-# Files to backup:
-#   - export dump from gitea container
-#   - export env from gitea container
 def main [--provider: string] {
     open env.toml | load-env
 
