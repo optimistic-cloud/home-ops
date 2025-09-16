@@ -44,16 +44,17 @@ def main [--provider: string] {
                             -v $"($export_docker_volume):/backup/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             -e TZ=Europe/Berlin
-                            $restic_docker_image --json --quiet backup /backup
-                                    --skip-if-unchanged
-                                    --exclude-caches
+                            $restic_docker_image --json --verbose=2 --quiet backup /backup
+
                                     --one-file-system
                                     --tag=$"git_commit=($git_commit)"
                     ) | complete
                 }
+                                                    #--skip-if-unchanged
+                                    #--exclude-caches
 
-                ^docker run -v $"($data_docker_volume):/backup/data:ro" -v $"($export_docker_volume):/backup/export:ro" alpine ls -laR /backup
-
+                ^docker run --rm -ti -v $"($data_docker_volume):/backup/data:ro" -v $"($export_docker_volume):/backup/export:ro" alpine ls -laR /backup
+                
                 # Run check with ping
                 with-ping {
                     (
