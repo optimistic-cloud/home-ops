@@ -111,7 +111,7 @@ const restic_docker_image = "restic/restic:0.18.0"
 
 export def restic-backup [--env-file: path]: record -> nothing {
   let envs = $env_file | path expand
-  let volumes = $in.volumes
+  let volumes = $in
 
   const backup_path = "/backup"
   
