@@ -10,12 +10,6 @@ const hc_slug = "vaultwarden-backup"
 const container_name = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
 
-const restic_docker_image = "restic/restic:0.18.0"
-
-# Files to backup:
-#   - export sqlite database from vaultwarden-data volume
-#   - backup /data
-#   - export env from vaultwarden container
 def main [--provider: string] {
     open env.toml | load-env
     
