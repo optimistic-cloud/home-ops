@@ -28,8 +28,6 @@ def main [--provider: string] {
                 # Create gitea-dump.tar.gz
                 # https://docs.gitea.com/administration/backup-and-restore
                 do {
-
-
                     # remove old dump, create new dump 
                     ^docker exec -u git gitea rm -f $"($dump_location)/($gitea_archive)"
                     ^docker exec -u git gitea mkdir -p $dump_location
