@@ -113,7 +113,13 @@ export def restic-backup [volumes: record]: path -> nothing {
   let env_file = $in | path expand
 
   # build -v flags where keys are docker volume names and values are mount paths
-  let vol_flags = $volumes | items {|key, value| $'-v ($value):/backup/($key):ro' }
+  #let vol_flags = $volumes | items {|key, value| $'-v ($value):/backup/($key):ro' }
+
+  let vol_flags = (
+    $volumes
+    | items {|key, value| [ "-v" ($value + ":" + ($key | str trim)) ] }
+    | flatten
+  )
 
   print "vol_flags to json: " 
   print ($vol_flags | to json)
