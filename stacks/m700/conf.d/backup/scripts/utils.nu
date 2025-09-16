@@ -38,17 +38,20 @@ export def export-sqlite-database-in-volume []: record -> nothing {
   let src_path = $in.src_path
   let dest_path = $in.dest_path
 
+  print a
   (
     ^docker run --rm 
         -v $"($src_volume):/data:ro"
         -v $"($dest_volume):/export:rw"
         alpine/sqlite $src_path $".backup '($dest_path)'"
   ) | complete | print
+  print b
   (
     ^docker run --rm 
         -v $"($dest_volume):/export:rw"
         alpine/sqlite /export/db.sqlite3 "PRAGMA integrity_check;" | ignore
   ) | complete | print
+  print c
 }
 
 export def copy-file-from-container-to-volume []: record -> nothing {
