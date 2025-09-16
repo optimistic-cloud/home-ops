@@ -34,8 +34,7 @@ def main [--provider: string] {
                         alpine/sqlite /export/db.sqlite3 "PRAGMA integrity_check;" | ignore
                 )
 
-                #"example.env.toml" | add-file-to-volume $export_docker_volume
-                "example.env.toml111111" | add-file-to-volume $export_docker_volume
+                "example.env.toml" | add-file-to-volume $export_docker_volume
 
                 let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 

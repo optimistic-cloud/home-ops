@@ -14,9 +14,6 @@ export def add-file-to-volume [volume: string]: path -> nothing {
   let file = $in | path expand
   let filename = ($file | path basename)
 
-  print $file
-  print $filename
-
   if not ($file | path exists) {
     log error $"File ($file) does not exist, cannot add to volume ($volume)"
     error make { msg: $"File ($file) does not exist" }
@@ -27,14 +24,6 @@ export def add-file-to-volume [volume: string]: path -> nothing {
     error make { msg: $"Docker volume ($volume) does not exist" }
   }
 
-  pwd | print
-  ls -l $file | print
-  (
-    ^docker run --rm -ti 
-      -v $"($volume):/data:rw"
-      -v $"($file):/import/($filename):ro"
-      alpine sh -c 'ls -la /import'
-  )
   (
     ^docker run --rm -ti 
       -v $"($volume):/data:rw"
