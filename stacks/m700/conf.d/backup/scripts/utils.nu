@@ -116,7 +116,7 @@ export def restic-backup [volumes: record]: path -> nothing {
   let vol_flags = $volumes | items {|key, value| $'-v ($value):/backup/($key):ro' }
 
   let a = $vol_flags | str join " "
-  print $" ($a) "
+  print $"($a) "
 
   (
     ^docker run --rm -ti 
