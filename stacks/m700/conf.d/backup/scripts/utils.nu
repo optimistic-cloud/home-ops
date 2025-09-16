@@ -54,14 +54,20 @@ export def export-sqlite-database-in-volume [--volume: string, prefix: string = 
   ignore
 }
 
-export def extract-file-from-container [--volume: string, --sub-path: path = '', operation?: closure]: record -> nothing {
+export def extract-files-from-container [--volume: string, --sub-path: path = '', operation?: closure]: record -> nothing {
   let from_container = $in.from_container
-  let file_path_to_extract = $in.file_path_to_extract
+  let paths = $in.paths
 
   let tmp_dir = (mktemp -d)
 
-  try { 
-    ^docker cp $"($from_container):($file_path_to_extract)" $tmp_dir
+  try {
+    $paths | each {|p|
+	    ^docker cp $"($from_container):($p)" $tmp_dir
+    }
+
+    if (ls tmp_dir | is-empty) {
+      error make { msg: "directory is empty"}
+    }
 
     if not ($operation == null) {
       $tmp_dir | do $operation
