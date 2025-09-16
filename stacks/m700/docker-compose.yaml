@@ -87,7 +87,6 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost/api/alive"]
       <<: *default-healthcheck
     volumes:
-      # - ./vaultwarden/appdata:/data/
       - vaultwarden-data:/data/
     labels:
       - "traefik.enable=true"

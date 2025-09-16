@@ -31,3 +31,22 @@ export def add-file-to-volume [volume: string]: path -> nothing {
       alpine sh -c $'cp /import/($filename) /data'
   )
 }
+
+export def export-sqlite-database-in-volume []: record -> nothing {
+  let data_docker_volume = $in.data_docker_volume
+  let config_docker_volume = $in.config_docker_volume
+  let src_path = $in.src_path
+  let dest_path = $in.dest_path
+
+  (
+    ^docker run --rm 
+        -v $"($data_docker_volume):/data:ro"
+        -v $"($config_docker_volume):/export:rw"
+        alpine/sqlite /data/db.sqlite3 ".backup '/export/db.sqlite3'"
+  )
+  (
+    ^docker run --rm 
+        -v $"($config_docker_volume):/export:rw"
+        alpine/sqlite /export/db.sqlite3 "PRAGMA integrity_check;" | ignore
+  )
+}

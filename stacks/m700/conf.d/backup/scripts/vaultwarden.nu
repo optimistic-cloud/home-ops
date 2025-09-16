@@ -22,17 +22,12 @@ def main [--provider: string] {
                 let config_docker_volume = $in
 
                 # Export sqlite database
-                (
-                    ^docker run --rm 
-                        -v $"($data_docker_volume):/data:ro"
-                        -v $"($config_docker_volume):/export:rw"
-                        alpine/sqlite /data/db.sqlite3 ".backup '/export/db.sqlite3'"
-                )
-                (
-                    ^docker run --rm 
-                        -v $"($config_docker_volume):/export:rw"
-                        alpine/sqlite /export/db.sqlite3 "PRAGMA integrity_check;" | ignore
-                )
+                {
+                    src_volume = "vaultwarden-data"
+                    dest_volume = $in
+                    src_path = "/data/db.sqlite3"
+                    dest_path = "/export/db.sqlite3"
+                } | export-sqlite-database-in-volume
 
                 "example.env.toml" | add-file-to-volume $config_docker_volume
 
