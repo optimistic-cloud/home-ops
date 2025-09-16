@@ -43,9 +43,9 @@ def main [--provider: string] {
                 }
                 
                 # Run check with ping
-                with-ping {
-                    restic-check --env-file $env_file
-                }
+                #with-ping {
+                #    restic-check --env-file $env_file
+                #}
             }
         }
     }
