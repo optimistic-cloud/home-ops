@@ -30,7 +30,7 @@ def main [--provider: string] {
                     # Export sqlite database
                     {
                         src_volume: $data_docker_volume
-                        src_path: "/app/data/pocket-id.db"
+                        src_path: "pocket-id.db"
                     } | export-sqlite-database-in-volume --volume $backup_docker_volume
                 }
 
