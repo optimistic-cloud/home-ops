@@ -113,7 +113,7 @@ export def restic-backup [volumes: record]: path -> nothing {
   let env_file = $in | path expand
 
   # build -v flags where keys are docker volume names and values are mount paths
-  let vol_flags = ($volumes | keys) | each {|kv| $"-v ($kv.key):($kv.value)" }
+  let vol_flags = $volumes | each {|kv| $"-v ($kv.key):($kv.value)" }
 
   print $vol_flags
 
