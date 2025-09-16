@@ -34,22 +34,14 @@ def main [--provider: string] {
                     } | export-sqlite-database-in-volume --volume $backup_docker_volume
                 }
 
-                # TODO: refactor
-                # Copy /app/secrets/pocket-id.encfile to export volume
-                # let working_dir = '/tmp' | path join $app
-                # mkdir $working_dir
-                # ^docker cp pocket-id:/app/secrets/pocket-id.encfile /tmp/pocket-id/ | ignore
-
-
+                # Add /app/secrets/pocket-id.encfile to backup volume
+                do {
+                    {
+                        from_container: $container_name
+                        file_to_extract: /app/secrets/pocket-id.encfile
+                    } | extract-file-from-container --volume $backup_docker_volume --sub-path "files" {}
+                }
                 
-                # TODO: not working yet use copy-file-from-container-to-volume
-                (
-                    ^docker run --rm 
-                        -v $"($data_docker_volume):/data:ro"
-                        -v $"($backup_docker_volume):/export:rw"
-                        alpine sh -c "cp /app/secrets/pocket-id.encfile /export/pocket-id.encfile"
-                ) | ignore
-
                 # Export env from container
                 $container_name | export-env-from-container --volume $backup_docker_volume
 
