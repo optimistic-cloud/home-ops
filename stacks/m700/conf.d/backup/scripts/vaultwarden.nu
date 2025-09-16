@@ -42,8 +42,8 @@ def main [--provider: string] {
                 # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
                 with-ping {
                     let volumes = {
-                        ($data_docker_volume): "/backup/data:ro"
-                        ($backup_docker_volume): "/backup/config:ro"
+                        data: ($data_docker_volume)
+                        config: ($backup_docker_volume)
                     }
                     $"($app).($provider).restic.env" | restic-backup $volumes
 
