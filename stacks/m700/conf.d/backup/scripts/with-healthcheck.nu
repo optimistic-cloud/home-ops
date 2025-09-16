@@ -47,7 +47,7 @@ export def with-ping [operation: closure] {
 
   let out = do $operation
 
-  if not is-json $out {
+  if not (is-json $out) {
       error make { msg: "Not valid JSON: ($out)" }
   }
 
