@@ -1,7 +1,8 @@
 use std/log
 
+use with-lockfile.nu *
 use with-healthcheck.nu *
-use with-stopped-docker-container.nu *
+use with-docker.nu *
 use utils.nu *
 
 const app = "gitea"
