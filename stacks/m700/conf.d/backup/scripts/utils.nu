@@ -31,7 +31,7 @@ export def add-file-to-volume [volume: string]: path -> nothing {
       -v $"($volume):/data:rw"
       -v $"($file):/import/($filename):ro"
       alpine sh -c 'ls -la /import'
-
+  )
   (
     ^docker run --rm -ti 
       -v $"($volume):/data:rw"
