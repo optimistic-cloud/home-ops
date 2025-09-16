@@ -107,8 +107,10 @@ export def get-current-git-commit []: nothing -> string {
   (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 }
 
+const restic_docker_image = "restic/restic:0.18.0"
 export def restic-check [--subset: string = "33%"]: path -> nothing {
   let env_file = $in | path expand
+
   (
     ^docker run --rm -ti
         --env-file $env_file
