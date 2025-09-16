@@ -41,18 +41,24 @@ def main [--provider: string] {
                 # Run backup with ping
                 # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
                 with-ping {
-                    (
-                        ^docker run --rm -ti
-                            --env-file $"($app).($provider).restic.env"
-                            -v $"($data_docker_volume):/backup/data:ro"
-                            -v $"($backup_docker_volume):/backup/config:ro"
-                            -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-                            -e TZ=Europe/Berlin
-                            $restic_docker_image --json --quiet backup /backup
-                                    --skip-if-unchanged
-                                    --exclude-caches
-                                    --tag=$"git_commit=(get-current-git-commit)"
-                    )
+                    let volumes = {
+                        ($data_docker_volume): "/backup/data:ro"
+                        ($backup_docker_volume): "/backup/config:ro"
+                    }
+                    $"($app).($provider).restic.env" | restic-backup $volumes
+
+                    # (
+                    #     ^docker run --rm -ti
+                    #         --env-file $"($app).($provider).restic.env"
+                    #         -v $"($data_docker_volume):/backup/data:ro"
+                    #         -v $"($backup_docker_volume):/backup/config:ro"
+                    #         -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
+                    #         -e TZ=Europe/Berlin
+                    #         $restic_docker_image --json --quiet backup /backup
+                    #                 --skip-if-unchanged
+                    #                 --exclude-caches
+                    #                 --tag=$"git_commit=(get-current-git-commit)"
+                    # )
                 }
                 
                 # Run check with ping

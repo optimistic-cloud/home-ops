@@ -108,6 +108,28 @@ export def get-current-git-commit []: nothing -> string {
 }
 
 const restic_docker_image = "restic/restic:0.18.0"
+
+export def restic-backup [volumes: record]: path -> nothing {
+  let env_file = $in | path expand
+
+  # build -v flags where keys are docker volume names and values are mount paths
+  let vol_flags = ($volumes | keys) | each { $"-v ($it):($volumes.($it))" }
+
+  print $vol_flags
+
+  (
+    ^docker run --rm -ti
+        --env-file $env_file
+        ...$vol_flags
+        -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
+        -e TZ=Europe/Berlin
+        $restic_docker_image --json --quiet backup /backup
+                --skip-if-unchanged
+                --exclude-caches
+                --tag=$"git_commit=(get-current-git-commit)"
+  )
+}
+
 export def restic-check [--subset: string = "33%"]: path -> nothing {
   let env_file = $in | path expand
 
