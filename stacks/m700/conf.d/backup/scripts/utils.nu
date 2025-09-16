@@ -12,6 +12,7 @@ export def do_logging_for [command: string]: record -> nothing {
 
 export def add-file-to-volume [volume: string]: path -> nothing {
   let file = $in
+  let filename = ($file | path basename)
 
   if not ($file | path exists) {
     log error $"File ($file) does not exist, cannot add to volume ($volume)"
@@ -29,7 +30,7 @@ export def add-file-to-volume [volume: string]: path -> nothing {
   (
     ^docker run --rm -ti 
       -v $"($volume):/data:rw"
-      -v $"($file):/import/($file):ro"
-      alpine sh -c $'cp /import/($file) /data/misc/'
+      -v $"($file):/import/($filename):ro"
+      alpine sh -c $'cp /import/($filename) /data/misc/'
   )
 }
