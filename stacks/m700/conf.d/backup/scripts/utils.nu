@@ -42,6 +42,7 @@ export def export-sqlite-database-in-volume []: record -> nothing {
   print a
   (
     ^docker run --rm 
+        --user 65532:65532
         -v $"($src_volume):/data:ro"
         -v $"($dest_volume):/export:rw"
         alpine/sqlite $src_path $".backup '($dest_path)'"
