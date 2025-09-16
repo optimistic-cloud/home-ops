@@ -54,7 +54,7 @@ export def export-sqlite-database-in-volume [--volume: string, prefix: string = 
   ignore
 }
 
-export def extract-file-from-container [--volume: string, --sub-path: path = '/', operation?: closure]: record -> nothing {
+export def extract-file-from-container [--volume: string, --sub-path: path = '', operation?: closure]: record -> nothing {
   let from_container = $in.from_container
   let file_path_to_extract = $in.file_path_to_extract
 
