@@ -26,12 +26,12 @@ def main [--provider: string] {
                     ^docker run --rm 
                         -v $"($data_docker_volume):/data:ro"
                         -v $"($config_docker_volume):/export:rw"
-                        alpine/sqlite /data/db.sqlite3 ".backup '/export/export/db.sqlite3'"
+                        alpine/sqlite /data/db.sqlite3 ".backup '/export/db.sqlite3'"
                 )
                 (
                     ^docker run --rm 
                         -v $"($config_docker_volume):/export:rw"
-                        alpine/sqlite /export/export/db.sqlite3 "PRAGMA integrity_check;" | ignore
+                        alpine/sqlite /export/db.sqlite3 "PRAGMA integrity_check;" | ignore
                 )
 
                 "example.env.toml" | add-file-to-volume $config_docker_volume
