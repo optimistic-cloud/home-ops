@@ -120,11 +120,7 @@ export def restic-backup [volumes: record]: path -> nothing {
     | flatten
   )
 
-  print "vol_flags to json:"
-  print ($vol_flags | to json)
-  print "vol_flags items:"
-  $vol_flags | each {|k| print $"ITEM: ($k)" }
-
+  # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
   (
     ^docker run --rm -ti 
       --env-file $env_file ...$vol_flags
