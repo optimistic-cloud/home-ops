@@ -54,7 +54,7 @@ export def export-sqlite-database-in-volume [--volume: string]: record -> nothin
   ignore
 }
 
-export def copy-file-from-container-to-volume [--volume: string, --sub-path?: path, operation: closure]: record -> nothing {
+export def copy-file-from-container-to-volume [--volume: string, --sub-path: path = 'import', operation: closure]: record -> nothing {
   let container = $in.container
   let src_path = $in.src_path
 
@@ -65,13 +65,11 @@ export def copy-file-from-container-to-volume [--volume: string, --sub-path?: pa
 
     $tmp_dir | do $operation
 
-    let working_path = $sub_path | default 'import'
-
     (
       ^docker run --rm -ti 
         -v $"($volume):/data:rw"
-        -v $"($tmp_dir):/($working_path):ro"
-        alpine sh -c $'cp -r /($working_path) /data'
+        -v $"($tmp_dir):/($sub_path):ro"
+        alpine sh -c $'cp -r /($sub_path) /data'
     )
     
     rm -rf $tmp_dir | ignore
