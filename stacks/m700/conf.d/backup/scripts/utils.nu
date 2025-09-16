@@ -26,7 +26,7 @@ export def add-file-to-volume [volume: string]: path -> nothing {
   }
 
   pwd | print
-  ls -l $file
+  ls -l $file | print
   (
     ^docker run --rm -ti 
       -v $"($volume):/data:rw"
