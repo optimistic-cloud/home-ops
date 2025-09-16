@@ -38,7 +38,7 @@ def main [--provider: string] {
                 # Run backup with ping
                 # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
                 with-ping {
-                    let out = (
+                    (
                         ^docker run --rm -ti
                             --env-file $"($app).($provider).restic.env"
                             -v $"($data_docker_volume):/backup/data:ro"
