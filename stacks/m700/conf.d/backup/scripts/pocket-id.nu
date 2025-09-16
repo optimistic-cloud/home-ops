@@ -37,7 +37,7 @@ print 22
                     src_path: "/app/data/pocket-id.db"
                     dest_path: "/export/pocket-id.db"
                 } 
-                print 34
+                print 34 $config
                 $config | export-sqlite-database-in-volume
                 print 44
             }
