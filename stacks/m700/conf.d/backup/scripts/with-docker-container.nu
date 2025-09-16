@@ -35,13 +35,9 @@ def start_container []: string -> nothing {
 export def with-backup-docker-volume [operation: closure]: nothing -> string {
   let name = (random chars --length 4)
   try {
-      print 1
       ^docker volume create $name | ignore
-      print 2
       $name | do $operation
-      print 3
       ^docker volume rm $name | ignore
-      print 4
   } catch {|err|
       ^docker volume rm $name | ignore
       log error $"Error: ($err)"
