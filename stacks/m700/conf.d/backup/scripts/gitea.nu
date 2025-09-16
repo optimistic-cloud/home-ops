@@ -7,9 +7,7 @@ use utils.nu *
 
 const app = "gitea"
 const hc_slug = "gitea-backup"
-const container = "gitea"
-
-const restic_docker_image = "restic/restic:0.18.0"
+const container_name = "gitea"
 
 # Files to backup:
 #   - export dump from gitea container
