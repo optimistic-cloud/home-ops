@@ -113,9 +113,9 @@ export def restic-backup [volumes: record]: path -> nothing {
   let env_file = $in | path expand
 
   # build -v flags where keys are docker volume names and values are mount paths
-  let vol_flags = $volumes | items {|key, value| $'-v ($value):/backup/($key):ro' }
+  let vol_flags = $volumes | items {|key, value| $'-v ($value):/backup/($key):ro' } | str join " "
 
-  print (...$vol_flags  | str join " ")
+  print $vol_flags
 
   (
     ^docker run --rm -ti
