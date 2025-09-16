@@ -115,19 +115,19 @@ export def restic-backup [volumes: record]: path -> nothing {
   # build -v flags where keys are docker volume names and values are mount paths
   let vol_flags = $volumes | items {|key, value| $'-v ($value):/backup/($key):ro' }
 
-  print ...$vol_flags
+  print (...$vol_flags  | str join " ")
 
-  # (
-  #   ^docker run --rm -ti
-  #       --env-file $env_file
-  #       ...$vol_flags
-  #       -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-  #       -e TZ=Europe/Berlin
-  #       $restic_docker_image --json --quiet backup /backup
-  #               --skip-if-unchanged
-  #               --exclude-caches
-  #               --tag=$"git_commit=(get-current-git-commit)"
-  # )
+  (
+    ^docker run --rm -ti
+        --env-file $env_file
+        (...$vol_flags  | str join " ")
+        -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
+        -e TZ=Europe/Berlin
+        $restic_docker_image --json --quiet backup /backup
+                --skip-if-unchanged
+                --exclude-caches
+                --tag=$"git_commit=(get-current-git-commit)"
+  )
 }
 
 export def restic-check [--subset: string = "33%"]: path -> nothing {
