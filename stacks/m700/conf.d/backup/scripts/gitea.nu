@@ -62,7 +62,7 @@ def main [--provider: string] {
 
             # Export env from container
             {
-                container: $contaner
+                container: $container
                 dest_volume: $config_docker_volume
             } | export-env-from-container-to-volume
 
