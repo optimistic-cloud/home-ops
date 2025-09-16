@@ -39,7 +39,7 @@ def main [--provider: string] {
                     docker run --rm -ti
                         -v vaultwarden-data:/backup/data:ro
                         -v $"($export_docker_volume):/backup/export:ro"
-                        restic/restic:0.18.0 sh -c "ls -laR /backup"
+                        restic/restic:0.18.0 ls -laR /backup
                 ) | complete | print
             
 
