@@ -23,14 +23,14 @@ def main [--provider: string] {
     with-healthcheck {
 
         with-backup-docker-volume {
-            let config_docker_volume = $in
+            let backup_docker_volume = $in
 
             # Stops the container if it is running, and starts it again afterwards
             with-docker-container --name $app {
                 # Export sqlite database
                 {
                     src_volume: $data_docker_volume
-                    dest_volume: $config_docker_volume
+                    dest_volume: $backup_docker_volume
                     src_path: "/data/db.sqlite3"
                     dest_path: "/export/db.sqlite3"
                 } | export-sqlite-database-in-volume
@@ -39,7 +39,7 @@ def main [--provider: string] {
             # Export env from container
             {
                 container: $container
-                dest_volume: $config_docker_volume
+                dest_volume: $backup_docker_volume
             } | export-env-from-container-to-volume
 
             # Run backup with ping
@@ -49,7 +49,7 @@ def main [--provider: string] {
                     ^docker run --rm -ti
                         --env-file $"($app).($provider).restic.env"
                         -v $"($data_docker_volume):/backup/data:ro"
-                        -v $"($config_docker_volume):/backup/config:ro"
+                        -v $"($backup_docker_volume):/backup/config:ro"
                         -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                         -e TZ=Europe/Berlin
                         $restic_docker_image --json --quiet backup /backup

@@ -23,7 +23,7 @@ def main [--provider: string] {
     with-healthcheck {
 
         with-backup-docker-volume {
-            let export_docker_volume = $in
+            let backup_docker_volume = $in
 
             with-docker-container --name $app {
                 # Export sqlite database
@@ -38,7 +38,7 @@ def main [--provider: string] {
             # Export env from container
             {
                 container: $container
-                dest_volume: $config_docker_volume
+                dest_volume: $backup_docker_volume
             } | export-env-from-container-to-volume
 
             # Run backup with ping
@@ -48,7 +48,7 @@ def main [--provider: string] {
                     ^docker run --rm -ti
                         --env-file $"($app).($provider).restic.env"
                         -v $"($data_docker_volume):/backup/data:ro"
-                        -v $"($export_docker_volume):/backup/export:ro"
+                        -v $"($backup_docker_volume):/backup/export:ro"
                         -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                         -e TZ=Europe/Berlin
                         $restic_docker_image --json --quiet backup /backup

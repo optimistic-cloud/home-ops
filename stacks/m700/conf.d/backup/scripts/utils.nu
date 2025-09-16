@@ -83,9 +83,7 @@ export def export-env-from-container-to-volume []: record -> nothing {
   let env_file = mktemp env_file.XXX
 
   try {
-    print 1
     ^docker exec $container printenv | save --force $env_file | ignore
-    print 2
     (
       ^docker run --rm -ti 
         -v $"($dest_volume):/data:rw"
