@@ -58,10 +58,8 @@ export def copy-file-from-container-to-volume []: record -> nothing {
   let dest_path = $in.dest_path
 
   let tmp_dir = (mktemp -d)
-  
-  try { 
-    
 
+  try { 
     ^docker $"cp ($container):($src_path) ($tmp_dir)" | ignore
 
     (
@@ -70,6 +68,7 @@ export def copy-file-from-container-to-volume []: record -> nothing {
           -v $"($dest_volume):/export:rw"
           alpine sh -c $"cd /data && tar -xvzf /export/($dest_path)"
     )
+    
     rm -rf $tmp_dir | ignore
    } catch {|err|
       rm -rf $tmp_dir | ignore
