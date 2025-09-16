@@ -36,7 +36,7 @@ export def export-sqlite-database-in-volume [--volume: string]: record -> nothin
   let src_volume = $in.src_volume
   let src_path = $in.src_path
 
-  let db_name = ($src_path | path basename)
+  let db_name = export | path join - ($src_path | path basename)
 
   (
     ^docker run --rm 
