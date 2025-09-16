@@ -74,7 +74,7 @@ export def extract-file-from-container [--volume: string, --sub-path: path = '/'
         -v $"($volume):/data:rw"
         -v $"($tmp_dir):/import:ro"
         alpine sh -c $'mkdir -p ($target_path) && cp -r /import/* ($target_path)'
-    ) | complete | print
+    )
     
     rm -rf $tmp_dir | ignore
    } catch {|err|
