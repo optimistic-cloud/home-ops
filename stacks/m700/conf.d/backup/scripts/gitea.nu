@@ -6,7 +6,7 @@ use utils.nu *
 
 const app = "gitea"
 const hc_slug = "gitea-backup"
-const contaner = "gitea"
+const container = "gitea"
 
 const restic_docker_image = "restic/restic:0.18.0"
 
@@ -63,7 +63,7 @@ def main [--provider: string] {
             # Export env from container
             {
                 container: $container
-                dest_volume: $config_docker_volume
+                dest_volume: $backup_docker_volume
             } | export-env-from-container-to-volume
 
             # Run backup with ping
