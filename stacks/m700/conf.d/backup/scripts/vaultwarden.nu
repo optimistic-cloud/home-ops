@@ -44,7 +44,7 @@ def main [--provider: string] {
                             -v $"($export_docker_volume):/backup/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             -e TZ=Europe/Berlin
-                            $restic_docker_image --json --verbose=2 --quiet backup /backup
+                            $restic_docker_image --json --verbose=2 backup /backup
 
                                     --one-file-system
                                     --tag=$"git_commit=($git_commit)"
