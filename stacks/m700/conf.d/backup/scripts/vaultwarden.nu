@@ -57,11 +57,7 @@ def main [--provider: string] {
                 
                 # Run check with ping
                 with-ping {
-                    (
-                        ^docker run --rm -ti
-                            --env-file $"($app).($provider).restic.env"
-                            $restic_docker_image --json --quiet check --read-data-subset 33%
-                    )
+                    $"($app).($provider).restic.env" | restic-check
                 }
             }
         }

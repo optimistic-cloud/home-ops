@@ -79,7 +79,7 @@ def main [--provider: string] {
                                 --exclude-caches
                                 --one-file-system
                                 --tag=$"git_commit=(get-current-git-commit)"
-                ) | complete
+                )
             }
 
             # Run check with ping
@@ -88,7 +88,7 @@ def main [--provider: string] {
                     ^docker run --rm -ti
                         --env-file $"($app).($provider).restic.env"
                         $restic_docker_image --json --quiet check --read-data-subset 33%
-                ) | complete
+                )
             }
         }
     }
