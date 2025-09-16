@@ -120,10 +120,10 @@ export def restic-backup [volumes: record]: path -> nothing {
     | flatten
   )
 
-  echo "vol_flags to json:"
-  echo ($vol_flags | to json)
-  echo "vol_flags items:"
-  $vol_flags | each {|k| echo $"ITEM: ($k)" }
+  print "vol_flags to json:"
+  print ($vol_flags | to json)
+  print "vol_flags items:"
+  $vol_flags | each {|k| print $"ITEM: ($k)" }
 
   (
     ^docker run --rm -ti 
