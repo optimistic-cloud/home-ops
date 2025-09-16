@@ -40,7 +40,7 @@ def main [--provider: string] {
                 {
                     container: gitea
                     src_path: $"($dump_location)/($gitea_archive)"
-                } | copy-file-from-container-to-volume --volume $backup_docker_volume {
+                } | copy-file-from-container-to-volume --volume $backup_docker_volume "gitea-dump" {
                     let tmp_dir = $in
 
                     # gitea.tar.gz
