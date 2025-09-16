@@ -32,7 +32,6 @@ def main [--provider: string] {
                     src_volume: $data_docker_volume
                     dest_volume: $backup_docker_volume
                     src_path: "/data/db.sqlite3"
-                    dest_path: "/export/db.sqlite3"
                 } | export-sqlite-database-in-volume
             }
 

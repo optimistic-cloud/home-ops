@@ -36,7 +36,6 @@ print 22
                     src_volume: $data_docker_volume
                     dest_volume: $backup_docker_volume
                     src_path: "/app/data/pocket-id.db"
-                    dest_path: "/export/pocket-id.db"
                 } 
                 print 34 $config
                 $config | export-sqlite-database-in-volume
