@@ -64,19 +64,16 @@ export def extract-file-from-container [--volume: string, --sub-path: path = '/'
     ^docker cp $"($from_container):($file_to_extract)" $tmp_dir
 
     if not ($operation == null) {
-      print "if"
       $tmp_dir | do $operation
     }
 
-    print 1
     let target_path = '/data' | path join $sub_path 
-    print $target_path    
 
     (
       ^docker run --rm -ti 
         -v $"($volume):/data:rw"
         -v $"($tmp_dir):/import:ro"
-        alpine sh -c $'cp -r /import/* ($target_path)'
+        alpine sh -c $'mkdir -p ($target_path) && cp -r /import/* ($target_path)'
     ) | complete | print
     
     rm -rf $tmp_dir | ignore
