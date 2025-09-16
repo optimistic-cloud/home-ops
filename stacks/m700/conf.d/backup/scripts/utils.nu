@@ -51,7 +51,7 @@ export def export-sqlite-database-in-volume []: record -> nothing {
   (
     ^docker run --rm 
         -v $"($dest_volume):/export:rw"
-        alpine/sqlite $"/export/($db_name)" "PRAGMA integrity_check;" | ignore
+        alpine/sqlite $"/export/($db_name)" "PRAGMA integrity_check;"
   ) | complete | print
   print c
 }
