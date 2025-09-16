@@ -148,6 +148,16 @@ export def restic-check [--env-file: path, --subset: string = "33%"]: nothing ->
   )
 }
 
+export def restic-ls [--env-file: path]: nothing -> nothing {
+  let envs = $env_file | path expand
+
+  (
+    ^docker run --rm -ti 
+      --env-file $envs 
+      $restic_docker_image --json --quiet ls latest
+  )
+}
+
 # backup is done for a single volume
 
 # usecases:
