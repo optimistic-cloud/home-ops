@@ -16,6 +16,7 @@ def main [--provider: string] {
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
     with-healthcheck {
+        # Stops the container if it is running, and starts it again afterwards
         with-docker-container --name $app {
 
             with-tmp-docker-volume {
@@ -23,8 +24,8 @@ def main [--provider: string] {
 
                 # Export sqlite database
                 {
-                    src_volume: "vaultwarden-data"
-                    dest_volume: $in
+                    src_volume: $data_docker_volume
+                    dest_volume: $config_docker_volume
                     src_path: "/data/db.sqlite3"
                     dest_path: "/export/db.sqlite3"
                 } | export-sqlite-database-in-volume
