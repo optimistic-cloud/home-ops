@@ -42,7 +42,7 @@ def main [--provider: string] {
                 } | copy-file-from-container-to-volume --volume $backup_docker_volume {
                     let dir = $in
 
-                    print aaaaa
+                    print $dir
                 }
 
                 # not ready to use
