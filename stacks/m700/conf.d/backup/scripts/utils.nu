@@ -126,6 +126,7 @@ export def restic-backup [--env-file: path]: record -> record {
   # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
   (
     ^docker run --rm -ti 
+      --hostname m700
       --env-file $envs ...$vol_flags
       -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
       -e TZ=Europe/Berlin
