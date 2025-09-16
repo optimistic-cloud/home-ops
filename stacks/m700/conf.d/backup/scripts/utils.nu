@@ -68,7 +68,7 @@ export def extract-file-from-container [--volume: string, --sub-path: path = '/'
     }
 
     let target_path = /data | path join $sub_path
-    
+    print $target_path    
 
     (
       ^docker run --rm -ti 
