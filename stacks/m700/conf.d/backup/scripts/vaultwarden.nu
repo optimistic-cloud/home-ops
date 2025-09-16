@@ -52,6 +52,8 @@ def main [--provider: string] {
                     ) | complete
                 }
 
+                ^docker run -v $"($data_docker_volume):/backup/data:ro" -v $"($export_docker_volume):/backup/export:ro" alpine ls -laR /backup
+
                 # Run check with ping
                 with-ping {
                     (
