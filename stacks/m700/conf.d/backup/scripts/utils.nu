@@ -50,3 +50,7 @@ export def export-sqlite-database-in-volume []: record -> nothing {
         alpine/sqlite /export/db.sqlite3 "PRAGMA integrity_check;" | ignore
   )
 }
+
+export def get-current-git-commit []: nothing -> string {
+  (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
+}

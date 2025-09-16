@@ -31,8 +31,6 @@ def main [--provider: string] {
 
                 "example.env.toml" | add-file-to-volume $config_docker_volume
 
-                let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
-
                 # Run backup with ping
                 # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
                 with-ping {
@@ -46,7 +44,7 @@ def main [--provider: string] {
                             $restic_docker_image --json --quiet backup /backup
                                     --skip-if-unchanged
                                     --exclude-caches
-                                    --tag=$"git_commit=($git_commit)"
+                                    --tag=$"git_commit=(get-current-git-commit)"
                     ) | complete
                 }
                 

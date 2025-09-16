@@ -21,19 +21,12 @@ def main [--provider: string] {
                 let export_docker_volume = $in
 
                 # Export sqlite database
-                (
-                    ^docker run --rm 
-                        -v $"($data_docker_volume):/data:ro"
-                        -v $"($export_docker_volume):/export:rw"
-                        alpine/sqlite $"/data/($app).db" $".backup '/export/($app).db'"
-                )
-                (
-                    ^docker run --rm 
-                        -v $"($export_docker_volume):/export:rw"
-                        alpine/sqlite $"/export/($app).db" "PRAGMA integrity_check;" | ignore
-                )
-
-                let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
+                {
+                    src_volume: "vaultwarden-data"
+                    dest_volume: $in
+                    src_path: "/data/opengist.db"
+                    dest_path: "/export/opengist.db"
+                } | export-sqlite-database-in-volume
 
                 # Run backup with ping
                 # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
@@ -48,7 +41,7 @@ def main [--provider: string] {
                             $restic_docker_image --json --quiet backup /backup
                                     --skip-if-unchanged
                                     --exclude-caches
-                                    --tag=$"git_commit=($git_commit)"
+                                    --tag=$"git_commit=(get-current-git-commit)"
                     ) | complete
                 }
 
