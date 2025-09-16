@@ -149,23 +149,12 @@ export def restic-check [--env-file: path, --subset: string = "33%"]: nothing ->
   )
 }
 
-export def restic-init [--env-file: path]: nothing -> nothing {
-  let envs = $env_file | path expand
+export def with-restic [command: string]: path -> nothing {
+    let envs = $in | path expand
 
-  ^docker run --rm -ti --env-file $envs $restic_docker_image init
+    ^docker run --rm -ti --env-file $envs $restic_docker_image command
 }
 
-export def restic-ls [--env-file: path]: nothing -> nothing {
-  let envs = $env_file | path expand
-
-  ^docker run --rm -ti --env-file $envs $restic_docker_image ls latest
-}
-
-export def restic-snapshots [--env-file: path, --latest: int = 5]: nothing -> nothing {
-  let envs = $env_file | path expand
-
-  ^docker run --rm -ti --env-file $envs $restic_docker_image snapshots --latest $latest
-}
 
 # backup is done for a single volume
 

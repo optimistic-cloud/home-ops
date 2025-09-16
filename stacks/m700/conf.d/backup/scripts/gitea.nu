@@ -79,20 +79,22 @@ def main [--provider: string] {
     }
 }
 
-def "main init" [--provider: string] {
-    let env_file = $"($app).($provider).restic.env"
-
-    restic-init --env-file $env_file
+def "main init" [--provider: string] { 
+    $"($app).($provider).restic.env" | with-restic init 
 }
 
-def "main ls" [--provider: string] {
-    let env_file = $"($app).($provider).restic.env"
-
-    restic-ls --env-file $env_file
+def "main stats" [--provider: string] { 
+    $"($app).($provider).restic.env" | with-restic stats 
 }
 
-export def restic-snapshots [--env-file: path, --latest: int = 5]: nothing -> nothing {
-  let envs = $env_file | path expand
+def "main ls" [--provider: string] { 
+    $"($app).($provider).restic.env" | with-restic "ls latest" 
+}
 
-  ^docker run --rm -ti --env-file $envs $restic_docker_image snapshots --latest $latest
+def "main snapshots" [--provider: string] { 
+    $"($app).($provider).restic.env" | with-restic "snapshots --latest 5" 
+}
+
+def "main restore" [--provider: string] { 
+    $"($app).($provider).restic.env" | with-restic "bla restore" 
 }

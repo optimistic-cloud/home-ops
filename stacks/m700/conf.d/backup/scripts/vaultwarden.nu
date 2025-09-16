@@ -51,20 +51,18 @@ def main [--provider: string] {
     }
 }
 
-def "main init" [--provider: string] {
-    let env_file = $"($app).($provider).restic.env"
-
-    restic-init --env-file $env_file
+def "main init" [--provider: string] { 
+    $"($app).($provider).restic.env" | with-restic init 
 }
 
-def "main ls" [--provider: string] {
-    let env_file = $"($app).($provider).restic.env"
-
-    restic-ls --env-file $env_file
+def "main stats" [--provider: string] { 
+    $"($app).($provider).restic.env" | with-restic stats 
 }
 
-def "main snapshots" [--provider: string] {
-    let env_file = $"($app).($provider).restic.env"
+def "main ls" [--provider: string] { 
+    $"($app).($provider).restic.env" | with-restic "ls latest" 
+}
 
-    restic-snapshots --env-file $env_file
+def "main snapshots" [--provider: string] { 
+    $"($app).($provider).restic.env" | with-restic "snapshots --latest 5" 
 }
