@@ -36,6 +36,15 @@ def main [--provider: string] {
                         --type tar.gz
                 ) | ignore
 
+                {
+                    container: gitea
+                    src_path: $"($dump_location)/($dump_name)"
+                } | copy-file-from-container-to-volume --volume $backup_docker_volume {
+                    let dir = $in
+
+                    print $dir
+                }
+
                 # not ready to use
                 #{
                 #    container: gitea
@@ -45,18 +54,18 @@ def main [--provider: string] {
                 #} | copy-file-from-container-to-volume
 
 
-                let working_dir = '/tmp' | path join $app
-                mkdir $working_dir
-                ^docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/ | ignore
+                # let working_dir = '/tmp' | path join $app
+                # mkdir $working_dir
+                # ^docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/ | ignore
 
-                (
-                    ^docker run --rm -ti
-                        -v $"($working_dir):/export:ro"
-                        -v $"($backup_docker_volume):/data:rw"
-                        alpine sh -c $"cd /data && tar -xvzf /export/($dump_name)"
-                ) | ignore
-                ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | ignore
-                rm -rf $working_dir
+                # (
+                #     ^docker run --rm -ti
+                #         -v $"($working_dir):/export:ro"
+                #         -v $"($backup_docker_volume):/data:rw"
+                #         alpine sh -c $"cd /data && tar -xvzf /export/($dump_name)"
+                # ) | ignore
+                # ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | ignore
+                # rm -rf $working_dir
 
                 # Export env from container
                 $container_name | export-env-from-container --volume $backup_docker_volume

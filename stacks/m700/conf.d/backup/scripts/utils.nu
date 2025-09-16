@@ -54,28 +54,28 @@ export def export-sqlite-database-in-volume [--volume: string]: record -> nothin
   ignore
 }
 
-export def copy-file-from-container-to-volume []: record -> nothing {
+export def copy-file-from-container-to-volume [--volume: string, operation: closure]: record -> nothing {
   let container = $in.container
-  let dest_volume = $in.dest_volume
   let src_path = $in.src_path
-  let dest_path = $in.dest_path
 
   let tmp_dir = (mktemp -d)
 
   try { 
-    ^docker $"cp ($container):($src_path) ($tmp_dir)" | ignore
+    ^docker cp $"($container):($src_path)" $tmp_dir
+
+    $tmp_dir | do { $operation }
 
     (
-      # TODO: needs rework tar component
-      ^docker run --rm -ti
-          -v $"($tmp_dir):/data:ro"
-          -v $"($dest_volume):/export:rw"
-          alpine sh -c $"cd /data && tar -xvzf /export/($dest_path)" 
+      ^docker run --rm -ti 
+        -v $"($volume):/data:rw"
+        -v $"($tmp_dir):/import:ro"
+        alpine sh -c $'cp -r /import /data'
     )
     
     rm -rf $tmp_dir | ignore
    } catch {|err|
       rm -rf $tmp_dir | ignore
+      error make $err
    }
 }
 
