@@ -2,6 +2,7 @@ use std/log
 
 use with-healthcheck.nu *
 use with-docker-container.nu *
+use utils.nu *
 
 const app = "pocket-id"
 const hc_slug = "pocket-id-backup"
