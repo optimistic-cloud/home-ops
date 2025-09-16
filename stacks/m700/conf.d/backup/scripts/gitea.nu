@@ -48,6 +48,7 @@ def main [--provider: string] {
 
                         # gitea.tar.gz
                         let archive = $"($tmp_dir)/($gitea_archive)"
+                        print $archive
 
                         # extract in-place and remove the archive
                         ^tar -xzf $archive -C $tmp_dir | ignore
