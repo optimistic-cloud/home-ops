@@ -149,10 +149,10 @@ export def restic-check [--env-file: path, --subset: string = "33%"]: nothing ->
   )
 }
 
-export def with-restic [command: string]: path -> nothing {
+export def with-restic [commands: list<string>]: path -> nothing {
     let envs = $in | path expand
 
-    ^docker run --rm -ti --env-file $envs $restic_docker_image $command
+    ^docker run --rm -ti --env-file $envs $restic_docker_image ...$commands
 }
 
 
