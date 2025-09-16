@@ -25,8 +25,8 @@ def main [--provider: string] {
                 (
                     ^docker run --rm 
                         -v $"($data_docker_volume):/data:ro"
-                        -v $"($config_docker_volume):/export:rw"
-                        alpine/sqlite /data/db.sqlite3 ".backup '/export/db.sqlite3'"
+                        -v $"($config_docker_volume):/db:rw"
+                        alpine/sqlite /data/db.sqlite3 ".backup '/db/export/db.sqlite3'"
                 )
                 (
                     ^docker run --rm 
