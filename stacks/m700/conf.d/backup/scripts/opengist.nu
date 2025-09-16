@@ -23,7 +23,7 @@ def main [--provider: string] {
 
                 # Export sqlite database
                 {
-                    src_volume: "vaultwarden-data"
+                    src_volume: $data_docker_volume
                     dest_volume: $in
                     src_path: "/data/opengist.db"
                     dest_path: "/export/opengist.db"
