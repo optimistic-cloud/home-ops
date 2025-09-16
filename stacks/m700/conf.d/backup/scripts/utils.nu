@@ -11,14 +11,13 @@ export def do_logging_for [command: string]: record -> nothing {
 }
 
 export def add-file-to-volume [volume: string]: path -> nothing {
-  let file = $in
+  let file = $in | path expand
+  let filename = ($file | path basename)
 
   if not ($file | path exists) {
     log error $"File ($file) does not exist, cannot add to volume ($volume)"
     error make { msg: $"File ($file) does not exist" }
   }
-
-  let filename = ($file | path basename)
 
   if (docker volume inspect $volume | complete | get exit_code) != 0 {
     log error $"Docker volume ($volume) does not exist, cannot add file ($file)"
