@@ -50,7 +50,7 @@ export def export-sqlite-database-in-volume []: record -> nothing {
     ^docker run --rm 
         -v $"($dest_volume):/export:rw"
         alpine/sqlite $"/export/($db_name)" "PRAGMA integrity_check;"
-  )
+  ) | ignore
 
   ignore
 }
@@ -88,7 +88,7 @@ export def export-env-from-container-to-volume []: record -> nothing {
 
   try {
     ^docker exec $container printenv | save --force $env_file
-    
+
     (
       ^docker run --rm -ti 
         -v $"($dest_volume):/data:rw"
