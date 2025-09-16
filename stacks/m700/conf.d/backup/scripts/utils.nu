@@ -137,7 +137,7 @@ export def restic-backup [--env-file: path]: record -> record {
   )
 }
 
-export def restic-check [--env-file: path, --subset: string = "33%"]: record {
+export def restic-check [--env-file: path, --subset: string = "33%"] -> record {
   let envs = $env_file | path expand
 
   (
