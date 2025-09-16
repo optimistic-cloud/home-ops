@@ -51,6 +51,12 @@ def main [--provider: string] {
     }
 }
 
+def "main init" [--provider: string] {
+    let env_file = $"($app).($provider).restic.env"
+
+    restic-init --env-file $env_file
+}
+
 def "main ls" [--provider: string] {
     let env_file = $"($app).($provider).restic.env"
 

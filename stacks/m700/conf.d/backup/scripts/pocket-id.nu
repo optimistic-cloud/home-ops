@@ -63,8 +63,20 @@ def main [--provider: string] {
     }
 }
 
+def "main init" [--provider: string] {
+    let env_file = $"($app).($provider).restic.env"
+
+    restic-init --env-file $env_file
+}
+
 def "main ls" [--provider: string] {
     let env_file = $"($app).($provider).restic.env"
 
     restic-ls --env-file $env_file
+}
+
+export def restic-snapshots [--env-file: path, --latest: int = 5]: nothing -> nothing {
+  let envs = $env_file | path expand
+
+  ^docker run --rm -ti --env-file $envs $restic_docker_image snapshots --latest $latest
 }
