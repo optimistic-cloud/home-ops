@@ -80,7 +80,7 @@ export def export-env-from-container-to-volume []: record -> nothing {
   let container = $in.container
   let dest_volume = $in.dest_volume
 
-  ^docker exec $in.container printenv | save $in.dest_volume/env | ignore
+  ^docker exec $in.container printenv | save $"($in.dest_volume)/env" | ignore
 }
 
 export def get-current-git-commit []: nothing -> string {
