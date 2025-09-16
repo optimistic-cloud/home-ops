@@ -2,6 +2,7 @@ use std/log
 
 use with-healthcheck.nu *
 use with-docker-container.nu *
+use utils.nu *
 
 const app = "vaultwarden"
 const hc_slug = "vaultwarden-backup"
@@ -32,6 +33,8 @@ def main [--provider: string] {
                         -v $"($export_docker_volume):/export:rw"
                         alpine/sqlite /export/db.sqlite3 "PRAGMA integrity_check;" | ignore
                 )
+
+                example.env.toml | add-file-to-volume $export_docker_volume
 
                 let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 

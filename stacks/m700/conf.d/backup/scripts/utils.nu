@@ -10,22 +10,22 @@ export def do_logging_for [command: string]: record -> nothing {
   }
 }
 
-export def add-file-to-volume [conf: record]: path -> nothing {
+export def add-file-to-volume [volume: string]: path -> nothing {
   let file = $in
 
   if not ($file | path exists) {
-    log error $"File ($file) does not exist, cannot add to volume ($conf.volume_name)"
+    log error $"File ($file) does not exist, cannot add to volume ($volume)"
     error make { msg: $"File ($file) does not exist" }
   }
 
-  if (docker volume inspect $conf.volume_name | complete | get exit_code) != 0 {
-    log error $"Docker volume ($conf.volume_name) does not exist, cannot add file ($file)"
-    error make { msg: $"Docker volume ($conf.volume_name) does not exist" }
+  if (docker volume inspect $volume | complete | get exit_code) != 0 {
+    log error $"Docker volume ($volume) does not exist, cannot add file ($file)"
+    error make { msg: $"Docker volume ($volume) does not exist" }
   }
 
   (
     ^docker run --rm -ti 
-      -v $"($conf.volume_name):/data:rw"
+      -v $"($volume):/data:rw"
       -v $"($file):/import:ro"
       alpine sh -c $'cp /import/($file) /data/misc/'
   )
