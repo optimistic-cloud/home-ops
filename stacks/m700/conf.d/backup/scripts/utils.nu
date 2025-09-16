@@ -85,7 +85,9 @@ export def export-env-from-container-to-volume [--volume: string]: string -> not
   let env_file = mktemp env_file.XXX
 
   try {
-    ^docker exec $container_name printenv | save --force $env_file
+    ^docker container inspect $container_name | from json | get 0.Config.Env | save --force $env_file
+
+    print $env_file
 
     (
       ^docker run --rm -ti 
