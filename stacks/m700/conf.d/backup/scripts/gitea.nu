@@ -9,6 +9,9 @@ const hc_slug = "gitea-backup"
 
 const restic_docker_image = "restic/restic:0.18.0"
 
+# Files to backup:
+#   - export dump from gitea container
+#   - export env from gitea container
 def main [--provider: string] {
     open env.toml | load-env
 

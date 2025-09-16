@@ -63,10 +63,11 @@ export def copy-file-from-container-to-volume []: record -> nothing {
     ^docker $"cp ($container):($src_path) ($tmp_dir)" | ignore
 
     (
+      # TODO: needs rework tar component
       ^docker run --rm -ti
           -v $"($tmp_dir):/data:ro"
           -v $"($dest_volume):/export:rw"
-          alpine sh -c $"cd /data && tar -xvzf /export/($dest_path)"
+          alpine sh -c $"cd /data && tar -xvzf /export/($dest_path)" 
     )
     
     rm -rf $tmp_dir | ignore
@@ -75,6 +76,32 @@ export def copy-file-from-container-to-volume []: record -> nothing {
    }
 }
 
+export def export-env-from-container-to-volume []: record -> nothing {
+  let container = $in.container
+  let dest_volume = $in.dest_volume
+
+  ^docker exec $in.container printenv | save $in.dest_volume/env | ignore
+}
+
 export def get-current-git-commit []: nothing -> string {
   (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 }
+
+# backup is done for a single volume
+
+# usecases:
+# - backup file from container
+#   - src container     
+#   - backup volume
+#   => function: copy-file-from-container-to-volume
+# - backup env from container
+#   - src container     
+#   - backup volume
+#   => function: export-env-from-container-to-volume
+# - backup sqlite database
+#   - src volume
+#   - backup volume
+#   => function: export-sqlite-database-in-volume
+# - backup volume
+#   - volume
+#   => function: no

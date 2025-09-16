@@ -9,6 +9,11 @@ const data_docker_volume = "pocket-id-data"
 
 const restic_docker_image = "restic/restic:0.18.0"
 
+# Files to backup:
+#   - backup file /app/secrets/pocket-id.encfile from pocket-id container
+#   - export sqlite database /data/pocket-id.db sqlite from pocket-id-data volume
+#   - backup /app/data
+#   - export env from pocket-id container
 def main [--provider: string] {
     open env.toml | load-env
 

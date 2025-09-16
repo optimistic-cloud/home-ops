@@ -10,6 +10,10 @@ const data_docker_volume = "vaultwarden-data"
 
 const restic_docker_image = "restic/restic:0.18.0"
 
+# Files to backup:
+#   - export sqlite database from vaultwarden-data volume
+#   - backup /data
+#   - export env from vaultwarden container
 def main [--provider: string] {
     open env.toml | load-env
     
@@ -32,6 +36,11 @@ def main [--provider: string] {
 
                 # TODO: what?
                 "example.env.toml" | add-file-to-volume $config_docker_volume
+
+                {
+                    container: vaultwarden
+                    dest_volume: $config_docker_volume
+                } | export-env-from-container-to-volume
 
                 # Run backup with ping
                 # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)

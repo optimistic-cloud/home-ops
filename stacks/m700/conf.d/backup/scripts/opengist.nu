@@ -10,6 +10,10 @@ const data_docker_volume = "opengist-data"
 
 const restic_docker_image = "restic/restic:0.18.0"
 
+# Files to backup:
+#   - export sqlite database from opengist-data volume
+#   - backup /data
+#   - export env from opengist container
 def main [--provider: string] {
     open env.toml | load-env
 
