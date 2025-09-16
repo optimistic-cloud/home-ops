@@ -1,5 +1,6 @@
 use std/log
 
+use with-lockfile.nu *
 use with-healthcheck.nu *
 use with-docker-container.nu *
 use utils.nu *
