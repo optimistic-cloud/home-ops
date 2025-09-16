@@ -32,20 +32,26 @@ def main [--provider: string] {
                     --type tar.gz
             ) | ignore
 
-            let working_dir = '/tmp' | path join $app
-            mkdir $working_dir
-            ^docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/ | ignore
+            {
+                container: gitea
+                dest_volume: $in.dest_volume
+                src_path: $in.src_path
+                dest_path: $in.dest_path
+            } | copy-file-from-container-to-volume
 
-            (
-                ^docker run --rm -ti
-                    -v $"($working_dir):/export:ro"
-                    -v $"($export_docker_volume):/data:rw"
-                    alpine sh -c $"cd /data && tar -xvzf /export/($dump_name)"
-            ) | ignore
+
+            #let working_dir = '/tmp' | path join $app
+            #mkdir $working_dir
+            #^docker cp gitea:/var/lib/gitea/gitea-dump.tar.gz /tmp/gitea/ | ignore
+
+            #(
+            #    ^docker run --rm -ti
+            #        -v $"($working_dir):/export:ro"
+            #        -v $"($export_docker_volume):/data:rw"
+            #        alpine sh -c $"cd /data && tar -xvzf /export/($dump_name)"
+            #) | ignore
             ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | ignore
-            rm -rf $working_dir
-
-            let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
+            #rm -rf $working_dir
 
             # Run backup with ping
             with-ping {
@@ -59,7 +65,7 @@ def main [--provider: string] {
                                 --skip-if-unchanged
                                 --exclude-caches
                                 --one-file-system
-                                --tag=$"git_commit=($git_commit)"
+                                --tag=$"git_commit=(get-current-git-commit)"
                 ) | complete
             }
 
