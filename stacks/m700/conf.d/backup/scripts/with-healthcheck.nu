@@ -45,7 +45,7 @@ export def --env configure-hc-api [ping_key: string]: string -> nothing {
 export def with-ping [operation: closure] {
   let url = $env.BACKUP_CONFIG
 
-  let out = do $operation | complete
+  let out = do $operation
 
   # TODO: 
   #if not (is-json $out) {
