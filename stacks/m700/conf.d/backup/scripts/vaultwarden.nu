@@ -30,6 +30,7 @@ def main [--provider: string] {
                     dest_path: "/export/db.sqlite3"
                 } | export-sqlite-database-in-volume
 
+                # TODO: what?
                 "example.env.toml" | add-file-to-volume $config_docker_volume
 
                 # Run backup with ping
