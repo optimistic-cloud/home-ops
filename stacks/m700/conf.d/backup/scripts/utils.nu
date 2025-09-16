@@ -115,7 +115,7 @@ export def restic-backup [--env-file: path]: record -> nothing {
 
   const backup_path = "/backup"
   
-  def trasform-volumes-to-docker-flags [volumes: record]: record {
+  def trasform-volumes-to-docker-flags [volumes: record] {
     $volumes
     | items {|key, value| [ "-v" ($value + $":($backup_path)/" + ($key | str trim)) ] }
     | flatten
