@@ -64,6 +64,7 @@ export def extract-file-from-container [--volume: string, --sub-path: path = '/'
     ^docker cp $"($from_container):($file_to_extract)" $tmp_dir
 
     if not ($operation == null) {
+      print "if"
       $tmp_dir | do $operation
     }
 
