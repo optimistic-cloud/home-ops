@@ -57,8 +57,10 @@ export def copy-file-from-container-to-volume []: record -> nothing {
   let src_path = $in.src_path
   let dest_path = $in.dest_path
 
+  let tmp_dir = (mktemp -d)
+  
   try { 
-    let tmp_dir = (mktemp -d)
+    
 
     ^docker $"cp ($container):($src_path) ($tmp_dir)" | ignore
 
