@@ -84,7 +84,7 @@ export def export-env-from-container-to-volume []: record -> nothing {
 
   try {
     print 1
-    ^docker exec $in.container printenv | save --force $env_file | ignore
+    ^docker exec $container printenv | save --force $env_file | ignore
     print 2
     (
       ^docker run --rm -ti 
