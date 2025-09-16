@@ -83,13 +83,14 @@ export def export-env-from-container-to-volume []: record -> nothing {
   let env_file = mktemp env_file.XXX
 
   try {
+    print 1
     ^docker exec $in.container printenv | save --force $env_file | ignore
-
+    print 2
     (
       ^docker run --rm -ti 
         -v $"($dest_volume):/data:rw"
         -v $"($env_file):/import/env:ro"
-        alpine sh -c $'cp /import/env /data/env' | ignore
+        alpine sh -c 'cp /import/env /data/env' | ignore
     )
     rm $env_file | ignore
   } catch {|err|
