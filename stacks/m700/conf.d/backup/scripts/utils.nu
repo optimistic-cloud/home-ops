@@ -54,7 +54,7 @@ export def export-sqlite-database-in-volume [--volume: string]: record -> nothin
   ignore
 }
 
-export def copy-file-from-container-to-volume [--volume: string, sub_path?: path, operation: closure]: record -> nothing {
+export def copy-file-from-container-to-volume [--volume: string, --sub-path?: path, operation: closure]: record -> nothing {
   let container = $in.container
   let src_path = $in.src_path
 
