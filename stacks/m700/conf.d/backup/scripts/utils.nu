@@ -14,6 +14,9 @@ export def add-file-to-volume [volume: string]: path -> nothing {
   let file = $in | path expand
   let filename = ($file | path basename)
 
+  print $file
+  print $filename
+
   if not ($file | path exists) {
     log error $"File ($file) does not exist, cannot add to volume ($volume)"
     error make { msg: $"File ($file) does not exist" }
