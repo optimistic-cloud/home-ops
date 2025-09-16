@@ -47,9 +47,9 @@ export def with-ping [operation: closure] {
 
   let out = do $operation
 
-  if not (is-json $out) {
-      error make { msg: "Not valid JSON: ($out)" }
-  }
+  #if not (is-json $out) {
+  #    error make { msg: "Not valid JSON: ($out)" }
+  #}
 
   let url = $url | to_url ($out.exit_code | into string)
 
