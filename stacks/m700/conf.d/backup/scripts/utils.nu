@@ -63,8 +63,9 @@ export def copy-file-from-container-to-volume [--volume: string, operation: clos
   try { 
     ^docker cp $"($container):($src_path)" $tmp_dir
 
-    $tmp_dir | do { $operation }
-
+    print 1
+    $tmp_dir | do $operation
+    print 2
     (
       ^docker run --rm -ti 
         -v $"($volume):/data:rw"
