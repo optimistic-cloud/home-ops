@@ -23,6 +23,7 @@ def main [--provider: string] {
     with-lockfile $app {
         with-healthcheck {
             with-backup-docker-volume {
+                # The data in this volume will be backed up under /backup/config
                 let backup_docker_volume = $in
 
                 # Stop and start container to ensure a clean state
