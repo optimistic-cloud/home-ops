@@ -45,7 +45,7 @@ export def with-backup-docker-volume [operation: closure]: nothing -> string {
   }
 }
 
-export def main [--name: string, operation: closure] {
+export def with-stopped-docker-container [--name: string, operation: closure] {
   $name | stop_container
 
   try {
