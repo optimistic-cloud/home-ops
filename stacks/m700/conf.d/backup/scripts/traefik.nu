@@ -43,7 +43,6 @@ def main [--provider: string] {
                 # Run backup with ping
                 with-ping {
                     {
-                        data: $data_docker_volume
                         config: $backup_docker_volume
                     } | restic-backup --env-file $env_file
                 }
