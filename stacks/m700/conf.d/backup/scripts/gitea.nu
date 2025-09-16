@@ -42,7 +42,7 @@ def main [--provider: string] {
                 do {
                     {
                         from_container: $container_name
-                        file_to_extract: $"($dump_location)/($gitea_archive)"
+                        file_path_to_extract: $"($dump_location)/($gitea_archive)"
                     } | extract-file-from-container --volume $backup_docker_volume --sub-path "gitea-dump" {
                         let tmp_dir = $in
 

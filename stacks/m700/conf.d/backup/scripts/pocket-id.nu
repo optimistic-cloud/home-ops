@@ -36,12 +36,10 @@ def main [--provider: string] {
                 }
 
                 # Add /app/secrets/pocket-id.encfile to backup volume
-                do {
-                    {
-                        from_container: $container_name
-                        file_to_extract: /app/secrets/pocket-id.encfile
-                    } | extract-file-from-container --volume $backup_docker_volume
-                }
+                {
+                    from_container: $container_name
+                    file_path_to_extract: /app/secrets/pocket-id.encfile
+                } | extract-file-from-container --volume $backup_docker_volume
                 
                 # Export env from container
                 $container_name | export-env-from-container --volume $backup_docker_volume

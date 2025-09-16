@@ -56,12 +56,12 @@ export def export-sqlite-database-in-volume [--volume: string, prefix: string = 
 
 export def extract-file-from-container [--volume: string, --sub-path: path = '/', operation?: closure]: record -> nothing {
   let from_container = $in.from_container
-  let file_to_extract = $in.file_to_extract
+  let file_path_to_extract = $in.file_path_to_extract
 
   let tmp_dir = (mktemp -d)
 
   try { 
-    ^docker cp $"($from_container):($file_to_extract)" $tmp_dir
+    ^docker cp $"($from_container):($file_path_to_extract)" $tmp_dir
 
     if not ($operation == null) {
       $tmp_dir | do $operation
