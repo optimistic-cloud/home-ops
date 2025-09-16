@@ -10,7 +10,7 @@ export def do_logging_for [command: string]: record -> nothing {
   }
 }
 
-export def add-file-to-volume [volume: string]: path -> nothing {
+export def add-file-to-volume [--volume: string]: path -> nothing {
   let file = $in | path expand
   let filename = ($file | path basename)
 
@@ -32,7 +32,7 @@ export def add-file-to-volume [volume: string]: path -> nothing {
   )
 }
 
-export def export-sqlite-database-in-volume [volume: string]: record -> nothing {
+export def export-sqlite-database-in-volume [--volume: string]: record -> nothing {
   let src_volume = $in.src_volume
   let src_path = $in.src_path
 
