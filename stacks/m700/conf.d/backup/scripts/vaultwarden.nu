@@ -37,17 +37,19 @@ def main [--provider: string] {
 
                 # Run backup with ping
                 with-ping {
-                    (
+                    let out = (
                         ^docker run --rm -ti
                             --env-file $"($app).($provider).restic.env"
                             -v $"($data_docker_volume):/backup/data:ro"
                             -v $"($export_docker_volume):/backup/export:ro"
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             -e TZ=Europe/Berlin
-                            $restic_docker_image --json --quiet backup /backup
+                            $restic_docker_image --json --verbose=2 backup /backup
                                     --one-file-system
                                     --tag=$"git_commit=($git_commit)"
                     ) | complete
+                    print $out
+                    $out
                 }
                                                     #--skip-if-unchanged
                                     #--exclude-caches
