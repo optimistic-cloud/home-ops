@@ -5,7 +5,9 @@ use with-docker-container.nu *
 
 const app = "pocket-id"
 const hc_slug = "pocket-id-backup"
+const contaner = "pocket-id"
 const data_docker_volume = "pocket-id-data"
+
 
 const restic_docker_image = "restic/restic:0.18.0"
 
@@ -20,24 +22,19 @@ def main [--provider: string] {
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
     with-healthcheck {
-        with-tmp-docker-volume {
+
+        with-backup-docker-volume {
+            let export_docker_volume = $in
+
             # Stop and start container to ensure a clean state
             with-docker-container --name $app {
-
-                let export_docker_volume = $in
-
                 # Export sqlite database
-                (
-                    ^docker run --rm 
-                        -v $"($data_docker_volume):/data:ro"
-                        -v $"($export_docker_volume):/export:rw"
-                        alpine/sqlite $"/data/($app).db" $".backup '/export/($app).db'"
-                )
-                (
-                    ^docker run --rm 
-                        -v $"($export_docker_volume):/export:rw"
-                        alpine/sqlite $"/export/($app).db" "PRAGMA integrity_check;" | ignore
-                )
+                {
+                    src_volume: $data_docker_volume
+                    dest_volume: $export_docker_volume
+                    src_path: "/data/pocket-id.db"
+                    dest_path: "/export/pocket-id.db"
+                } | export-sqlite-database-in-volume
             }
 
             # TODO: refactor
@@ -54,7 +51,11 @@ def main [--provider: string] {
                     alpine sh -c "cp /data/secrets/pocket-id.encfile /export/pocket-id.encfile"
             ) | ignore
 
-            let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
+            # Export env from container
+            {
+                container: $contaner
+                dest_volume: $config_docker_volume
+            } | export-env-from-container-to-volume
 
             # Run backup with ping
             with-ping {
@@ -69,7 +70,7 @@ def main [--provider: string] {
                                 --skip-if-unchanged
                                 --exclude-caches
                                 --one-file-system
-                                --tag=$"git_commit=($git_commit)"
+                                --tag=$"git_commit=(get-current-git-commit)"
                 ) | complete
             }
 

@@ -6,6 +6,7 @@ use utils.nu *
 
 const app = "gitea"
 const hc_slug = "gitea-backup"
+const contaner = "gitea"
 
 const restic_docker_image = "restic/restic:0.18.0"
 
@@ -18,7 +19,8 @@ def main [--provider: string] {
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
     with-healthcheck {
-        with-tmp-docker-volume {
+
+        with-backup-docker-volume {
             let export_docker_volume = $in
 
             
@@ -57,6 +59,12 @@ def main [--provider: string] {
             ) | ignore
             ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)" | ignore
             rm -rf $working_dir
+
+            # Export env from container
+            {
+                container: $contaner
+                dest_volume: $config_docker_volume
+            } | export-env-from-container-to-volume
 
             # Run backup with ping
             with-ping {

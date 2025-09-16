@@ -6,6 +6,7 @@ use utils.nu *
 
 const app = "vaultwarden"
 const hc_slug = "vaultwarden-backup"
+const container = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
 
 const restic_docker_image = "restic/restic:0.18.0"
@@ -20,7 +21,8 @@ def main [--provider: string] {
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
     with-healthcheck {
-        with-tmp-docker-volume {
+
+        with-backup-docker-volume {
             let config_docker_volume = $in
 
             # Stops the container if it is running, and starts it again afterwards
@@ -34,11 +36,9 @@ def main [--provider: string] {
                 } | export-sqlite-database-in-volume
             }
 
-            # TODO: what?
-            "example.env.toml" | add-file-to-volume $config_docker_volume
-
+            # Export env from container
             {
-                container: vaultwarden
+                container: $contaner
                 dest_volume: $config_docker_volume
             } | export-env-from-container-to-volume
 
