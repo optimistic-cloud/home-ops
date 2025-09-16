@@ -35,13 +35,7 @@ def main [--provider: string] {
 
                 let git_commit = (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
-                (
-                    docker run --rm -ti
-                        --entrypoint sh
-                        -v vaultwarden-data:/backup/data:ro
-                        -v $"($export_docker_volume):/backup/export:ro"
-                        restic/restic:0.18.0 ls -laR /backup
-                ) | complete | print
+                ^docker run --rm -ti -v $"($data_docker_volume):/backup/data:ro" -v $"($export_docker_volume):/backup/export:ro" alpine ls -laR /backup | complete | print
             
 
                 # Run backup with ping
@@ -62,8 +56,6 @@ def main [--provider: string] {
                 }
                                                     #--skip-if-unchanged
                                     #--exclude-caches
-
-                ^docker run --rm -ti -v $"($data_docker_volume):/backup/data:ro" -v $"($export_docker_volume):/backup/export:ro" alpine ls -laR /backup
                 
                 # Run check with ping
                 with-ping {
