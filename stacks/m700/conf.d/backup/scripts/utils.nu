@@ -87,7 +87,7 @@ export def export-env-from-container-to-volume [--volume: string]: string -> not
   try {
     ^docker container inspect $container_name | from json | get 0.Config.Env | save --force $env_file
 
-    print $env_file
+    cat $env_file
 
     (
       ^docker run --rm -ti 
