@@ -20,7 +20,7 @@ export def send_fail [url: record] {
   $url | to_url 'fail' | do_get
 }
 
-def is-json [data: record] {
+def is-json [data: string] {
     do -i { $data | from json } | complete | get success
 }
 
