@@ -36,16 +36,16 @@ def main [--provider: string] {
 
                 # Run backup with ping
                 with-ping {
-                    let volumes = {
+                    {
                         data: $data_docker_volume
                         config: $backup_docker_volume
                     } | restic-backup --env-file $env_file
                 }
                 
                 # Run check with ping
-                #with-ping {
-                #    restic-check --env-file $env_file
-                #}
+                with-ping {
+                    restic-check --env-file $env_file
+                }
             }
         }
     }
