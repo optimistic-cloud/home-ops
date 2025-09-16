@@ -17,7 +17,6 @@ def main [--provider: string] {
 
     with-lockfile $app {
         with-healthcheck {
-
             with-backup-docker-volume {
                 let backup_docker_volume = $in
 
