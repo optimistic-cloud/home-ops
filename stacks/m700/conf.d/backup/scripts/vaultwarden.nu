@@ -48,7 +48,6 @@ def main [--provider: string] {
                             -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
                             -e TZ=Europe/Berlin
                             $restic_docker_image --verbose=2 backup /backup/
-                                    --one-file-system
                                     --skip-if-unchanged
                                     --exclude-caches
                                     --tag=$"git_commit=($git_commit)"
@@ -57,7 +56,7 @@ def main [--provider: string] {
                     $out
                 }
                                                     #
-                                    #
+                                    #--one-file-system
                 
                 # Run check with ping
                 with-ping {
