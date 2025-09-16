@@ -80,8 +80,6 @@ export def export-env-from-container-to-volume []: record -> nothing {
   let container = $in.container
   let dest_volume = $in.dest_volume
 
-  $dest_volume | print
-
   let env_file = mktemp env_file.XXX
   ^docker exec $in.container printenv | save $env_file | ignore
 
@@ -91,6 +89,7 @@ export def export-env-from-container-to-volume []: record -> nothing {
       -v $"($env_file):/import/env:ro"
       alpine sh -c $'cp /import/env /data/env' | ignore
   )
+  rm $env_file | ignore
 }
 
 export def get-current-git-commit []: nothing -> string {
