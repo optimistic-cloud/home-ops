@@ -20,50 +20,52 @@ def main [--provider: string] {
 
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
-    with-healthcheck {
+    with-lockfile $app {
+        with-healthcheck {
 
-        with-backup-docker-volume {
-            let backup_docker_volume = $in
+            with-backup-docker-volume {
+                let backup_docker_volume = $in
 
-            with-docker-container --name $app {
-                # Export sqlite database
+                with-docker-container --name $app {
+                    # Export sqlite database
+                    {
+                        src_volume: $data_docker_volume
+                        dest_volume: $backup_docker_volume
+                        src_path: "/data/opengist.db"
+                    } | export-sqlite-database-in-volume
+                }
+
+                # Export env from container
                 {
-                    src_volume: $data_docker_volume
+                    container: $container
                     dest_volume: $backup_docker_volume
-                    src_path: "/data/opengist.db"
-                } | export-sqlite-database-in-volume
-            }
+                } | export-env-from-container-to-volume
 
-            # Export env from container
-            {
-                container: $container
-                dest_volume: $backup_docker_volume
-            } | export-env-from-container-to-volume
+                # Run backup with ping
+                # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
+                with-ping {
+                    (
+                        ^docker run --rm -ti
+                            --env-file $"($app).($provider).restic.env"
+                            -v $"($data_docker_volume):/backup/data:ro"
+                            -v $"($backup_docker_volume):/backup/export:ro"
+                            -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
+                            -e TZ=Europe/Berlin
+                            $restic_docker_image --json --quiet backup /backup
+                                    --skip-if-unchanged
+                                    --exclude-caches
+                                    --tag=$"git_commit=(get-current-git-commit)"
+                    )
+                }
 
-            # Run backup with ping
-            # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
-            with-ping {
-                (
-                    ^docker run --rm -ti
-                        --env-file $"($app).($provider).restic.env"
-                        -v $"($data_docker_volume):/backup/data:ro"
-                        -v $"($backup_docker_volume):/backup/export:ro"
-                        -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-                        -e TZ=Europe/Berlin
-                        $restic_docker_image --json --quiet backup /backup
-                                --skip-if-unchanged
-                                --exclude-caches
-                                --tag=$"git_commit=(get-current-git-commit)"
-                )
-            }
-
-            # Run check with ping
-            with-ping {
-                (
-                    ^docker run --rm -ti
-                        --env-file $"($app).($provider).restic.env"
-                        $restic_docker_image --json --quiet check --read-data-subset 33%
-                )
+                # Run check with ping
+                with-ping {
+                    (
+                        ^docker run --rm -ti
+                            --env-file $"($app).($provider).restic.env"
+                            $restic_docker_image --json --quiet check --read-data-subset 33%
+                    )
+                }
             }
         }
     }
