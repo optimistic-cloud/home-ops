@@ -28,6 +28,6 @@ export def add-file-to-volume [volume: string]: path -> nothing {
     ^docker run --rm -ti 
       -v $"($volume):/data:rw"
       -v $"($file):/import/($filename):ro"
-      alpine sh -c $'mkdir -p /data/config/ && cp /import/($filename) /data/config/'
+      alpine sh -c $'cp /import/($filename) /data'
   )
 }
