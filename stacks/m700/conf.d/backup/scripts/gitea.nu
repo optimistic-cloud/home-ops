@@ -23,14 +23,15 @@ def main [--provider: string] {
                 let backup_docker_volume = $in
 
                 let dump_location = '/var/lib/gitea'
-                let dump_name = 'gitea-dump.tar.gz'
+                let gitea_archive = 'gitea-dump.tar.gz'
 
-                ^docker exec -u git gitea rm -f $"($dump_location)/($dump_name)"
+                # remove old dump, create new dump
+                ^docker exec -u git gitea rm -f $"($dump_location)/($gitea_archive)"
                 ^docker exec -u git gitea mkdir -p $dump_location
                 (
                     ^docker exec -u git gitea /usr/local/bin/gitea
                         dump --work-path /tmp
-                        --file $dump_name
+                        --file $gitea_archive
                         --config /etc/gitea/app.ini
                         --database sqlite3
                         --type tar.gz
@@ -38,11 +39,18 @@ def main [--provider: string] {
 
                 {
                     container: gitea
-                    src_path: $"($dump_location)/($dump_name)"
+                    src_path: $"($dump_location)/($gitea_archive)"
                 } | copy-file-from-container-to-volume --volume $backup_docker_volume {
-                    let dir = $in
+                    let tmp_dir = $in
 
-                    print $dir
+                    # gitea.tar.gz
+                    let archive = $"($tmp_dir)/($gitea_archive)"
+
+                    # extract in-place and remove the archive
+                    ^tar -xzf $archive -C $tmp_dir | ignore
+                    ^rm -f $archive | ignore
+
+                    $tmp_dir
                 }
 
                 # not ready to use
