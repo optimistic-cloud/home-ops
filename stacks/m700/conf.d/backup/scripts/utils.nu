@@ -25,7 +25,7 @@ export def add-file-to-volume [volume: string]: path -> nothing {
     error make { msg: $"Docker volume ($volume) does not exist" }
   }
 
-
+ls -l "$file"
   (
     ^docker run --rm -ti 
       -v $"($volume):/data:rw"
