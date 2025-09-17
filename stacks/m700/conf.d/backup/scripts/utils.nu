@@ -58,19 +58,12 @@ export def extract-files-from-container [--volume: string, --sub-path: path = ''
   let from_container = $in.from_container
   let paths = $in.paths
 
-  print $paths
-
   let tmp_dir = (mktemp -d)
 
   try {
-    print 1
     $paths | each {|p|
-      print $p
 	    ^docker cp $"($from_container):($p)" $tmp_dir
-      print 2
     }
-
-
 
     if (ls $tmp_dir | is-empty) {
       error make { msg: "directory is empty"}
