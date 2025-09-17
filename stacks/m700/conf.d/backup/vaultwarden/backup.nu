@@ -8,11 +8,12 @@ use ./../lib/utils.nu *
 const app = "vaultwarden"
 const hc_slug = "vaultwarden-backup"
 const container_name = "vaultwarden"
-const data_docker_volume = "m700_vaultwarden-data"
+const data_docker_volume = "vaultwarden-data"
 const restore_docker_volume = "vaultwarden-data-restore"
 
 def main [--provider: string] {
-    open './../env.toml' | load-env
+    # TODO: needs rework
+    open './env.toml' | load-env
     
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
