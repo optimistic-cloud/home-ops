@@ -48,7 +48,6 @@ def main [--provider: string] {
 
                         # gitea.tar.gz
                         let archive = $"($tmp_dir)/($gitea_archive)"
-                        print $archive
 
                         # extract in-place and remove the archive
                         ^tar -xzf $archive -C $tmp_dir | ignore
@@ -95,6 +94,6 @@ def "main snapshots" [--provider: string] {
     $"($app).($provider).restic.env" | with-restic ["snapshots", "--latest", "5"] 
 }
 
-def "main restore" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic "bla restore" 
+def "main restore" [--provider: string] {
+    restic-restore --env-file $"($app).($provider).restic.env"
 }

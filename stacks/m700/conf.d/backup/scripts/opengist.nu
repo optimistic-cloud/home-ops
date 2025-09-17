@@ -65,3 +65,7 @@ def "main ls" [--provider: string] {
 def "main snapshots" [--provider: string] { 
     $"($app).($provider).restic.env" | with-restic ["snapshots", "--latest", "5"] 
 }
+
+def "main restore" [--provider: string] {
+    restic-restore --env-file $"($app).($provider).restic.env"
+}
