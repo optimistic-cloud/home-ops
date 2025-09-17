@@ -61,4 +61,4 @@ backup app provider:
 [doc('Restore backup for an application')]
 [working-directory: 'conf.d/backup/']
 restore app provider restore_path:
-    nu {{app}}/backup.nu restore --provider-env-file {{app}}/{{provider}}.restic.env --restore-path {{restore_path}}
+    nu ./conf.d/backup/{{app}}/backup.nu restore --provider-env-file {{app}}/{{provider}}.restic.env --restore-path {{restore_path}}
