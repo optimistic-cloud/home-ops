@@ -1,5 +1,5 @@
 services:
-  vaultwarden:
+  vaultwarden-restore:
     image: vaultwarden/server:latest
     restart: always
     # environment:
