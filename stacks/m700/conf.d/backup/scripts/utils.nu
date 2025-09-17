@@ -174,23 +174,3 @@ export def with-restic [commands: list<string>]: path -> nothing {
 
     ^docker run --rm -ti --env-file $envs $restic_docker_image ...$commands
 }
-
-
-# backup is done for a single volume
-
-# usecases:
-# - backup file from container
-#   - src container     
-#   - backup volume
-#   => function: copy-file-from-container-to-volume
-# - backup env from container
-#   - src container     
-#   - backup volume
-#   => function: export-env-from-container-to-volume
-# - backup sqlite database
-#   - src volume
-#   - backup volume
-#   => function: export-sqlite-database-in-volume
-# - backup volume
-#   - volume
-#   => function: no
