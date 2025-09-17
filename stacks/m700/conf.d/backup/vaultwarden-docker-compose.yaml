@@ -1,10 +1,9 @@
 services:
   vaultwarden-restore:
-    image: vaultwarden/server:latest
-    restart: always
-    # environment:
-    #   SIGNUPS_ALLOWED: 'false'
-    #   ADMIN_TOKEN: 'your authentication token'
+    image: vaultwarden/server:1.34.3
+    container_name: vaultwarden-restore
+    restart: unless-stopped
+    read_only: true
     ports:
       - '127.0.0.1:8200:80'
     volumes:
