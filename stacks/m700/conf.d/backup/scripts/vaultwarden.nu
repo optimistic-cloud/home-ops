@@ -8,7 +8,7 @@ use utils.nu *
 const app = "vaultwarden"
 const hc_slug = "vaultwarden-backup"
 const container_name = "vaultwarden"
-const data_docker_volume = "vaultwarden-data"
+const data_docker_volume = "m700_vaultwarden-data"
 
 def main [--provider: string] {
     open env.toml | load-env

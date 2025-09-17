@@ -8,7 +8,7 @@ use utils.nu *
 const app = "opengist"
 const hc_slug = "opengist-backup"
 const container_name = "opengist"
-const data_docker_volume = "opengist-data"
+const data_docker_volume = "m700_opengist-data"
 
 def main [--provider: string] {
     open env.toml | load-env

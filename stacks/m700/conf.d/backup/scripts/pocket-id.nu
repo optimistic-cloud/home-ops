@@ -8,7 +8,7 @@ use utils.nu *
 const app = "pocket-id"
 const hc_slug = "pocket-id-backup"
 const container_name = "pocket-id"
-const data_docker_volume = "pocket-id-data"
+const data_docker_volume = "m700_pocket-id-data"
 
 # Files to backup:
 #   - backup file /app/secrets/pocket-id.encfile from pocket-id container
