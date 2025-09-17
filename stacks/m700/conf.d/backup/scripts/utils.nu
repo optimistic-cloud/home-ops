@@ -162,7 +162,7 @@ export def restic-restore [--env-file: path] {
   (
     ^docker run --rm -ti 
       --env-file $envs
-      -v $tmp_dir:/data:rw
+      -v $"($tmp_dir):/data:rw"
       $restic_docker_image restore latest --target /data
   )
 
