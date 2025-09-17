@@ -136,7 +136,7 @@ services:
       - "traefik.http.services.gist.loadbalancer.server.port=6157"
 
   gitea:
-    image: docker.gitea.com/gitea:1.24.5-rootless
+    image: docker.gitea.com/gitea:1.24.6-rootless
     container_name: gitea
     restart: unless-stopped
     user: "1000:1000"
