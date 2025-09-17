@@ -1,17 +1,1 @@
-{
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  
-  "dependencyDashboard": true,
-
-  "extends": [
-    "config:best-practices",
-    ":semanticCommits",
-    ":dependencyDashboard",
-    ":prHourlyLimit2",
-    ":prConcurrentLimit10",
-    ":label(renovate)"
-  ],
-
-  "timezone": "Europe/Berlin",
-  "schedule": ["before 13:00 on monday, tuesday, wednesday, thursday, friday"]
-}
+{}
