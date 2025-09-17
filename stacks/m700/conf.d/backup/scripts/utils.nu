@@ -88,7 +88,7 @@ export def extract-files-from-container [--volume: string, --sub-path: path = ''
    }
 }
 
-export def export-env-from-container [--volume: string]: string -> nothing {
+export def export-env-from-container [--volume: string, name: string = "container.env"]: string -> nothing {
   let container_name = $in
 
   let env_file = mktemp env_file.XXX
@@ -100,7 +100,7 @@ export def export-env-from-container [--volume: string]: string -> nothing {
       ^docker run --rm -ti 
         -v $"($volume):/data:rw"
         -v $"($env_file):/import/env:ro"
-        alpine sh -c 'cp /import/env /data/env'
+        alpine sh -c $'cp /import/env /data/($name)'
     )
 
     rm $env_file

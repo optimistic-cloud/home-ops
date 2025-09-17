@@ -27,7 +27,7 @@ def main [--provider: string] {
                 do {
                     # remove old dump, create new dump 
                     ^docker exec -u git gitea rm -f $"($dump_location)/($gitea_archive)"
-                    ^docker exec -u git gitea mkdir -p $dump_location
+                    #^docker exec -u git gitea mkdir -p $dump_location
                     (
                         ^docker exec -u git gitea /usr/local/bin/gitea
                             dump --work-path /tmp
