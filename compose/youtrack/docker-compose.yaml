@@ -1,0 +1,33 @@
+x-healthcheck: &default-healthcheck
+  interval: 180s
+  timeout: 10s
+  retries: 5
+  start_period: 60s
+
+services:
+  youtrack:
+    image: jetbrains/youtrack:2025.2.94372
+    container_name: youtrack
+    restart: unless-stopped
+    volumes:
+      - youtrack-data:/opt/youtrack/data
+      - youtrack-conf:/opt/youtrack/conf
+      - youtrack-logs:/opt/youtrack/logs
+      - youtrack-backups:/opt/youtrack/backups
+    environment:
+      - YOUTRACK_JVM_OPTIONS=-Xmx2g
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      <<: *default-healthcheck
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.youtrack.rule=Host(`youtrack.${DOMAIN}`)"
+      - "traefik.http.routers.youtrack.entrypoints=https"
+      - "traefik.http.routers.youtrack.tls.certresolver=letsencrypt"
+      - "traefik.http.services.youtrack.loadbalancer.server.port=8080"
+
+volumes:
+  youtrack-data:
+  youtrack-conf:
+  youtrack-logs:
+  youtrack-backups:

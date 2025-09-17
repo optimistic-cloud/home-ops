@@ -258,27 +258,6 @@ services:
       - "traefik.http.routers.pocket-id.tls.certresolver=letsencrypt"
       - "traefik.http.services.pocket-id.loadbalancer.server.port=1411"
 
-  youtrack:
-    image: jetbrains/youtrack:2025.2.94372
-    container_name: youtrack
-    restart: unless-stopped
-    volumes:
-      - youtrack-data:/opt/youtrack/data
-      - youtrack-conf:/opt/youtrack/conf
-      - youtrack-logs:/opt/youtrack/logs
-      - youtrack-backups:/opt/youtrack/backups
-    environment:
-      - YOUTRACK_JVM_OPTIONS=-Xmx2g
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
-      <<: *default-healthcheck
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.youtrack.rule=Host(`youtrack.${DOMAIN}`)"
-      - "traefik.http.routers.youtrack.entrypoints=https"
-      - "traefik.http.routers.youtrack.tls.certresolver=letsencrypt"
-      - "traefik.http.services.youtrack.loadbalancer.server.port=8080"
-
 volumes:
   traefik-acme:
   traefik-config:
@@ -291,7 +270,3 @@ volumes:
   gitea-config:
   pocket-id-data:
     name: pocket-id-data
-  youtrack-data:
-  youtrack-conf:
-  youtrack-logs:
-  youtrack-backups:
