@@ -65,9 +65,7 @@ def "main snapshots" [--provider-env-file: path] {
     $provider_env_file | with-restic ["snapshots", "--latest", "5"] 
 }
 
-def "main restore" [--provider-env-file: path] {
-    let restore_path = "./vaultwarden/restore"
-    
+def "main restore" [--provider-env-file: path, --restore-path: path] {
     if $restore_path | path-exists {
         error make {msg: "Restore path already exists" }
     }

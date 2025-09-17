@@ -1,10 +1,10 @@
 
 use std/log
 
-use with-lockfile.nu *
-use with-healthcheck.nu *
-use with-docker.nu *
-use utils.nu *
+use ./../lib/with-lockfile.nu *
+use ./../lib/with-healthcheck.nu *
+use ./../lib/with-docker.nu *
+use ./../lib/utils.nu *
 
 const app = "traefik"
 const hc_slug = "traefik-backup"
@@ -50,23 +50,26 @@ def main [--provider: string] {
     }
 }
 
-
-def "main init" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic ["init"]
+def "main init" [--provider-env-file: path] { 
+    $provider_env_file | with-restic ["init"]
 }
 
-def "main stats" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic ["stats"] 
+def "main stats" [--provider-env-file: path] { 
+    $provider_env_file | with-restic ["stats"] 
 }
 
-def "main ls" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic ["ls", "latest"] 
+def "main ls" [--provider-env-file: path] { 
+    $provider_env_file | with-restic ["ls", "latest"] 
 }
 
-def "main snapshots" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic ["snapshots", "--latest", "5"] 
+def "main snapshots" [--provider-env-file: path] { 
+    $provider_env_file | with-restic ["snapshots", "--latest", "5"] 
 }
 
-def "main restore" [--provider: string] {
-    restic-restore --env-file $"($app).($provider).restic.env"
+def "main restore" [--provider-env-file: path, --restore-path: path] {
+    if $restore_path | path-exists {
+        error make {msg: "Restore path already exists" }
+    }
+
+    restic-restore --env-file $provider_env_file --target $restore_path
 }
