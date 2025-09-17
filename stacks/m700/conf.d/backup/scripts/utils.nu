@@ -70,7 +70,9 @@ export def extract-files-from-container [--volume: string, --sub-path: path = ''
       print 2
     }
 
-    if (ls tmp_dir | is-empty) {
+
+
+    if (ls $tmp_dir | is-empty) {
       error make { msg: "directory is empty"}
     }
 
