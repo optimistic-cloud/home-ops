@@ -67,6 +67,7 @@ export def extract-files-from-container [--volume: string, --sub-path: path = ''
     $paths | each {|p|
       print $p
 	    ^docker cp $"($from_container):($p)" $tmp_dir
+      print 2
     }
 
     if (ls tmp_dir | is-empty) {
