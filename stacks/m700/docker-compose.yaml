@@ -6,7 +6,7 @@ x-healthcheck: &default-healthcheck
 
 services:
   traefik:
-    image: traefik:v3.5.0
+    image: traefik:v3.5.2
     container_name: traefik
     restart: unless-stopped
       #read_only: true
