@@ -68,5 +68,5 @@ def "main snapshots" [--provider: string] {
 }
 
 def "main restore" [--provider: string] {
-    restic-restore --env-file $env_file
+    restic-restore --env-file $"($app).($provider).restic.env"
 }
