@@ -66,3 +66,10 @@ def "main ls" [--provider: string] {
 def "main snapshots" [--provider: string] { 
     $"($app).($provider).restic.env" | with-restic ["snapshots", "--latest", "5"] 
 }
+
+def "main restore" [--provider: string] {
+    let tmp_dir = (mktemp -d)
+    $"($app).($provider).restic.env" | with-restic ["restore", "latest", "--target", $tmp_dir]
+
+    log info $"Restored files to ($tmp_dir)"
+}
