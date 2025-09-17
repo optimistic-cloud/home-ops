@@ -161,12 +161,12 @@ export def restic-restore [--env-file: path, --target: path] {
   (
     ^docker run --rm -ti 
       --env-file $envs
-      -v $"($restore_path):/data:rw"
+      -v $"($target):/data:rw"
       -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
       $restic_docker_image restore latest --target /data
   )
 
-  log info $"Restored data is available at: ($restore_path)"
+  log info $"Restored data is available at: ($target)"
 }
 
 export def with-restic [commands: list<string>]: path -> nothing {
