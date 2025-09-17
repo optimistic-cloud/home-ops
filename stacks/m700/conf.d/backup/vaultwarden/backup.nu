@@ -11,9 +11,9 @@ const container_name = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
 const restore_docker_volume = "vaultwarden-data-restore"
 
-def main [--provider: string] {
+def main [--env-file: path, --provider-env-file: path] {
     # TODO: needs rework
-    open './env.toml' | load-env
+    open $env_file | load-env
     
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
@@ -34,43 +34,41 @@ def main [--provider: string] {
                 # Export env from container
                 $container_name | export-env-from-container --volume $backup_docker_volume
 
-                let env_file = $"($app).($provider).restic.env"
-
                 # Run backup with ping
                 with-ping {
                     {
                         data: $data_docker_volume
                         config: $backup_docker_volume
-                    } | restic-backup --env-file $env_file
+                    } | restic-backup --env-file $provider_env_file
                 }
                 
                 # Run check with ping
                 with-ping {
-                    restic-check --env-file $env_file
+                    restic-check --env-file $provider_env_file
                 }
             }
         }
     }
 }
 
-def "main init" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic ["init"]
+def "main init" [--provider-env-file: path] { 
+    $provider_env_file | with-restic ["init"]
 }
 
-def "main stats" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic ["stats"] 
+def "main stats" [--provider-env-file: path] { 
+    $provider_env_file | with-restic ["stats"] 
 }
 
-def "main ls" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic ["ls", "latest"] 
+def "main ls" [--provider-env-file: path] { 
+    $provider_env_file | with-restic ["ls", "latest"] 
 }
 
-def "main snapshots" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic ["snapshots", "--latest", "5"] 
+def "main snapshots" [--provider-env-file: path] { 
+    $provider_env_file | with-restic ["snapshots", "--latest", "5"] 
 }
 
-def "main restore" [--provider: string] {
+def "main restore" [--provider-env-file: path] {
     {
         data: $restore_docker_volume
-    } | restic-restore --env-file $"($app).($provider).restic.env"
+    } | restic-restore --env-file $provider_env_file
 }
