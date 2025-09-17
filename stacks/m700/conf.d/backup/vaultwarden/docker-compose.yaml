@@ -34,7 +34,7 @@ services:
     environment:
       TZ: Europe/Berlin
       
-      DOMAIN: https://vaultwarden.${DOMAIN}
+      DOMAIN: https://vaultwarden-restore.${DOMAIN}
       ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
       SIGNUPS_ALLOWED: false
       INVITATIONS_ALLOWED: false
@@ -46,7 +46,7 @@ services:
       - ./vaultwarden-restore/backup/data:/data/
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.vaultwarden.rule=Host(`restore.vaultwarden.${DOMAIN}`)"
+      - "traefik.http.routers.vaultwarden.rule=Host(`vaultwarden-restore.${DOMAIN}`)"
       - "traefik.http.routers.vaultwarden.entrypoints=https"
       - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
       - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
