@@ -63,6 +63,7 @@ export def extract-files-from-container [--volume: string, --sub-path: path = ''
   let tmp_dir = (mktemp -d)
 
   try {
+    print 1
     $paths | each {|p|
       print $p
 	    ^docker cp $"($from_container):($p)" $tmp_dir
