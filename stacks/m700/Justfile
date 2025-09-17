@@ -1,4 +1,5 @@
-mod ops './conf.d/backup/scripts'
+# info, debug, warn, error
+export NU_LOG_LEVEL := "info"
 
 alias u := update
 alias d := down
@@ -33,10 +34,12 @@ init app provider:
 
 [group('restic')]
 [doc('Backup application')]
-abackup app provider:
-    just --justfile conf.d/backup/scripts/.justfile backup {{app}} {{provider}}
+[working-directory: 'conf.d/backup/scripts/']
+backup app provider:
+    nu {{app}}.nu --provider {{provider}}
 
 [group('restic')]
 [doc('Restore backup for an application')]
-raestore app provider:
-    just --justfile conf.d/backup/scripts/.justfile backup {{app}} {{provider}}
+[working-directory: 'conf.d/backup/scripts/']
+restore app provider:
+    nu {{app}}.nu restore --provider {{provider}}
