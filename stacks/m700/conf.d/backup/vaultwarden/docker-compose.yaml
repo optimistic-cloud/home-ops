@@ -13,6 +13,12 @@ services:
       DOMAIN: https://vaultwarden-restore.optimistic.cloud
     volumes:
       - ./restore/backup/data:/data/
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/api/alive"]
+      interval: 180s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.vaultwarden-restore.rule=Host(`vaultwarden-restore.optimistic.cloud`)"
