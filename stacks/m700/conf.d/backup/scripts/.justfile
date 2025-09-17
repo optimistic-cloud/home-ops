@@ -6,6 +6,11 @@ help:
 [group('restic')]
 [doc('Backup application')]
 backup app provider:
+    echo "SHELL=$SHELL"
+    which sh || true
+    which bash || true
+    which nu || true
+    ls -l /bin/sh || true
     nu {{app}}.nu --provider {{provider}}
 
 [group('restic')]
