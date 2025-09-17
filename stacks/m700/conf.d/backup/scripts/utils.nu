@@ -149,7 +149,8 @@ export def restic-check [--env-file: path, --subset: string = "33%"]: nothing ->
 
   (
     ^docker run --rm -ti 
-      --env-file $envs 
+      --env-file $envs
+      -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
       $restic_docker_image --json --quiet check --read-data-subset $subset
       | complete
   )
@@ -163,6 +164,7 @@ export def restic-restore [--env-file: path] {
     ^docker run --rm -ti 
       --env-file $envs
       -v $"($tmp_dir):/data:rw"
+      -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
       $restic_docker_image restore latest --target /data
   )
 
