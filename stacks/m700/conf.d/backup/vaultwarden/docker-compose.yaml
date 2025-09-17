@@ -9,9 +9,8 @@ services:
     restart: unless-stopped
     read_only: true
     environment:
+      TZ: Europe/Berlin
       DOMAIN: https://vaultwarden-restore.optimistic.cloud
-    ports:
-      - '8200:80'
     volumes:
       - ./restore/backup/data:/data/
     labels:
