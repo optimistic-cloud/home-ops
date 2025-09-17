@@ -55,10 +55,10 @@ stats app provider:
 [doc('Backup application')]
 [working-directory: 'conf.d/backup/']
 backup app provider:
-    nu {{app}}/backup.nu --provider {{provider}}
+    nu {{app}}/backup.nu --env-file ./env.toml --provider-env-file {{app}}/{{provider}}.restic.env
 
 [group('restic')]
 [doc('Restore backup for an application')]
 [working-directory: 'conf.d/backup/']
 restore app provider:
-    nu {{app}}/backup.nu restore --provider {{provider}}
+    nu {{app}}/backup.nu restore --env-file ./env.toml --provider-env-file {{app}}/{{provider}}.restic.env
