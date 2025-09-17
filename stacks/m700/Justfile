@@ -29,36 +29,36 @@ logs service:
 
 [group('restic')]
 [doc('Init repository')]
-[working-directory: 'conf.d/backup/scripts/']
+[working-directory: 'conf.d/backup/']
 init app provider:
-    nu {{app}}.nu init --provider {{provider}}
+    nu {{app}}/backup.nu init --provider {{provider}}
 
 [group('restic')]
 [doc('Get snapshots')]
-[working-directory: 'conf.d/backup/scripts/']
+[working-directory: 'conf.d/backup/']
 snapshots app provider:
-    nu {{app}}.nu snapshot --provider {{provider}}
+    nu {{app}}/backup.nu snapshot --provider {{provider}}
 
 [group('restic')]
 [doc('List files in the snapshot')]
-[working-directory: 'conf.d/backup/scripts/']
+[working-directory: 'conf.d/backup/']
 ls app provider:
-    nu {{app}}.nu ls --provider {{provider}}
+    nu {{app}}/backup.nu ls --provider {{provider}}
 
 [group('restic')]
 [doc('Get stats of the repository')]
-[working-directory: 'conf.d/backup/scripts/']
+[working-directory: 'conf.d/backup/']
 stats app provider:
-    nu {{app}}.nu stats --provider {{provider}}
+    nu {{app}}/backup.nu stats --provider {{provider}}
 
 [group('restic')]
 [doc('Backup application')]
-[working-directory: 'conf.d/backup/scripts/']
+[working-directory: 'conf.d/backup/']
 backup app provider:
-    nu {{app}}.nu --provider {{provider}}
+    nu {{app}}/backup.nu --provider {{provider}}
 
 [group('restic')]
 [doc('Restore backup for an application')]
-[working-directory: 'conf.d/backup/scripts/']
+[working-directory: 'conf.d/backup/']
 restore app provider:
-    nu {{app}}.nu restore --provider {{provider}}
+    nu {{app}}/backup.nu restore --provider {{provider}}
