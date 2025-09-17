@@ -5,6 +5,6 @@ services:
     restart: unless-stopped
     read_only: true
     ports:
-      - '127.0.0.1:8200:80'
+      - '8200:80'
     volumes:
       - ./restore/backup/data:/data/
