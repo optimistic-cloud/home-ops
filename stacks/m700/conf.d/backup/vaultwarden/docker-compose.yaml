@@ -8,3 +8,9 @@ services:
       - '8200:80'
     volumes:
       - ./restore/backup/data:/data/
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden-restore.rule=Host(`vaultwarden-restore.${DOMAIN}`)"
+      - "traefik.http.routers.vaultwarden-restore.entrypoints=https"
+      - "traefik.http.routers.vaultwarden-restore.tls.certresolver=letsencrypt"
+      - "traefik.http.services.vaultwarden-restore.loadbalancer.server.port=80"
