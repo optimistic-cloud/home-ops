@@ -42,13 +42,13 @@ init app provider:
 [group('restic')]
 [doc('List files in the snapshot')]
 [working-directory: 'conf.d/backup/scripts/']
-init app provider:
+ls app provider:
     nu {{app}}.nu ls --provider {{provider}}
 
 [group('restic')]
 [doc('Get stats of the repository')]
 [working-directory: 'conf.d/backup/scripts/']
-init app provider:
+stats app provider:
     nu {{app}}.nu stats --provider {{provider}}
 
 [group('restic')]
