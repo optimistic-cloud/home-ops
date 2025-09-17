@@ -9,6 +9,7 @@ const app = "vaultwarden"
 const hc_slug = "vaultwarden-backup"
 const container_name = "vaultwarden"
 const data_docker_volume = "m700_vaultwarden-data"
+const restore_docker_volume = "vaultwarden-data-restore"
 
 def main [--provider: string] {
     open env.toml | load-env
@@ -68,5 +69,7 @@ def "main snapshots" [--provider: string] {
 }
 
 def "main restore" [--provider: string] {
-    restic-restore --env-file $"($app).($provider).restic.env"
+    {
+        data: $restore_docker_volume
+    } | restic-restore --env-file $"($app).($provider).restic.env"
 }
