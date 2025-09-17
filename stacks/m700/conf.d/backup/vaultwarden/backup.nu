@@ -9,10 +9,8 @@ const app = "vaultwarden"
 const hc_slug = "vaultwarden-backup"
 const container_name = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
-const restore_docker_volume = "vaultwarden-data-restore"
 
 def main [--env-file: path, --provider-env-file: path] {
-    # TODO: needs rework
     open $env_file | load-env
     
     $hc_slug | configure-hc-api $env.HC_PING_KEY
@@ -68,7 +66,7 @@ def "main snapshots" [--provider-env-file: path] {
 }
 
 def "main restore" [--provider-env-file: path] {
-    {
-        data: $restore_docker_volume
-    } | restic-restore --env-file $provider_env_file
+    let restore_path = "./vaultwarden/restore"
+    rm -rf $restore_path | ignore
+    restic-restore --env-file $provider_env_file --target $restore_path
 }

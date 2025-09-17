@@ -8,7 +8,3 @@ services:
       - '127.0.0.1:8200:80'
     volumes:
       - vaultwarden-data-restore:/data/
-
-volumes:
-  vaultwarden-data-restore:
-    name: vaultwarden-data-restore
