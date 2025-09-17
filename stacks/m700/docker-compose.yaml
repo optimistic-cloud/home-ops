@@ -135,6 +135,21 @@ services:
       - "traefik.http.routers.gist.tls.certresolver=letsencrypt"
       - "traefik.http.services.gist.loadbalancer.server.port=6157"
 
+  # Add init container to set permissions
+  gitea-init:
+    image: alpine
+    volumes:
+      - gitea-data:/var/lib/gitea
+      - gitea-config:/etc/gitea
+    command: |
+      sh -c "
+        chown -R 1000:1000 /var/lib/gitea &&
+        chown -R 1000:1000 /etc/gitea &&
+        chmod -R 700 /var/lib/gitea &&
+        chmod -R 700 /etc/gitea
+      "
+    restart: "no"
+
   gitea:
     image: docker.gitea.com/gitea:1.24.6-rootless
     container_name: gitea
