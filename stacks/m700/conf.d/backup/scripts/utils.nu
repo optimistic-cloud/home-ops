@@ -169,7 +169,6 @@ export def restic-restore [--env-file: path] {
   log info $"Restored data is available at: ($tmp_dir)"
 }
 
-let tmp_dir = (mktemp -d)
 export def with-restic [commands: list<string>]: path -> nothing {
     let envs = $in | path expand
 
