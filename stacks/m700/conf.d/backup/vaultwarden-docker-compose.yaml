@@ -1,0 +1,14 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    restart: always
+    # environment:
+    #   SIGNUPS_ALLOWED: 'false'
+    #   ADMIN_TOKEN: 'your authentication token'
+    ports:
+      - '127.0.0.1:8200:80'
+    volumes:
+      - vaultwarden-data-restore:/data/
+
+volumes:
+  vaultwarden-data-restore:
