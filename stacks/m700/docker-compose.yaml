@@ -127,7 +127,6 @@ services:
       # TODO: https://github.com/thomiceli/opengist/pull/490
 
     volumes:
-      # - ./opengist/appdata:/opengist
       - opengist-data:/opengist
     labels:
       - "traefik.enable=true"
@@ -181,8 +180,6 @@ services:
     volumes:
       - gitea-data:/var/lib/gitea
       - gitea-config:/etc/gitea
-      # - ./gitea/appdata/data:/var/lib/gitea
-      # - ./gitea/appdata/config:/etc/gitea
       - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
@@ -249,7 +246,6 @@ services:
       ANALYTICS_DISABLED: true
 
     volumes:
-      # - ./pocket-id/appdata:/app/data
       - pocket-id-data:/app/data
       - ./pocket-id.encfile:/app/secrets/pocket-id.encfile:ro
     healthcheck:
@@ -282,34 +278,6 @@ services:
       - "traefik.http.routers.youtrack.entrypoints=https"
       - "traefik.http.routers.youtrack.tls.certresolver=letsencrypt"
       - "traefik.http.services.youtrack.loadbalancer.server.port=8080"
-
-  backup:
-    image: ghcr.io/optimistic-cloud/toolkit
-    container_name: backup-toolkit
-    restart: unless-stopped
-    hostname: m700.optimistic.cloud
-    user: "root:root"
-    depends_on:
-      - vaultwarden
-      - opengist
-      - gitea
-      - pocket-id
-      - traefik
-    env_file:
-      - ./conf.d/backup/.env
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      
-      # - ./conf.d/backup/crontab:/etc/crontab
-      # - ./conf.d/backup/scripts:/opt/conf.d/backup/scripts
-
-      # - ./.env:/opt/.env
-
-      # - ./vaultwarden/:/opt/vaultwarden/:ro
-      # - ./opengist/:/opt/opengist/:ro
-      # - ./gitea/:/opt/gitea/:ro
-      # - ./pocket-id/:/opt/pocket-id/:ro
-      # - ./traefik/:/opt/traefik/:ro
 
 volumes:
   traefik-acme:
