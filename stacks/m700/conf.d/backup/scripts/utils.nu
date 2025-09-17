@@ -156,18 +156,18 @@ export def restic-check [--env-file: path, --subset: string = "33%"]: nothing ->
 }
 
 export def restic-restore [--env-file: path] {
+  let volume = $in
   let envs = $env_file | path expand
-  let tmp_dir = (mktemp -d)
 
   (
     ^docker run --rm -ti 
       --env-file $envs
-      -v $"($tmp_dir):/data:rw"
+      -v $"($volume):/data:rw"
       -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
       $restic_docker_image restore latest --target /data
   )
 
-  log info $"Restored data is available at: ($tmp_dir)"
+  log info $"Restored data is available at: ($volume)"
 }
 
 export def with-restic [commands: list<string>]: path -> nothing {
