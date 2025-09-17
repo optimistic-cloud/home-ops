@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     read_only: true
     environments:
-      - DOMAIN: https://vaultwarden-restore.optimistic.cloud
+      DOMAIN: https://vaultwarden-restore.optimistic.cloud
     ports:
       - '8200:80'
     volumes:
