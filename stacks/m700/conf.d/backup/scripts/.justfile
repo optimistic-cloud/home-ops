@@ -6,7 +6,7 @@ help:
 [group('restic')]
 [doc('Backup application')]
 backup app provider:
-    echo "SHELL=$SHELL"
+    #echo "SHELL=$SHELL"
     which sh || true
     which bash || true
     which nu || true
