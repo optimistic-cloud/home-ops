@@ -1,3 +1,5 @@
+set working-directory := 'conf.d/backup/scripts'
+
 help:
     just --list
 
