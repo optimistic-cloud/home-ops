@@ -1,9 +1,9 @@
 use std/log
 
-use ./../lib/with-lockfile.nu *
-use ./../lib/with-healthcheck.nu *
-use ./../lib/with-docker.nu *
-use ./../lib/utils.nu *
+use ./lib/with-lockfile.nu *
+use ./lib/with-healthcheck.nu *
+use ./lib/with-docker.nu *
+use ./lib/utils.nu *
 
 const app = "vaultwarden"
 const hc_slug = "vaultwarden-backup"
@@ -66,10 +66,9 @@ def "main snapshots" [--provider-env-file: path] {
 }
 
 def "main restore" [--provider-env-file: path, --restore-path: path] {
-    let full_restore_path = $"./($restore_path)/restore"
-    if ($full_restore_path | path exists) {
+    if ($restore_path | path exists) {
         error make {msg: "Restore path already exists" }
     }
 
-    restic-restore --env-file $provider_env_file --target $full_restore_path
+    restic-restore --env-file $provider_env_file --target $restore_path
 }
