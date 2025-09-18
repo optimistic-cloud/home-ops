@@ -1,7 +1,7 @@
 {
   "regexManagers": [
     {
-      "fileMatch": ["stacks/.*/Justfile$"],
+      "fileMatch": ["(?i).*/justfile$"],
       "matchStrings": [
         "export RESTIC_DOCKER_IMAGE := \\\"(?<depName>restic/restic):(?<currentValue>[0-9.]+)\\\""
       ],
