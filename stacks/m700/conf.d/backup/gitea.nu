@@ -10,10 +10,8 @@ const hc_slug = "gitea-backup"
 const container_name = "gitea"
 
 def main [--provider-env-file: path] {
-    $hc_slug | configure-hc-api
-
     with-lockfile $app {
-        with-healthcheck {
+        with-healthcheck $hc_slug {
             with-backup-docker-volume {
                 let backup_docker_volume = $in
 
