@@ -15,10 +15,12 @@ export def log-debug []: record -> nothing {
   let stdout = $in.stdout
   let stderr = $in.stderr
 
+  let msg = $"exit code: ($in.exit_code), stderr: ($in.stderr), stdout: ($in.stdout)"
+
   if $exit_code != 0 {
-    log error $"Error: ($in)"
+    log error $"Error: ($msg)"
   } else {
-    log debug $"($in)"
+    log debug $"($msg)"
   }
 }
 
