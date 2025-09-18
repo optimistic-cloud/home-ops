@@ -33,12 +33,12 @@ def main [--env-file: path, --provider-env-file: path] {
                 with-ping {
                     {
                         config: $backup_docker_volume
-                    } | restic-backup --env-file $env_file
+                    } | restic-backup --provider-env-file $provider_env_file
                 }
                 
                 # Run check with ping
                 with-ping {
-                    restic-check --env-file $env_file
+                    restic-check --provider-env-file $provider_env_file
                 }
             }
         }
@@ -66,5 +66,5 @@ def "main restore" [--provider-env-file: path, --restore-path: path] {
         error make {msg: "Restore path already exists" }
     }
 
-    restic-restore --env-file $provider_env_file --target $restore_path
+    restic-restore --provider-env-file $provider_env_file --target $restore_path
 }
