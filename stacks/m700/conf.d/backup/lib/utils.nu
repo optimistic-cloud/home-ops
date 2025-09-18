@@ -131,7 +131,16 @@ export def get-current-git-commit []: nothing -> string {
 const restic_docker_image = "restic/restic:0.18.0"
 
 export def backup [--provider-env-file: path]: record -> record {
-  let volumes = $in
+  if not ($in | columns | any {|col| $col == 'container_name'}) {
+    error make { msg: "Mandatory key 'container_name' is missing in input record" }
+  }
+  if not ($in | columns | any {|col| $col == 'volumes'}) {
+    error make { msg: "Mandatory key 'volumes' is missing in input record" }
+  }
+  
+  let container_name = $in.container_name
+  let volumes = $in.volumes
+  
   if ($volumes | length) == 0 {
     error make { msg: "No volumes provided for backup" }
   }
