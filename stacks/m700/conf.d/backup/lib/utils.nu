@@ -150,10 +150,10 @@ export def backup [--provider-env-file: path]: record -> record {
 
   # Run backup with ping
   with-ping {
-    $volumes | restic-backup --provider-env-file $provider_env_file
+    let out = $volumes | restic-backup --provider-env-file $provider_env_file
+    'latest' | assert_snapshot --provider-env-file $provider_env_file
+    $out
   }
-  
-  'latest' | assert_snapshot --provider-env-file $provider_env_file
 
   # Run check with ping
   with-ping {
@@ -173,19 +173,35 @@ def restic-backup [--provider-env-file: path]: record -> record {
     | items {|key, value| [ "-v" ($value + $":($backup_path)/" + ($key | str trim)) ] }
     | flatten
 
-  # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
-  (
-    ^docker run --rm -ti 
-      --hostname $env.HOSTNAME
-      --env-file $envs 
-      ...$vol_flags
-      -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-      -e TZ=Europe/Berlin
-      $restic_docker_image --json --quiet backup $backup_path
-        --skip-if-unchanged
-        --exclude-caches
-        --tag=$"git_commit=(get-current-git-commit)"
-  ) | complete
+  # # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
+  # (
+  #   ^docker run --rm -ti 
+  #     --hostname $env.HOSTNAME
+  #     --env-file $envs 
+  #     ...$vol_flags
+  #     -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
+  #     -e TZ=Europe/Berlin
+  #     $restic_docker_image --json --quiet backup $backup_path
+  #       --skip-if-unchanged
+  #       --exclude-caches
+  #       --tag=$"git_commit=(get-current-git-commit)"
+  # ) | complete
+
+  let da = [
+    "--hostname", $env.HOSTNAME,
+    "--env-file", $provider_env_file,
+    ...$vol_flags,
+    "-v", $"($env.HOME)/.cache/restic:/root/.cache/restic",
+    "-e", "TZ=Europe/Berlin"
+  ]
+  let ra = [
+    "--json", "--quiet", 
+    "backup", $backup_path, 
+    "--skip-if-unchanged", 
+    "--exclude-caches", 
+    "--tag", $"git_commit=(get-current-git-commit)"]
+
+  with-restic --docker-args $da --restic-args $ra
 }
 
 def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> record {
@@ -198,15 +214,6 @@ def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing 
   let ra = ["--json", "--quiet", "check", "--read-data-subset", $subset]
 
   with-restic --docker-args $da --restic-args $ra
-
-
-
-  # (
-  #   ^docker run --rm -ti 
-  #     --env-file $envs
-  #     -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-  #     $restic_docker_image --json --quiet check --read-data-subset $subset
-  # ) | complete
 }
 
 export def restic-restore [--provider-env-file: path, --target: path] {
@@ -219,15 +226,7 @@ export def restic-restore [--provider-env-file: path, --target: path] {
   ]
   let ra = ["restore", "latest", "--target", "/data"]
 
-  let out = with-restic --docker-args $da --restic-args $ra
-
-  # (
-  #   ^docker run --rm -ti 
-  #     --env-file $envs
-  #     -v $"($target):/data:rw"
-  #     -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-  #     $restic_docker_image restore latest --target /data
-  # )
+  with-restic --docker-args $da --restic-args $ra
 
   log info $"Restored data is available at: ($target)"
 }
