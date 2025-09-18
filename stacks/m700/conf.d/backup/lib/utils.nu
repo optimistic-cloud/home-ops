@@ -75,15 +75,7 @@ export def export-sqlite-database-in-volume [--volume: string, prefix: string = 
     with-alpine-sqlite --docker-args $da --args $args
   }
 
-  # (
-  #   ^docker run --rm 
-  #       -v $"($src_volume):/data:ro"
-  #       -v $"($volume):/export:rw"
-  #       alpine/sqlite $src_path $".backup '/export/($db_name)'"
-  # )
-
-
-    do {
+  do {
     let da = [
       "-v", $"($volume):/export:rw",
     ]
@@ -91,12 +83,6 @@ export def export-sqlite-database-in-volume [--volume: string, prefix: string = 
 
     with-alpine-sqlite --docker-args $da --args $args
   }
-
-  # (
-  #   ^docker run --rm 
-  #       -v $"($volume):/export:rw"
-  #       alpine/sqlite $"/export/($db_name)" "PRAGMA integrity_check;"
-  # ) | ignore
 
   ignore
 }
@@ -277,27 +263,41 @@ def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: str
 }
 
 export def with-restic [--docker-args: list<string>, --restic-args: list<string>]: nothing -> record {
-  log debug $"Running restic with docker args: ($docker_args) and restic args: ($restic_args)"
+  # log debug $"Running restic with docker args: ($docker_args) and restic args: ($restic_args)"
   
-  let out = ^docker run --rm -ti ...$docker_args $restic_docker_image ...$restic_args | complete
+  # let out = ^docker run --rm -ti ...$docker_args $restic_docker_image ...$restic_args | complete
 
-  $out | log-debug
-  $out
+  # $out | log-debug
+  # $out
+
+  with-docker-run $restic_docker_image --docker-args $docker_args --args $args
 }
 
 def with-alpine [--docker-args: list<string>, --args: list<string>]: nothing -> record {
-  log debug $"Running alpine with docker args: ($docker_args) and args: ($args)"
+  # log debug $"Running alpine with docker args: ($docker_args) and args: ($args)"
 
-  let out = ^docker run --rm -ti ...$docker_args alpine ...$args | complete
+  # let out = ^docker run --rm -ti ...$docker_args alpine ...$args | complete
 
-  $out | log-debug
-  $out
+  # $out | log-debug
+  # $out
+
+  with-docker-run "alpine" --docker-args $docker_args --args $args
 }
 
 def with-alpine-sqlite [--docker-args: list<string>, --args: list<string>]: nothing -> record {
-  log debug $"Running alpine/sqlite with docker args: ($docker_args) and args: ($args)"
+  # log debug $"Running alpine/sqlite with docker args: ($docker_args) and args: ($args)"
 
-  let out = ^docker run --rm -ti ...$docker_args alpine/sqlite ...$args | complete
+  # let out = ^docker run --rm -ti ...$docker_args alpine/sqlite ...$args | complete
+
+  # $out | log-debug
+  # $out
+
+  with-docker-run "alpine/sqlite" --docker-args $docker_args --args $args 
+}
+def with-docker-run [image: string, --docker-args: list<string>, --args: list<string>]: nothing -> record {
+  log debug $"Running ($image) with docker args: ($docker_args) and args: ($args)"
+
+  let out = ^docker run --rm -ti ...$docker_args $image ...$args | complete
 
   $out | log-debug
   $out
