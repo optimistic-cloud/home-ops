@@ -12,7 +12,7 @@ def "main init" [--provider-env-file: path] {
 }
 
 def "main stats" [--provider-env-file: path] { 
-    with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["stats"]
+    with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["--quiet", "stats"]
 }
 
 def "main ls" [--provider-env-file: path] { 
