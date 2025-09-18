@@ -1,4 +1,3 @@
-
 use std/log
 
 use ./lib/with-lockfile.nu *
@@ -26,45 +25,10 @@ def main [--env-file: path, --provider-env-file: path] {
                     paths: ['/acme.json', '/etc/traefik/traefik.yml']
                 } | extract-files-from-container --volume $backup_docker_volume
 
-                # Export env from container
-                $container_name | export-env-from-container --volume $backup_docker_volume
-
-                # Run backup with ping
-                with-ping {
-                    {
-                        config: $backup_docker_volume
-                    } | restic-backup --provider-env-file $provider_env_file
-                }
-                
-                # Run check with ping
-                with-ping {
-                    restic-check --provider-env-file $provider_env_file
-                }
+                {
+                    config: $backup_docker_volume
+                } | backup --provider-env-file $provider_env_file
             }
         }
     }
-}
-
-def "main init" [--provider-env-file: path] { 
-    $provider_env_file | with-restic ["init"]
-}
-
-def "main stats" [--provider-env-file: path] { 
-    $provider_env_file | with-restic ["stats"] 
-}
-
-def "main ls" [--provider-env-file: path] { 
-    $provider_env_file | with-restic ["ls", "latest"] 
-}
-
-def "main snapshots" [--provider-env-file: path] { 
-    $provider_env_file | with-restic ["snapshots", "--latest", "5"] 
-}
-
-def "main restore" [--provider-env-file: path, --restore-path: path] {
-    if ($restore_path | path exists) {
-        error make {msg: "Restore path already exists" }
-    }
-
-    restic-restore --provider-env-file $provider_env_file --target $restore_path
 }

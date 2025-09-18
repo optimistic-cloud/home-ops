@@ -1,3 +1,5 @@
+use ./with-healthcheck.nu *
+
 export def require []: path -> path {
   let file = $in | path expand
   if not ($file | path exists) {
@@ -98,7 +100,7 @@ export def extract-files-from-container [--volume: string, --sub-path: path = ''
    }
 }
 
-export def export-env-from-container [--volume: string, name: string = "container.env"]: string -> nothing {
+def export-env-from-container [--volume: string, name: string = "container.env"]: string -> nothing {
   let container_name = $in
 
   let env_file = mktemp env_file.XXX
@@ -128,7 +130,30 @@ export def get-current-git-commit []: nothing -> string {
 
 const restic_docker_image = "restic/restic:0.18.0"
 
-export def restic-backup [--provider-env-file: path]: record -> record {
+export def backup [--provider-env-file: path]: record -> record {
+  let volumes = $in
+  if ($volumes | length) == 0 {
+    error make { msg: "No volumes provided for backup" }
+  }
+  if not ($volumes | columns | any {|col| $col == 'config'}) {
+    error make { msg: "Mandatory volume with key 'config' is missing" }
+  }
+
+  # Export env from container
+  $container_name | export-env-from-container --volume $volumes.config
+
+  # Run backup with ping
+  with-ping {
+      $volumes | restic-backup --provider-env-file $provider_env_file
+  }
+  
+  # Run check with ping
+  with-ping {
+      restic-check --provider-env-file $provider_env_file
+  }
+}
+
+def restic-backup [--provider-env-file: path]: record -> record {
   let envs = $provider_env_file | path expand | require
 
   let volumes = $in
@@ -153,7 +178,7 @@ export def restic-backup [--provider-env-file: path]: record -> record {
   ) | complete
 }
 
-export def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> record {
+def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> record {
   let envs = $provider_env_file | path expand | require
 
   (

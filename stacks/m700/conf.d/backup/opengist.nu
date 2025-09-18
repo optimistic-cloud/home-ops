@@ -1,18 +1,18 @@
 use std/log
 
-use ./lib/with-lockfile.nu *
-use ./lib/with-healthcheck.nu *
-use ./lib/with-docker.nu *
-use ./lib/utils.nu *
+use with-lockfile.nu *
+use with-healthcheck.nu *
+use with-docker.nu *
+use utils.nu *
 
-const app = "vaultwarden"
-const hc_slug = "vaultwarden-backup"
-const container_name = "vaultwarden"
-const data_docker_volume = "vaultwarden-data"
+const app = "opengist"
+const hc_slug = "opengist-backup"
+const container_name = "opengist"
+const data_docker_volume = "m700_opengist-data"
 
 def main [--env-file: path, --provider-env-file: path] {
     $env_file | require | open | load-env
-    
+
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
     with-lockfile $app {
@@ -20,12 +20,11 @@ def main [--env-file: path, --provider-env-file: path] {
             with-backup-docker-volume {
                 let backup_docker_volume = $in
 
-                # Stops the container if it is running, and starts it again afterwards
                 with-stopped-docker-container --name $app {
                     # Export sqlite database
                     {
                         src_volume: $data_docker_volume
-                        src_path: "/data/db.sqlite3"
+                        src_path: "/data/opengist.db"
                     } | export-sqlite-database-in-volume --volume $backup_docker_volume
                 }
 
