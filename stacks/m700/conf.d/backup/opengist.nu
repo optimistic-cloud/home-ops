@@ -1,9 +1,9 @@
 use std/log
 
-use with-lockfile.nu *
-use with-healthcheck.nu *
-use with-docker.nu *
-use utils.nu *
+use ./lib/with-lockfile.nu *
+use ./lib/with-healthcheck.nu *
+use ./lib/with-docker.nu *
+use ./lib/utils.nu *
 
 const app = "opengist"
 const hc_slug = "opengist-backup"
