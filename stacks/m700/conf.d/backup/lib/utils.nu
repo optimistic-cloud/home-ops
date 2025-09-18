@@ -188,7 +188,7 @@ export def backup [--provider-env-files: list<path>]: record -> record {
   # Run check with ping
   with-ping {
     # TODO: refactor to check the json and for errors
-    restic-check --provider-env-file $provider_env_file.0
+    restic-check --provider-env-file $provider_env_files.0
   }
 }
 
