@@ -5,6 +5,8 @@ use ./lib/with-healthcheck.nu *
 use ./lib/with-docker.nu *
 use ./lib/utils.nu *
 
+def main [] { }
+
 def "main init" [--provider-env-file: path] { 
   with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["init"]
 }
