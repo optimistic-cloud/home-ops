@@ -5,7 +5,6 @@ use ./lib/with-docker.nu *
 use ./lib/utils.nu *
 
 const app = "vaultwarden"
-const hc_slug = "vaultwarden-backup"
 const container_name = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
 
