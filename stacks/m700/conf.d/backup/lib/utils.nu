@@ -230,9 +230,11 @@ def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: str
   
   let snapshot_time = $out.stdout | from json | get 0.time | into datetime
 
-  if not ((date now) < ($snapshot_time + $threshold)) {
+  let result = (date now) < ($snapshot_time + $threshold) | complete
+
+  if not $result {
       error make { msg: $"Snapshot assertion failed! Snapshot time: ($snapshot_time), Current time: (date now)" }
   }
-
-  log info $"Snapshot assertion failed! Snapshot time: ($snapshot_time), Current time: (date now)"
+  
+  $result
 }
