@@ -16,9 +16,9 @@ export def log-debug []: record -> nothing {
   let stderr = $in.stderr
 
   if $exit_code != 0 {
-    log error $"Error: ($stderr) \n($stdout)"
+    log error $"Error: ($record)"
   } else {
-    log debug $"($stdout)"
+    log debug $"($record)"
   }
 }
 
