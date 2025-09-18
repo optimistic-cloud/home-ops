@@ -9,9 +9,7 @@ const app = "traefik"
 const hc_slug = "traefik-backup"
 const container_name = "traefik"
 
-def main [--env-file: path, --provider-env-file: path] {
-    $env_file | require | open | load-env
-    
+def main [--provider-env-file: path] {
     $hc_slug | configure-hc-api
 
     with-lockfile $app {
