@@ -49,9 +49,9 @@ export def with-ping [operation: closure] {
 
   if ($out | describe) == "boolean" {
     if $out {
-      send_exit_code $url 0
+      0 | send_exit_code $url 
     } else {
-      send_exit_code $url 1
+      1 | send_exit_code $url
     }
   }
 
