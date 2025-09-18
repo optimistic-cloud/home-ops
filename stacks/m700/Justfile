@@ -40,17 +40,17 @@ init app provider:
 [group('restic')]
 [doc('Get snapshots')]
 snapshots app provider:
-    nu ./conf.d/backup/restic.nu snapshot --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    nu ./conf.d/backup/restic.nu snapshots snapshot --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
 
 [group('restic')]
 [doc('List files in the snapshot')]
 ls app provider:
-    nu ./conf.d/backup/restic.nu --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    nu ./conf.d/backup/restic.nu ls --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
 
 [group('restic')]
 [doc('Get stats of the repository')]
 stats app provider:
-    nu ./conf.d/backup/restic.nu --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    nu ./conf.d/backup/restic.nu stats --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
 
 [group('restic')]
 [doc('Backup application')]
