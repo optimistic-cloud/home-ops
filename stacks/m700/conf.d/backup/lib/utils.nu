@@ -140,7 +140,7 @@ def export-env-from-container [--volume: string, name?: string]: string -> nothi
         "-v", $"($volume):/data:rw",
         "-v", $"($env_file):/import/env:ro"
       ]
-      let args = ["sh", "-c", $"cp /import/env /data/" + $env_name]
+      let args = ["sh", "-c", $"cp /import/env /data/($env_name)"]
 
       with-alpine --docker-args $da --args $args
     }
