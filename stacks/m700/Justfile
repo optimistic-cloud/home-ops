@@ -1,5 +1,5 @@
 set dotenv-load
-set dotenv-filename '.backup.env'
+set dotenv-filename := '.backup.env'
 
 # info, debug, warn, error
 export NU_LOG_LEVEL := "info"
