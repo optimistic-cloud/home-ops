@@ -182,9 +182,27 @@ export def backup [--provider-env-files: list<path>]: record -> record {
     log debug $"Using provider env file: ($i)"
     let provider_config = $i | path expand
 
+    let v = do {
+      # TODO: refactor this block
+      # this is a check if the restic repository is local
+      let is_local = $provider_config | str contains ".local."
+      if $is_local {
+        let repository = open $provider_config
+          | lines 
+          | where $it starts-with "RESTIC_REPOSITORY=" 
+          | str replace "RESTIC_REPOSITORY=" ""
+
+        ($volumes | insert $repository $repository)
+      }
+    }
+
+
+
+
+
     # Run backup with ping
     with-ping {
-      let out = $volumes | restic-backup --provider-env-file $provider_config
+      let out = $v | restic-backup --provider-env-file $provider_config
       'latest' | assert_snapshot --provider-env-file $provider_config
       $out
     }
