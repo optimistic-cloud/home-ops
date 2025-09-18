@@ -55,7 +55,7 @@ stats app provider:
 [group('restic')]
 [doc('Backup application')]
 backup app provider:
-    nu ./conf.d/backup/{{app}}.nu --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    nu ./conf.d/backup/{{app}}.nu --provider-env-files ["./conf.d/backup/{{app}}.{{provider}}.restic.env"]
 
 [group('restic')]
 [doc('Restore backup for an application')]
