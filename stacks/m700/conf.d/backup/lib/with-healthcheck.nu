@@ -55,20 +55,20 @@ export def with-ping [operation: closure] {
     } else {
       1 | send_exit_code $url
     }
-  }
-
-  # TODO: 
-  #if not (is-json $out) {
-  #    error make { msg: "Not valid JSON: ($out)" }
-  #}
-
-  let url = $url | to_url ($out.exit_code | into string)
-
-  if $out.exit_code != 0 {
-      $out.stderr | from json | to json --indent 2 | do_post $url
-      error make { msg: $"Operation failed with exit code ($out.exit_code) - ($out)"}
   } else {
-      $out.stdout | from json | to json --indent 2 | do_post $url
+    # TODO: 
+    #if not (is-json $out) {
+    #    error make { msg: "Not valid JSON: ($out)" }
+    #}
+
+    let url = $url | to_url ($out.exit_code | into string)
+
+    if $out.exit_code != 0 {
+        $out.stderr | from json | to json --indent 2 | do_post $url
+        error make { msg: $"Operation failed with exit code ($out.exit_code) - ($out)"}
+    } else {
+        $out.stdout | from json | to json --indent 2 | do_post $url
+    }
   }
 }
 
