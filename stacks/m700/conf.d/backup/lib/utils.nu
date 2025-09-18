@@ -270,7 +270,7 @@ export def with-restic [--docker-args: list<string>, --restic-args: list<string>
   # $out | log-debug
   # $out
 
-  with-docker-run $restic_docker_image --docker-args $docker_args --args $args
+  with-docker-run $restic_docker_image --docker-args $docker_args --args $restic_args
 }
 
 def with-alpine [--docker-args: list<string>, --args: list<string>]: nothing -> record {
