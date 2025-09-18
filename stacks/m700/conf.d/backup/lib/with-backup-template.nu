@@ -6,7 +6,7 @@ export def main [app: string, operation: closure] {
     with-lockfile $app {
         with-healthcheck $"($app)-backup" {
             with-backup-docker-volume {
-                do $operation
+                do $operation | backup --provider-env-file $provider_env_file
             }
         }
     }
