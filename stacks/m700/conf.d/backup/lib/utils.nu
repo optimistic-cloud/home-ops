@@ -1,4 +1,4 @@
-def require []: path -> path {
+export def require []: path -> path {
   let file = $in | path expand
   if not ($file | path exists) {
       error make {
@@ -130,7 +130,7 @@ const restic_docker_image = "restic/restic:0.18.0"
 
 export def restic-backup [--env-file: path]: record -> record {
   let envs = $in | path expand | require
-  
+
   let volumes = $in
 
   const backup_path = "/backup"
