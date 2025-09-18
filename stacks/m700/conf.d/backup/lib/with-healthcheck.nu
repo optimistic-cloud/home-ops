@@ -43,7 +43,7 @@ export def --env configure-hc-api [ping_key: string]: string -> nothing {
 }
 
 def is-bool []: any -> bool {
-  $in | describe == "bool"
+  ($in | describe) == "bool"
 }
 
 export def with-ping [operation: closure] {
