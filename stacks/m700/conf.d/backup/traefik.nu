@@ -24,7 +24,7 @@ def main [--provider-env-file: path] {
                 volumes: {
                     config: $backup_docker_volume
                 }
-            } | backup --provider-env-file $provider_env_file
+            }
         }
     }
 }
