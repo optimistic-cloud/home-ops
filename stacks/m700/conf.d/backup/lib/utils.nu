@@ -130,7 +130,7 @@ def export-env-from-container [--volume: string, name?: string]: string -> nothi
 
   let env_name = $name
   if ($name == null) {
-    env_name = $"($container_name).env"
+    $env_name = $"($container_name).env"
   }
 
   let env_file = mktemp env_file.XXX
