@@ -197,9 +197,7 @@ def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing 
   ]
   let ra = ["--json", "--quiet", "check", "--read-data-subset", $subset]
 
-  $da | describe | print
-
-  with-restic --docker-args ...$da --restic-args ...$ra
+  with-restic --docker-args $da --restic-args $ra
 
 
 
@@ -221,7 +219,7 @@ export def restic-restore [--provider-env-file: path, --target: path] {
   ]
   let ra = ["restore", "latest", "--target", "/data"]
 
-  let out = with-restic --docker-args ...$da --restic-args ...$ra
+  let out = with-restic --docker-args $da --restic-args $ra
 
   # (
   #   ^docker run --rm -ti 
