@@ -1,16 +1,16 @@
 use std/log
 
-use with-lockfile.nu *
-use with-healthcheck.nu *
-use with-docker.nu *
-use utils.nu *
+use ./lib/with-lockfile.nu *
+use ./lib/with-healthcheck.nu *
+use ./lib/with-docker.nu *
+use ./lib/utils.nu *
 
 const app = "gitea"
 const hc_slug = "gitea-backup"
 const container_name = "gitea"
 
-def main [--provider: string] {
-    open env.toml | load-env
+def main [--env-file: path, --provider-env-file: path] {
+    $env_file | require | open | load-env
 
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
@@ -57,43 +57,13 @@ def main [--provider: string] {
                     }
                 }
 
-                # Export env from container
-                $container_name | export-env-from-container --volume $backup_docker_volume
-
-                let env_file = $"($app).($provider).restic.env"
-
-                # Run backup with ping
-                with-ping {
-                    {
+                {
+                    container_name: $container_name
+                    volumes: {
                         config: $backup_docker_volume
-                    } | restic-backup --env-file $env_file
-                }
-
-                # Run check with ping
-                with-ping {
-                    restic-check --env-file $env_file
-                }
+                    }
+                } | backup --provider-env-file $provider_env_file
             }
         }
     }
-}
-
-def "main init" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic ["init"]
-}
-
-def "main stats" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic ["stats"] 
-}
-
-def "main ls" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic ["ls", "latest"] 
-}
-
-def "main snapshots" [--provider: string] { 
-    $"($app).($provider).restic.env" | with-restic ["snapshots", "--latest", "5"] 
-}
-
-def "main restore" [--provider: string] {
-    restic-restore --env-file $"($app).($provider).restic.env"
 }
