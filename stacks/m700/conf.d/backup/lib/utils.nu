@@ -70,7 +70,7 @@ export def export-sqlite-database-in-volume [--volume: string, prefix: string = 
       "-v", $"($src_volume):/data:ro"
       "-v", $"($volume):/export:rw",
     ]
-    let args = ["sh", "-c", $src_path, $".backup '/export/($db_name)'"]
+    let args = [$src_path, $".backup '/export/($db_name)'"]
 
     with-alpine-sqlite --docker-args $da --args $args
   }
@@ -87,7 +87,7 @@ export def export-sqlite-database-in-volume [--volume: string, prefix: string = 
     let da = [
       "-v", $"($volume):/export:rw",
     ]
-    let args = ["sh", "-c", $"/export/($db_name)", "PRAGMA integrity_check;"]
+    let args = [$"/export/($db_name)", "PRAGMA integrity_check;"]
 
     with-alpine-sqlite --docker-args $da --args $args
   }
