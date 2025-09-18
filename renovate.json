@@ -1,9 +1,9 @@
 {
   "regexManagers": [
     {
-      "fileMatch": ["^Justfile$"],
+      "fileMatch": ["stacks/.*/Justfile$"],
       "matchStrings": [
-        "export RESTIC_DOCKER_IMAGE := \\\"(?<depName>restic/restic):(?<currentValue>[^\\\"]+)\\\""
+        "export RESTIC_DOCKER_IMAGE := \\\"(?<depName>restic/restic):(?<currentValue>[0-9.]+)\\\""
       ],
       "datasourceTemplate": "docker"
     }
