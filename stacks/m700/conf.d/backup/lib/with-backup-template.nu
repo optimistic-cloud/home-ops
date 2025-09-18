@@ -2,7 +2,8 @@ use ./with-lockfile.nu *
 use ./with-healthcheck.nu *
 use ./with-docker.nu *
 
-export def main [app: string, operation: closure] {
+export def main [--provider-env-file: string, operation: closure]: string -> nochting {
+    let app = $in
     with-lockfile $app {
         with-healthcheck $"($app)-backup" {
             with-backup-docker-volume {
