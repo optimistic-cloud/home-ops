@@ -48,13 +48,6 @@ export def add-file-to-volume [--volume: string]: path -> nothing {
     error make { msg: $"Docker volume ($volume) does not exist" }
   }
 
-  # (
-  #   ^docker run --rm -ti 
-  #     -v $"($volume):/data:rw"
-  #     -v $"($file):/import/($filename):ro"
-  #     alpine sh -c $'cp /import/($filename) /data'
-  # )
-
   do {
     let da = [
       "-v", $"($volume):/data:rw",
@@ -72,18 +65,38 @@ export def export-sqlite-database-in-volume [--volume: string, prefix: string = 
 
   let db_name = $"($prefix)-($src_path | path basename)"
 
-  (
-    ^docker run --rm 
-        -v $"($src_volume):/data:ro"
-        -v $"($volume):/export:rw"
-        alpine/sqlite $src_path $".backup '/export/($db_name)'"
-  )
+  do {
+    let da = [
+      "-v", $"($src_volume):/data:ro"
+      "-v", $"($volume):/export:rw",
+    ]
+    let args = ["sh", "-c", $src_path, $".backup '/export/($db_name)'"]
 
-  (
-    ^docker run --rm 
-        -v $"($volume):/export:rw"
-        alpine/sqlite $"/export/($db_name)" "PRAGMA integrity_check;"
-  ) | ignore
+    with-alpine-sqlite --docker-args $da --args $args
+  }
+
+  # (
+  #   ^docker run --rm 
+  #       -v $"($src_volume):/data:ro"
+  #       -v $"($volume):/export:rw"
+  #       alpine/sqlite $src_path $".backup '/export/($db_name)'"
+  # )
+
+
+    do {
+    let da = [
+      "-v", $"($volume):/export:rw",
+    ]
+    let args = ["sh", "-c", $"/export/($db_name)", "PRAGMA integrity_check;"]
+
+    with-alpine-sqlite --docker-args $da --args $args
+  }
+
+  # (
+  #   ^docker run --rm 
+  #       -v $"($volume):/export:rw"
+  #       alpine/sqlite $"/export/($db_name)" "PRAGMA integrity_check;"
+  # ) | ignore
 
   ignore
 }
@@ -276,6 +289,15 @@ def with-alpine [--docker-args: list<string>, --args: list<string>]: nothing -> 
   log debug $"Running alpine with docker args: ($docker_args) and args: ($args)"
 
   let out = ^docker run --rm -ti ...$docker_args alpine ...$args | complete
+
+  $out | log-debug
+  $out
+}
+
+def with-alpine-sqlite [--docker-args: list<string>, --args: list<string>]: nothing -> record {
+  log debug $"Running alpine/sqlite with docker args: ($docker_args) and args: ($args)"
+
+  let out = ^docker run --rm -ti ...$docker_args alpine/sqlite ...$args | complete
 
   $out | log-debug
   $out
