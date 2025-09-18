@@ -31,7 +31,7 @@ export def --env configure-hc-api [ping_key: string]: string -> nothing {
   let config = {
     "scheme": "https",
     "host": "hc-ping.com",
-    "path": $"($ping_key)/($slug)",
+    "path": $"($env.HC_PING_KEY)/($slug)",
     "params":
     {
       create: 1,
