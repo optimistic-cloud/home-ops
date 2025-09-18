@@ -125,8 +125,13 @@ export def extract-files-from-container [--volume: string, --sub-path: path = ''
    }
 }
 
-def export-env-from-container [--volume: string, name: string = "container.env"]: string -> nothing {
+def export-env-from-container [--volume: string, name?: string]: string -> nothing {
   let container_name = $in
+
+  let env_name = $name
+  if ($name == null) {
+    env_name = $"($container_name).env"
+  }
 
   let env_file = mktemp env_file.XXX
 
@@ -139,7 +144,7 @@ def export-env-from-container [--volume: string, name: string = "container.env"]
         "-v", $"($volume):/data:rw",
         "-v", $"($env_file):/import/env:ro"
       ]
-      let args = ["sh", "-c", $"cp /import/env /data/($name)"]
+      let args = ["sh", "-c", $"cp /import/env /data/($env_name)"]
 
       with-alpine --docker-args $da --args $args
     }
