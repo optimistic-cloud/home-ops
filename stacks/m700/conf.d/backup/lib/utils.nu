@@ -197,6 +197,8 @@ def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing 
   ]
   let ra = ["--json", "--quiet", "check", "--read-data-subset", $subset]
 
+  $da | describe | print
+
   with-restic --docker-args ...$da --restic-args ...$ra
 
 
