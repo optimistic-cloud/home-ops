@@ -155,7 +155,7 @@ export def backup [--provider-env-file: path]: record -> record {
   
   # assert snapshot
   with-ping {
-    'latest' | assert_snapshot
+    'latest' | assert_snapshot --provider-env-file $provider_env_file
   }
 
   # Run check with ping
@@ -220,10 +220,10 @@ export def with-restic [commands: list<string>]: path -> record {
     ^docker run --rm -ti --env-file $envs $restic_docker_image ...$commands | complete
 }
 
-def assert_snapshot [threshold: duration = 1min]: string -> record {
+def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: string -> record {
   let snapshot_id = $in
 
-  let out = with-restic ["snapshots", $snapshot_id, "--json"]
+  let out = $provider_env_file | with-restic ["snapshots", $snapshot_id, "--json"]
   if $out.exit_code != 0 {
     error make { msg: "Failed to get snapshots: ($out.stderr)" }
   }
@@ -233,4 +233,6 @@ def assert_snapshot [threshold: duration = 1min]: string -> record {
   if not ((date now) < ($snapshot_time + $threshold)) {
       error make { msg: $"Snapshot assertion failed! Snapshot time: ($snapshot_time), Current time: (date now)" }
   }
+
+  log info $"Snapshot assertion failed! Snapshot time: ($snapshot_time), Current time: (date now)"
 }
