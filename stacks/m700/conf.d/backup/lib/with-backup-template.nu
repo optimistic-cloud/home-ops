@@ -1,7 +1,7 @@
 use ./with-lockfile.nu *
 use ./with-healthcheck.nu *
 use ./with-docker.nu *
-use ./lib/utils.nu *
+use ./utils.nu *
 
 export def main [--provider-env-file: string, operation: closure]: string -> nothing {
     let app = $in
