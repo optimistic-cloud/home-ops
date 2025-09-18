@@ -26,7 +26,10 @@ def main [--env-file: path, --provider-env-file: path] {
                 } | extract-files-from-container --volume $backup_docker_volume
 
                 {
-                    config: $backup_docker_volume
+                    container_name: $container_name
+                    volumes: {
+                        config: $backup_docker_volume
+                    }
                 } | backup --provider-env-file $provider_env_file
             }
         }
