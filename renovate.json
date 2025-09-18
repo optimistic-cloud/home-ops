@@ -3,7 +3,7 @@
     {
       "fileMatch": ["^Justfile$"],
       "matchStrings": [
-        "RESTIC_DOCKER_IMAGE := \"(?<depName>restic/restic):(?<currentValue>.*?)\""
+        "export RESTIC_DOCKER_IMAGE := \\\"(?<depName>restic/restic):(?<currentValue>[^\\\"]+)\\\""
       ],
       "datasourceTemplate": "docker"
     }
