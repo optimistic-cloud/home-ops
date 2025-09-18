@@ -47,6 +47,14 @@ export def with-ping [operation: closure] {
 
   let out = do $operation
 
+  if ($out | describe) == "boolean" {
+    if $out {
+      send_exit_code $url 0
+    } else {
+      send_exit_code $url 1
+    }
+  }
+
   # TODO: 
   #if not (is-json $out) {
   #    error make { msg: "Not valid JSON: ($out)" }
