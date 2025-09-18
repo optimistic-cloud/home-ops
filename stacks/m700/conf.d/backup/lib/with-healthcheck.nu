@@ -74,7 +74,8 @@ export def with-ping [operation: closure] {
   }
 }
 
-export def main [operation: closure] {
+export def main [hc_slug: string, operation: closure] {
+  $hc_slug | configure-hc-api
   let url = $env.BACKUP_CONFIG
   
   send_start $url
