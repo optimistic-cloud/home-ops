@@ -24,7 +24,7 @@ def is-json [data: string] {
     do -i { $data | from json } | complete | get success
 }
 
-export def --env configure-hc-api [ping_key: string]: string -> nothing {
+export def --env configure-hc-api []: string -> nothing {
   let slug = $in
   let run_id = (random uuid -v 4)
 
