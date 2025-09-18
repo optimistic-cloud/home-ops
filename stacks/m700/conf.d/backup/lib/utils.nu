@@ -188,7 +188,7 @@ def restic-backup [--provider-env-file: path]: record -> record {
   ) | complete
 }
 
-def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> nothing {
+def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> record {
   let envs = $provider_env_file | path expand | require
 
   let da = [
@@ -199,7 +199,7 @@ def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing 
 
   $da | describe | print
 
-  #with-restic --docker-args ...$da --restic-args ...$ra
+  with-restic --docker-args ...$da --restic-args ...$ra
 
 
 
@@ -221,7 +221,7 @@ export def restic-restore [--provider-env-file: path, --target: path] {
   ]
   let ra = ["restore", "latest", "--target", "/data"]
 
-  #let out = with-restic --docker-args ...$da --restic-args ...$ra
+  let out = with-restic --docker-args ...$da --restic-args ...$ra
 
   # (
   #   ^docker run --rm -ti 
