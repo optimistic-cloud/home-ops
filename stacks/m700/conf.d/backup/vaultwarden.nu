@@ -10,7 +10,7 @@ const hc_slug = "vaultwarden-backup"
 const container_name = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
 
-def main [--env-file: path, --provider-env-file: path] {
+def main [--provider-env-file: path] {
     $hc_slug | configure-hc-api
 
     with-lockfile $app {
