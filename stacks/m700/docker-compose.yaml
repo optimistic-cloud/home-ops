@@ -136,7 +136,7 @@ services:
 
   # Add init container to set permissions
   gitea-init:
-    image: alpine
+    image: alpine:3.22.1
     volumes:
       - gitea-data:/var/lib/gitea
       - gitea-config:/etc/gitea
@@ -207,7 +207,7 @@ services:
 
   # Add init container to set permissions
   pocket-id-init:
-    image: alpine
+    image: alpine:3.22.1
     volumes:
       - pocket-id-data:/app/data
     command: |
