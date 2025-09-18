@@ -5,7 +5,6 @@ use ./lib/with-docker.nu *
 use ./lib/utils.nu *
 
 const app = "traefik"
-const hc_slug = "traefik-backup"
 const container_name = "traefik"
 
 def main [--provider-env-file: path] {
