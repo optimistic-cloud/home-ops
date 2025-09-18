@@ -141,9 +141,6 @@ export def backup [--provider-env-file: path]: record -> record {
   let container_name = $in.container_name
   let volumes = $in.volumes
   
-  if ($volumes | length) == 0 {
-    error make { msg: "No volumes provided for backup" }
-  }
   if not ($volumes | columns | any {|col| $col == 'config'}) {
     error make { msg: "Mandatory volume with key 'config' is missing" }
   }
