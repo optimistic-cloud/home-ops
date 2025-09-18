@@ -284,6 +284,7 @@ def with-alpine-sqlite [--docker-args: list<string>, --args: list<string>]: noth
   const image = "alpine/sqlite"
   with-docker-run $image --docker-args $docker_args --args $args
 }
+
 def with-docker-run [image: string, --docker-args: list<string>, --args: list<string>]: nothing -> record {
   log debug $"Running ($image) with docker args: ($docker_args) and args: ($args)"
 
