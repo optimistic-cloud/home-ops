@@ -42,6 +42,10 @@ export def --env configure-hc-api [ping_key: string]: string -> nothing {
   $env.BACKUP_CONFIG = $config
 }
 
+def is-bool []: any -> bool {
+  $in | describe == "bool"
+}
+
 export def with-ping [operation: closure] {
   let url = $env.BACKUP_CONFIG
 
@@ -49,9 +53,9 @@ export def with-ping [operation: closure] {
 
   $out | describe | print
 
-  if ($out | describe) == "bool" {
+  if $out | is-bool {
     if $out {
-      0 | send_exit_code $url 
+      0 | send_exit_code $url
     } else {
       1 | send_exit_code $url
     }
