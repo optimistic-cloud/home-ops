@@ -10,9 +10,7 @@ const hc_slug = "pocket-id-backup"
 const container_name = "pocket-id"
 const data_docker_volume = "m700_pocket-id-data"
 
-def main [--env-file: path, --provider-env-file: path] {
-    $env_file | require | open | load-env
-
+def main [--provider-env-file: path] {
     $hc_slug | configure-hc-api
 
     with-lockfile $app {
