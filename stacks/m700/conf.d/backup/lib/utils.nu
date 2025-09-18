@@ -134,13 +134,15 @@ def export-env-from-container [--volume: string, name: string = "container.env"]
 
     ^docker container inspect $container_name | from json | get 0.Config.Env | save --force $env_file
 
-    let da = [
-      "-v", $"($volume):/data:rw",
-      "-v", $"($env_file):/import/env:ro"
-    ]
-    let args = ["sh", "-c", $"cp /import/env /data/($name)"]
+    do {
+      let da = [
+        "-v", $"($volume):/data:rw",
+        "-v", $"($env_file):/import/env:ro"
+      ]
+      let args = ["sh", "-c", $"cp /import/env /data/($name)"]
 
-    with-alpine --docker-args $da --args $args
+      with-alpine --docker-args $da --args $args
+    }
 
     rm $env_file
     
@@ -154,8 +156,6 @@ def export-env-from-container [--volume: string, name: string = "container.env"]
 export def get-current-git-commit []: nothing -> string {
   (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 }
-
-const restic_docker_image = "restic/restic:0.18.0"
 
 export def backup [--provider-env-file: path]: record -> record {
   if not ($in | columns | any {|col| $col == 'container_name'}) {
@@ -200,22 +200,24 @@ def restic-backup [--provider-env-file: path]: record -> record {
     | items {|key, value| [ "-v" ($value + $":($backup_path)/" + ($key | str trim)) ] }
     | flatten
 
-  let da = [
-    "--hostname", $env.HOSTNAME,
-    "--env-file", $provider_env_file,
-    ...$vol_flags,
-    "-v", $"($env.HOME)/.cache/restic:/root/.cache/restic",
-    "-e", "TZ=Europe/Berlin"
-  ]
-  # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
-  let ra = [
-    "--json", "--quiet", 
-    "backup", $backup_path, 
-    "--skip-if-unchanged", 
-    "--exclude-caches", 
-    "--tag", $"git_commit=(get-current-git-commit)"]
+  do {
+    let da = [
+      "--hostname", $env.HOSTNAME,
+      "--env-file", $provider_env_file,
+      ...$vol_flags,
+      "-v", $"($env.HOME)/.cache/restic:/root/.cache/restic",
+      "-e", "TZ=Europe/Berlin"
+    ]
+    # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
+    let ra = [
+      "--json", "--quiet", 
+      "backup", $backup_path, 
+      "--skip-if-unchanged", 
+      "--exclude-caches", 
+      "--tag", $"git_commit=(get-current-git-commit)"]
 
-  with-restic --docker-args $da --restic-args $ra
+    with-restic --docker-args $da --restic-args $ra
+  }
 }
 
 def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> record {
@@ -263,36 +265,18 @@ def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: str
 }
 
 export def with-restic [--docker-args: list<string>, --restic-args: list<string>]: nothing -> record {
-  # log debug $"Running restic with docker args: ($docker_args) and restic args: ($restic_args)"
-  
-  # let out = ^docker run --rm -ti ...$docker_args $restic_docker_image ...$restic_args | complete
-
-  # $out | log-debug
-  # $out
-
-  with-docker-run $restic_docker_image --docker-args $docker_args --args $restic_args
+  const image = "restic/restic:0.18.0"
+  with-docker-run $image --docker-args $docker_args --args $restic_args
 }
 
 def with-alpine [--docker-args: list<string>, --args: list<string>]: nothing -> record {
-  # log debug $"Running alpine with docker args: ($docker_args) and args: ($args)"
-
-  # let out = ^docker run --rm -ti ...$docker_args alpine ...$args | complete
-
-  # $out | log-debug
-  # $out
-
-  with-docker-run "alpine" --docker-args $docker_args --args $args
+  const image = "alpine"
+  with-docker-run $image --docker-args $docker_args --args $args
 }
 
 def with-alpine-sqlite [--docker-args: list<string>, --args: list<string>]: nothing -> record {
-  # log debug $"Running alpine/sqlite with docker args: ($docker_args) and args: ($args)"
-
-  # let out = ^docker run --rm -ti ...$docker_args alpine/sqlite ...$args | complete
-
-  # $out | log-debug
-  # $out
-
-  with-docker-run "alpine/sqlite" --docker-args $docker_args --args $args 
+  const image = "alpine/sqlite"
+  with-docker-run $image --docker-args $docker_args --args $args
 }
 def with-docker-run [image: string, --docker-args: list<string>, --args: list<string>]: nothing -> record {
   log debug $"Running ($image) with docker args: ($docker_args) and args: ($args)"
