@@ -55,7 +55,9 @@ stats app provider:
 [group('restic')]
 [doc('Backup application')]
 backup app provider:
-    nu ./conf.d/backup/{{app}}.nu --provider-env-files ["./conf.d/backup/{{app}}.{{provider}}.restic.env"]
+    #!/usr/bin/env nu
+    let env_files = (ls conf.d/backup/{{app}}.*.restic.env | get name)
+    nu ./conf.d/backup/{{app}}.nu ...$env_files
 
 [group('restic')]
 [doc('Restore backup for an application')]

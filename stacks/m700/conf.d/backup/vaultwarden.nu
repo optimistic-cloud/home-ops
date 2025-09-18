@@ -8,7 +8,7 @@ const app = "vaultwarden"
 const container_name = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
 
-def main [--provider-env-files: list<path>] {
+def main [...provider_env_files: path] {
     $app | with-backup-template --provider-env-files $provider_env_files {
         let backup_docker_volume = $in
 
