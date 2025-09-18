@@ -10,9 +10,7 @@ const hc_slug = "opengist-backup"
 const container_name = "opengist"
 const data_docker_volume = "m700_opengist-data"
 
-def main [--env-file: path, --provider-env-file: path] {
-    $env_file | require | open | load-env
-
+def main [--provider-env-file: path] {
     $hc_slug | configure-hc-api
 
     with-lockfile $app {
