@@ -1,3 +1,11 @@
+def require [file: path] {
+  if not ($file | path exists) {
+      error make {
+          msg: $"Required file not found: ($file)"
+      }
+  }
+}
+
 export def do_logging_for [command: string]: record -> nothing {
   let exit_code = $in.exit_code
   let stdout = $in.stdout
