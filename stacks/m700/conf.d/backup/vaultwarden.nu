@@ -11,10 +11,8 @@ const container_name = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
 
 def main [--provider-env-file: path] {
-    $hc_slug | configure-hc-api
-
     with-lockfile $app {
-        with-healthcheck {
+        with-healthcheck $hc_slug {
             with-backup-docker-volume {
                 let backup_docker_volume = $in
 
