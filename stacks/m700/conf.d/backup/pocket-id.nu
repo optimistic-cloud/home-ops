@@ -11,10 +11,8 @@ const container_name = "pocket-id"
 const data_docker_volume = "m700_pocket-id-data"
 
 def main [--provider-env-file: path] {
-    $hc_slug | configure-hc-api
-
     with-lockfile $app {
-        with-healthcheck {
+        with-healthcheck $hc_slug {
             with-backup-docker-volume {
                 # The data in this volume will be backed up under /backup/config
                 let backup_docker_volume = $in
