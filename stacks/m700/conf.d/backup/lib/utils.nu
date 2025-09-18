@@ -270,7 +270,7 @@ def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: str
 }
 
 export def with-restic [--docker-args: list<string>, --restic-args: list<string>]: nothing -> record {
-  const image = "restic/restic:0.18.0"
+  const image = $env.RESTIC_DOCKER_IMAGE
   with-docker-run $image --docker-args $docker_args --args $restic_args
 }
 
