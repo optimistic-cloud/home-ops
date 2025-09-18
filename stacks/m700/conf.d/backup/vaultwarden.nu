@@ -8,8 +8,8 @@ const app = "vaultwarden"
 const container_name = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
 
-def main [--provider-env-file: path] {
-    $app | with-backup-template --provider-env-file $provider_env_file {
+def main [--provider-env-files: list<path>] {
+    $app | with-backup-template --provider-env-files $provider_env_files {
         let backup_docker_volume = $in
 
         # Stops the container if it is running, and starts it again afterwards
