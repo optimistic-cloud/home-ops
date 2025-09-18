@@ -1,7 +1,6 @@
 use std/log
 
-use ./lib/with-lockfile.nu *
-use ./lib/with-healthcheck.nu *
+use ./lib/with-backup-template.nu *
 use ./lib/with-docker.nu *
 use ./lib/utils.nu *
 
@@ -10,24 +9,22 @@ const hc_slug = "traefik-backup"
 const container_name = "traefik"
 
 def main [--provider-env-file: path] {
-    with-lockfile $app {
-        with-healthcheck $hc_slug {
-            with-backup-docker-volume {
-                let backup_docker_volume = $in
-
-                # Add files to backup volume
-                {
-                    from_container: $container_name
-                    paths: ['/acme.json', '/etc/traefik/traefik.yml']
-                } | extract-files-from-container --volume $backup_docker_volume
-
-                {
-                    container_name: $container_name
-                    volumes: {
-                        config: $backup_docker_volume
-                    }
-                } | backup --provider-env-file $provider_env_file
-            }
+    $app | with-backup-template --provider-env-file $provider_env_file {
+        with-backup-docker-volume {
+            let backup_docker_volume = $in
+    
+            # Add files to backup volume
+            {
+                from_container: $container_name
+                paths: ['/acme.json', '/etc/traefik/traefik.yml']
+            } | extract-files-from-container --volume $backup_docker_volume
+    
+            {
+                container_name: $container_name
+                volumes: {
+                    config: $backup_docker_volume
+                }
+            } | backup --provider-env-file $provider_env_file
         }
     }
 }
