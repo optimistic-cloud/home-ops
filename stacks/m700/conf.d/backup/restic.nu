@@ -16,11 +16,11 @@ def "main stats" [--provider-env-file: path] {
 }
 
 def "main ls" [--provider-env-file: path] { 
-    with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["ls", "latest"]
+    with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["--quiet", "ls", "latest"]
 }
 
 def "main snapshots" [--provider-env-file: path] { 
-    with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["snapshots", "--latest", "5"]
+    with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["--quiet", "snapshots", "--latest", "5"]
 }
 
 def "main restore" [--provider-env-file: path, --restore-path: path] {
