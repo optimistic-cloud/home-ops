@@ -1,4 +1,8 @@
 {
+  "pinDigests": true,
+  "docker": {
+    "includeComment": true
+  },
   "regexManagers": [
     {
       "fileMatch": ["(?i).*/justfile$"],
