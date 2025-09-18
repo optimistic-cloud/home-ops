@@ -129,7 +129,7 @@ export def get-current-git-commit []: nothing -> string {
 const restic_docker_image = "restic/restic:0.18.0"
 
 export def restic-backup [--env-file: path]: record -> record {
-  let envs = $in | path expand | require
+  let envs = $env_file | path expand | require
 
   let volumes = $in
 
@@ -154,7 +154,7 @@ export def restic-backup [--env-file: path]: record -> record {
 }
 
 export def restic-check [--env-file: path, --subset: string = "33%"]: nothing -> record {
-  let envs = $in | path expand | require
+  let envs = $env_file | path expand | require
 
   (
     ^docker run --rm -ti 
@@ -165,7 +165,7 @@ export def restic-check [--env-file: path, --subset: string = "33%"]: nothing ->
 }
 
 export def restic-restore [--env-file: path, --target: path] {
-  let envs = $in | path expand | require
+  let envs = $env_file | path expand | require
 
   (
     ^docker run --rm -ti 
