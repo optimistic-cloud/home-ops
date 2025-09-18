@@ -11,7 +11,7 @@ const container_name = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
 
 def main [--env-file: path, --provider-env-file: path] {
-    require $env_file
+    $env_file | require
 
     open $env_file | load-env
     
