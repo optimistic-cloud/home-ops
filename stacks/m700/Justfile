@@ -29,27 +29,23 @@ logs service:
 
 [group('restic')]
 [doc('Init repository')]
-[working-directory: 'conf.d/backup/']
 init app provider:
-    nu ./conf.d/backup/{{app}}.nu init --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    nu ./conf.d/backup/restic.nu init --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
 
 [group('restic')]
 [doc('Get snapshots')]
-[working-directory: 'conf.d/backup/']
 snapshots app provider:
-    nu ./conf.d/backup/{{app}}.nu snapshot --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    nu ./conf.d/backup/restic.nu snapshot --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
 
 [group('restic')]
 [doc('List files in the snapshot')]
-[working-directory: 'conf.d/backup/']
 ls app provider:
-    nu ./conf.d/backup/{{app}}.nu ls --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    nu ./conf.d/backup/restic.nu --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
 
 [group('restic')]
 [doc('Get stats of the repository')]
-[working-directory: 'conf.d/backup/']
 stats app provider:
-    nu ./conf.d/backup/{{app}}.nu stats --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    nu ./conf.d/backup/restic.nu --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
 
 [group('restic')]
 [doc('Backup application')]
@@ -59,4 +55,4 @@ backup app provider:
 [group('restic')]
 [doc('Restore backup for an application')]
 restore app provider restore_path:
-    nu ./conf.d/backup/{{app}}.nu restore --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env --restore-path {{restore_path}}
+    nu ./conf.d/backup/restic.nu restore --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env --restore-path {{restore_path}}
