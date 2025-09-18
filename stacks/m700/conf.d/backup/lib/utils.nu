@@ -228,7 +228,7 @@ def assert_snapshot [threshold: duration = 1min]: string -> record {
     error make { msg: "Failed to get snapshots: ($out.stderr)" }
   }
   
-  let snapshot_time = $out | from json | get 0.time | into datetime
+  let snapshot_time = $out.stdout | from json | get 0.time | into datetime
 
   if not ((date now) < ($snapshot_time + $threshold)) {
       error make { msg: $"Snapshot assertion failed! Snapshot time: ($snapshot_time), Current time: (date now)" }
