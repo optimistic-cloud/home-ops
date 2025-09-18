@@ -176,7 +176,7 @@ export def backup [--provider-env-files: list<path>]: record -> record {
   # Export env from container
   $container_name | export-env-from-container --volume $volumes.config
 
-  $provider_env_files | each {|i| print $i }
+  $provider_env_files | each {|i| $i | path expand | print }
 
   # Run backup with ping
   with-ping {
