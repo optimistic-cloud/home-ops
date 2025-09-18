@@ -12,7 +12,7 @@ const container_name = "gitea"
 def main [--env-file: path, --provider-env-file: path] {
     $env_file | require | open | load-env
 
-    $hc_slug | configure-hc-api $env.HC_PING_KEY
+    $hc_slug | configure-hc-api
 
     with-lockfile $app {
         with-healthcheck {
