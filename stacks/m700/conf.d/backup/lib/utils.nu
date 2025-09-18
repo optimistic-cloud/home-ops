@@ -188,7 +188,7 @@ def restic-backup [--provider-env-file: path]: record -> record {
   ) | complete
 }
 
-def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> record {
+def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> nothing {
   let envs = $provider_env_file | path expand | require
 
   let da = [
