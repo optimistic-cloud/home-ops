@@ -179,6 +179,7 @@ export def backup [--provider-env-files: list<path>]: record -> record {
   $container_name | export-env-from-container --volume $volumes.config
 
   $provider_env_files | each {|i|
+    log debug $"Using provider env file: ($i)"
     let provider_config = $i | path expand
 
     # Run backup with ping
