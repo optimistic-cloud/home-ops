@@ -11,9 +11,7 @@ const container_name = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
 
 def main [--env-file: path, --provider-env-file: path] {
-    $env_file | require
-
-    open $env_file | load-env
+    $env_file | require | open | load-env
     
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 

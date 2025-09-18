@@ -1,20 +1,17 @@
 
 use std/log
 
-use ./../lib/with-lockfile.nu *
-use ./../lib/with-healthcheck.nu *
-use ./../lib/with-docker.nu *
-use ./../lib/utils.nu *
+use ./lib/with-lockfile.nu *
+use ./lib/with-healthcheck.nu *
+use ./lib/with-docker.nu *
+use ./lib/utils.nu *
 
 const app = "traefik"
 const hc_slug = "traefik-backup"
 const container_name = "traefik"
 
-# Files to backup:
-#   - backup file acme.json from traefik container
-#   - backup file /etc/traefik/traefik.yml:ro from traefik container
-def main [--provider: string] {
-    open env.toml | load-env
+def main [--env-file: path, --provider-env-file: path] {
+    $env_file | require | open | load-env
     
     $hc_slug | configure-hc-api $env.HC_PING_KEY
 
@@ -31,8 +28,6 @@ def main [--provider: string] {
 
                 # Export env from container
                 $container_name | export-env-from-container --volume $backup_docker_volume
-
-                let env_file = $"($app).($provider).restic.env"
 
                 # Run backup with ping
                 with-ping {
@@ -67,7 +62,7 @@ def "main snapshots" [--provider-env-file: path] {
 }
 
 def "main restore" [--provider-env-file: path, --restore-path: path] {
-    if $restore_path | path-exists {
+    if ($restore_path | path exists) {
         error make {msg: "Restore path already exists" }
     }
 
