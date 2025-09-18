@@ -158,7 +158,7 @@ export def get-current-git-commit []: nothing -> string {
   (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 }
 
-export def backup [--provider-env-file: path]: record -> record {
+export def backup [--provider-env-files: list<path>]: record -> record {
   if not ($in | columns | any {|col| $col == 'container_name'}) {
     error make { msg: "Mandatory key 'container_name' is missing in input record" }
   }
@@ -175,6 +175,8 @@ export def backup [--provider-env-file: path]: record -> record {
 
   # Export env from container
   $container_name | export-env-from-container --volume $volumes.config
+
+  $provider-env-files | each {|i| print $i }
 
   # Run backup with ping
   with-ping {
