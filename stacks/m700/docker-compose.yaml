@@ -6,7 +6,7 @@ x-healthcheck: &default-healthcheck
 
 services:
   traefik:
-    image: traefik:v3.5.2
+    image: traefik:v3.5.2@sha256:f0abbbd11ced29754d4d188c29e9320b613481ec162b6ea5d3a8b6bdd8e5fa54
     container_name: traefik
     restart: unless-stopped
       #read_only: true
@@ -64,7 +64,7 @@ services:
       - "traefik.http.middlewares.redirect-to-domain2.redirectregex.permanent=true"
 
   vaultwarden:
-    image: vaultwarden/server:1.34.3
+    image: vaultwarden/server:1.34.3@sha256:84fd8a47f58d79a1ad824c27be0a9492750c0fa5216b35c749863093bfa3c3d7
     container_name: vaultwarden
     restart: unless-stopped
     read_only: true
@@ -95,7 +95,7 @@ services:
       - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
 
   opengist:
-    image: ghcr.io/thomiceli/opengist:1.10
+    image: ghcr.io/thomiceli/opengist:1.10@sha256:b3ae8c4614fcfc3099ed08317f0113444f314d3d390e89161cff9b673729d191
     container_name: opengist
     restart: unless-stopped
     # user: "1000:1000"
@@ -136,7 +136,7 @@ services:
 
   # Add init container to set permissions
   gitea-init:
-    image: alpine:3.22.1
+    image: alpine:3.22.1@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1
     volumes:
       - gitea-data:/var/lib/gitea
       - gitea-config:/etc/gitea
@@ -150,7 +150,7 @@ services:
     restart: "no"
 
   gitea:
-    image: docker.gitea.com/gitea:1.24.6-rootless
+    image: docker.gitea.com/gitea:1.24.6-rootless@sha256:91f2b27e080739f0d19dba716c3214f17257c632cf762e545b44ca577e37052c
     container_name: gitea
     restart: unless-stopped
     user: "1000:1000"
@@ -207,7 +207,7 @@ services:
 
   # Add init container to set permissions
   pocket-id-init:
-    image: alpine:3.22.1
+    image: alpine:3.22.1@sha256:4bcff63911fcb4448bd4fdacec207030997caf25e9bea4045fa6c8c44de311d1
     volumes:
       - pocket-id-data:/app/data
     command: |
@@ -218,7 +218,7 @@ services:
     restart: "no"
 
   pocket-id:
-    image: ghcr.io/pocket-id/pocket-id:v1.10.0-distroless
+    image: ghcr.io/pocket-id/pocket-id:v1.10.0-distroless@sha256:53aaee4ded66e2e163cd74b4bcfcf748c912672501346b08fa1bd8f21d295b81
     container_name: pocket-id
     restart: unless-stopped
     user: "65532:65532"
