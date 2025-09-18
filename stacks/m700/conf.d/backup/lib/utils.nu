@@ -98,12 +98,20 @@ export def extract-files-from-container [--volume: string, --sub-path: path = ''
     }
 
     let target_path = '/data' | path join $sub_path 
-    (
-      ^docker run --rm -ti 
-        -v $"($volume):/data:rw"
-        -v $"($tmp_dir):/import:ro"
-        alpine sh -c $'mkdir -p ($target_path) && cp -r /import/* ($target_path)'
-    )
+    # (
+    #   ^docker run --rm -ti 
+    #     -v $"($volume):/data:rw"
+    #     -v $"($tmp_dir):/import:ro"
+    #     alpine sh -c $'mkdir -p ($target_path) && cp -r /import/* ($target_path)'
+    # )
+
+    let da = [
+      "-v", $"($volume):/data:rw",
+      "-v", $"($tmp_dir):/import:ro"
+    ]
+    let args = ["sh", "-c", $"mkdir -p ($target_path) && cp -r /import/* ($target_path)"]
+
+    with-alpine --docker-args $da --args $args
     
     rm -rf $tmp_dir | ignore
    } catch {|err|
@@ -128,13 +136,6 @@ def export-env-from-container [--volume: string, name: string = "container.env"]
     let args = ["sh", "-c", $"cp /import/env /data/($name)"]
 
     with-alpine --docker-args $da --args $args
-
-    # (
-    #   ^docker run --rm -ti 
-    #     -v $"($volume):/data:rw"
-    #     -v $"($env_file):/import/env:ro"
-    #     alpine sh -c $'cp /import/env /data/($name)'
-    # )
 
     rm $env_file
     
