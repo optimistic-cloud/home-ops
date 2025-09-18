@@ -221,7 +221,7 @@ export def restic-restore [--provider-env-file: path, --target: path] {
   ]
   let ra = ["restore", "latest", "--target", "/data"]
 
-  let out = with-restic --docker-args ...$da --restic-args ...$ra
+  #let out = with-restic --docker-args ...$da --restic-args ...$ra
 
   # (
   #   ^docker run --rm -ti 
@@ -232,8 +232,6 @@ export def restic-restore [--provider-env-file: path, --target: path] {
   # )
 
   log info $"Restored data is available at: ($target)"
-
-  $out
 }
 
 def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: string -> nothing {
