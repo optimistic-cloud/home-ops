@@ -127,17 +127,7 @@ export def extract-files-from-container [--volume: string, --sub-path: path = ''
 
 def export-env-from-container [--volume: string, name?: string]: string -> nothing {
   let container_name = $in
-
-  #mut env_name = $name
-  #if ($name == null) {
-  #  $env_name = $"($container_name).env"
-  #}
-
-  let env_name = if $name == null {
-    $"($container_name).env"
-  } else {
-    $name
-  }
+  let env_name = ($name | default $"($container_name).env")
 
   let env_file = mktemp env_file.XXX
 
