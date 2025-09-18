@@ -1,5 +1,6 @@
 # info, debug, warn, error
 export NU_LOG_LEVEL := "info"
+export RESTIC_DOCKER_IMAGE := ""
 
 alias u := update
 alias d := down
