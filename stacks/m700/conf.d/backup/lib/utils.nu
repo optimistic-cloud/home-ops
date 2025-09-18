@@ -48,12 +48,22 @@ export def add-file-to-volume [--volume: string]: path -> nothing {
     error make { msg: $"Docker volume ($volume) does not exist" }
   }
 
-  (
-    ^docker run --rm -ti 
-      -v $"($volume):/data:rw"
-      -v $"($file):/import/($filename):ro"
-      alpine sh -c $'cp /import/($filename) /data'
-  )
+  # (
+  #   ^docker run --rm -ti 
+  #     -v $"($volume):/data:rw"
+  #     -v $"($file):/import/($filename):ro"
+  #     alpine sh -c $'cp /import/($filename) /data'
+  # )
+
+  do {
+    let da = [
+      "-v", $"($volume):/data:rw",
+      "-v", $"($file):/import/($filename):ro"
+    ]
+    let args = ["sh", "-c", $"cp /import/($filename) /data"]
+
+    with-alpine --docker-args $da --args $args
+  }
 }
 
 export def export-sqlite-database-in-volume [--volume: string, prefix: string = "export"]: record -> nothing {
@@ -98,20 +108,16 @@ export def extract-files-from-container [--volume: string, --sub-path: path = ''
     }
 
     let target_path = '/data' | path join $sub_path 
-    # (
-    #   ^docker run --rm -ti 
-    #     -v $"($volume):/data:rw"
-    #     -v $"($tmp_dir):/import:ro"
-    #     alpine sh -c $'mkdir -p ($target_path) && cp -r /import/* ($target_path)'
-    # )
 
-    let da = [
-      "-v", $"($volume):/data:rw",
-      "-v", $"($tmp_dir):/import:ro"
-    ]
-    let args = ["sh", "-c", $"mkdir -p ($target_path) && cp -r /import/* ($target_path)"]
+    do {
+      let da = [
+        "-v", $"($volume):/data:rw",
+        "-v", $"($tmp_dir):/import:ro"
+      ]
+      let args = ["sh", "-c", $"mkdir -p ($target_path) && cp -r /import/* ($target_path)"]
 
-    with-alpine --docker-args $da --args $args
+      with-alpine --docker-args $da --args $args
+    }
     
     rm -rf $tmp_dir | ignore
    } catch {|err|
