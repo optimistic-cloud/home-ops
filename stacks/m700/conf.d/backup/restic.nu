@@ -6,19 +6,19 @@ use ./lib/with-docker.nu *
 use ./lib/utils.nu *
 
 def "main init" [--provider-env-file: path] { 
-    $provider_env_file | with-restic ["init"]
+  with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["init"]
 }
 
 def "main stats" [--provider-env-file: path] { 
-    $provider_env_file | with-restic ["stats"] 
+    with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["stats"]
 }
 
 def "main ls" [--provider-env-file: path] { 
-    $provider_env_file | with-restic ["ls", "latest"] 
+    with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["ls", "latest"]
 }
 
 def "main snapshots" [--provider-env-file: path] { 
-    $provider_env_file | with-restic ["snapshots", "--latest", "5"] 
+    with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["snapshots", "--latest", "5"]
 }
 
 def "main restore" [--provider-env-file: path, --restore-path: path] {

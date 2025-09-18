@@ -153,13 +153,11 @@ export def backup [--provider-env-file: path]: record -> record {
     $volumes | restic-backup --provider-env-file $provider_env_file
   }
   
-  # assert snapshot
-  with-ping {
-    'latest' | assert_snapshot --provider-env-file $provider_env_file
-  }
+  'latest' | assert_snapshot --provider-env-file $provider_env_file
 
   # Run check with ping
   with-ping {
+    # TODO: refactor to check the json and for errors
     restic-check --provider-env-file $provider_env_file
   }
 }
@@ -179,7 +177,8 @@ def restic-backup [--provider-env-file: path]: record -> record {
   (
     ^docker run --rm -ti 
       --hostname $env.HOSTNAME
-      --env-file $envs ...$vol_flags
+      --env-file $envs 
+      ...$vol_flags
       -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
       -e TZ=Europe/Berlin
       $restic_docker_image --json --quiet backup $backup_path
@@ -192,38 +191,53 @@ def restic-backup [--provider-env-file: path]: record -> record {
 def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> record {
   let envs = $provider_env_file | path expand | require
 
-  (
-    ^docker run --rm -ti 
-      --env-file $envs
-      -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-      $restic_docker_image --json --quiet check --read-data-subset $subset
-  ) | complete
+  let da = [
+    "--env-file", $provider_env_file,
+    "-v", $"($env.HOME)/.cache/restic:/root/.cache/restic"
+  ]
+  let ra = ["--json", "--quiet", "check", "--read-data-subset", $subset]
+
+  with-restic --docker-args ...$da --restic-args ...$ra
+
+
+
+  # (
+  #   ^docker run --rm -ti 
+  #     --env-file $envs
+  #     -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
+  #     $restic_docker_image --json --quiet check --read-data-subset $subset
+  # ) | complete
 }
 
 export def restic-restore [--provider-env-file: path, --target: path] {
   let envs = $provider_env_file | path expand | require
 
-  (
-    ^docker run --rm -ti 
-      --env-file $envs
-      -v $"($target):/data:rw"
-      -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-      $restic_docker_image restore latest --target /data
-  )
+  let da = [
+    "--env-file", $provider_env_file,
+    "-v", $"($target):/data:rw",
+    "-v", $"($env.HOME)/.cache/restic:/root/.cache/restic"
+  ]
+  let ra = ["restore", "latest", "--target", "/data"]
+
+  let out = with-restic --docker-args ...$da --restic-args ...$ra
+
+  # (
+  #   ^docker run --rm -ti 
+  #     --env-file $envs
+  #     -v $"($target):/data:rw"
+  #     -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
+  #     $restic_docker_image restore latest --target /data
+  # )
 
   log info $"Restored data is available at: ($target)"
+
+  $out
 }
 
-export def with-restic [commands: list<string>]: path -> record {
-    let envs = $in | path expand | require
-
-    ^docker run --rm -ti --env-file $envs $restic_docker_image ...$commands | complete
-}
-
-def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: string -> bool {
+def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: string -> nothing {
   let snapshot_id = $in
 
-  let out = $provider_env_file | with-restic ["snapshots", $snapshot_id, "--json"]
+  let out = with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["snapshots", $snapshot_id, "--json"]
   if $out.exit_code != 0 {
     error make { msg: "Failed to get snapshots: ($out.stderr)" }
   }
@@ -235,6 +249,8 @@ def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: str
   if not $result {
       error make { msg: $"Snapshot assertion failed! Snapshot time: ($snapshot_time), Current time: (date now)" }
   }
-  
-  $result
+}
+
+export def with-restic [--docker-args: list<string>, --restic-args: list<string>]: nothing -> record {
+    ^docker run --rm -ti ...$docker_args $restic_docker_image ...$restic_args | complete
 }
