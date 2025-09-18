@@ -221,7 +221,7 @@ export def with-restic [commands: list<string>]: path -> record {
 }
 
 def assert_snapshot [threshold: duration = 1min]: string -> record {
-  let snapshot_id = $in.0
+  let snapshot_id = $in
 
   let out = with-restic ["snapshots", $snapshot_id, "--json"]
   if $out.exit_code != 0 {
