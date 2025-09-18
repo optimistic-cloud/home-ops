@@ -220,7 +220,7 @@ export def with-restic [commands: list<string>]: path -> record {
     ^docker run --rm -ti --env-file $envs $restic_docker_image ...$commands | complete
 }
 
-def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: string -> record {
+def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: string -> boolean {
   let snapshot_id = $in
 
   let out = $provider_env_file | with-restic ["snapshots", $snapshot_id, "--json"]
