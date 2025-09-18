@@ -10,6 +10,18 @@ export def require []: path -> path {
   $file
 }
 
+export def log-debug []: record -> nothing {
+  let exit_code = $in.exit_code
+  let stdout = $in.stdout
+  let stderr = $in.stderr
+
+  if $exit_code != 0 {
+    log error $"Error: ($stderr)"
+  } else {
+    log debug $"($stdout)"
+  }
+}
+
 export def do_logging_for [command: string]: record -> nothing {
   let exit_code = $in.exit_code
   let stdout = $in.stdout
@@ -106,14 +118,23 @@ def export-env-from-container [--volume: string, name: string = "container.env"]
   let env_file = mktemp env_file.XXX
 
   try {
+
     ^docker container inspect $container_name | from json | get 0.Config.Env | save --force $env_file
 
-    (
-      ^docker run --rm -ti 
-        -v $"($volume):/data:rw"
-        -v $"($env_file):/import/env:ro"
-        alpine sh -c $'cp /import/env /data/($name)'
-    )
+    let da = [
+      "-v", $"($volume):/data:rw",
+      "-v", $"($env_file):/import/env:ro"
+    ]
+    let args = ["sh", "-c", "cp", "/import/env", $"/data/($name)"]
+
+    with-alpine --docker-args $da --args $args
+
+    # (
+    #   ^docker run --rm -ti 
+    #     -v $"($volume):/data:rw"
+    #     -v $"($env_file):/import/env:ro"
+    #     alpine sh -c $'cp /import/env /data/($name)'
+    # )
 
     rm $env_file
     
@@ -173,20 +194,6 @@ def restic-backup [--provider-env-file: path]: record -> record {
     | items {|key, value| [ "-v" ($value + $":($backup_path)/" + ($key | str trim)) ] }
     | flatten
 
-  # # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
-  # (
-  #   ^docker run --rm -ti 
-  #     --hostname $env.HOSTNAME
-  #     --env-file $envs 
-  #     ...$vol_flags
-  #     -v $"($env.HOME)/.cache/restic:/root/.cache/restic"
-  #     -e TZ=Europe/Berlin
-  #     $restic_docker_image --json --quiet backup $backup_path
-  #       --skip-if-unchanged
-  #       --exclude-caches
-  #       --tag=$"git_commit=(get-current-git-commit)"
-  # ) | complete
-
   let da = [
     "--hostname", $env.HOSTNAME,
     "--env-file", $provider_env_file,
@@ -194,6 +201,7 @@ def restic-backup [--provider-env-file: path]: record -> record {
     "-v", $"($env.HOME)/.cache/restic:/root/.cache/restic",
     "-e", "TZ=Europe/Berlin"
   ]
+  # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
   let ra = [
     "--json", "--quiet", 
     "backup", $backup_path, 
@@ -249,5 +257,19 @@ def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: str
 }
 
 export def with-restic [--docker-args: list<string>, --restic-args: list<string>]: nothing -> record {
-    ^docker run --rm -ti ...$docker_args $restic_docker_image ...$restic_args | complete
+  log debug $"Running restic with docker args: ($docker_args) and restic args: ($restic_args)"
+  
+  let out = ^docker run --rm -ti ...$docker_args $restic_docker_image ...$restic_args | complete
+
+  $out | log-debug
+  $out
+}
+
+def with-alpine [--docker-args: list<string>, --args: list<string>]: nothing -> record {
+  log debug $"Running alpine with docker args: ($docker_args) and args: ($args)"
+
+  let out = ^docker run --rm -ti ...$docker_args alpine ...$args | complete
+
+  $out | log-debug
+  $out
 }
