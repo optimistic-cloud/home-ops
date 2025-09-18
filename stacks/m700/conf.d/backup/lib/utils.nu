@@ -180,15 +180,15 @@ export def backup [--provider-env-files: list<path>]: record -> record {
 
   # Run backup with ping
   with-ping {
-    let out = $volumes | restic-backup --provider-env-file $provider_env_file
-    'latest' | assert_snapshot --provider-env-file $provider_env_file
+    let out = $volumes | restic-backup --provider-env-file $provider_env_files.0
+    'latest' | assert_snapshot --provider-env-file $provider_env_files.0
     $out
   }
 
   # Run check with ping
   with-ping {
     # TODO: refactor to check the json and for errors
-    restic-check --provider-env-file $provider_env_file
+    restic-check --provider-env-file $provider_env_file.0
   }
 }
 
