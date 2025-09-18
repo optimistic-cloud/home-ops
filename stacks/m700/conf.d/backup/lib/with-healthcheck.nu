@@ -47,6 +47,8 @@ export def with-ping [operation: closure] {
 
   let out = do $operation
 
+  $out | describe | print
+
   if ($out | describe) == "boolean" {
     if $out {
       0 | send_exit_code $url 
