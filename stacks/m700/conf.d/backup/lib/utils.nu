@@ -1,9 +1,11 @@
-def require [file: path] {
+def require []: path -> path {
+  let file = $in | path expand
   if not ($file | path exists) {
       error make {
           msg: $"Required file not found: ($file)"
       }
   }
+  $file
 }
 
 export def do_logging_for [command: string]: record -> nothing {
@@ -127,7 +129,8 @@ export def get-current-git-commit []: nothing -> string {
 const restic_docker_image = "restic/restic:0.18.0"
 
 export def restic-backup [--env-file: path]: record -> record {
-  let envs = $env_file | path expand
+  let envs = $in | path expand | require
+  
   let volumes = $in
 
   const backup_path = "/backup"
@@ -151,7 +154,7 @@ export def restic-backup [--env-file: path]: record -> record {
 }
 
 export def restic-check [--env-file: path, --subset: string = "33%"]: nothing -> record {
-  let envs = $env_file | path expand
+  let envs = $in | path expand | require
 
   (
     ^docker run --rm -ti 
@@ -162,7 +165,7 @@ export def restic-check [--env-file: path, --subset: string = "33%"]: nothing ->
 }
 
 export def restic-restore [--env-file: path, --target: path] {
-  let envs = $env_file | path expand
+  let envs = $in | path expand | require
 
   (
     ^docker run --rm -ti 
@@ -176,7 +179,7 @@ export def restic-restore [--env-file: path, --target: path] {
 }
 
 export def with-restic [commands: list<string>]: path -> nothing {
-    let envs = $in | path expand
+    let envs = $in | path expand | require
 
     ^docker run --rm -ti --env-file $envs $restic_docker_image ...$commands
 }
