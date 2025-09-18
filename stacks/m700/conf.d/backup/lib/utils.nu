@@ -176,19 +176,21 @@ export def backup [--provider-env-files: list<path>]: record -> record {
   # Export env from container
   $container_name | export-env-from-container --volume $volumes.config
 
-  $provider_env_files | each {|i| $i | path expand | print }
+  $provider_env_files | each {|i|
+    let provider_config = $i | path expand
 
-  # Run backup with ping
-  with-ping {
-    let out = $volumes | restic-backup --provider-env-file $provider_env_files.0
-    'latest' | assert_snapshot --provider-env-file $provider_env_files.0
-    $out
-  }
-
-  # Run check with ping
-  with-ping {
-    # TODO: refactor to check the json and for errors
-    restic-check --provider-env-file $provider_env_files.0
+    # Run backup with ping
+    with-ping {
+      let out = $volumes | restic-backup --provider-env-file $provider_config
+      'latest' | assert_snapshot --provider-env-file $provider_config
+      $out
+    }
+  
+    # Run check with ping
+    with-ping {
+      # TODO: refactor to check the json and for errors
+      restic-check --provider-env-file $provider_config
+    }
   }
 }
 
