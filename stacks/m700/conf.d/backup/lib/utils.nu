@@ -3,9 +3,7 @@ use ./with-healthcheck.nu *
 export def require []: path -> path {
   let file = $in | path expand
   if not ($file | path exists) {
-      error make {
-          msg: $"Required file not found: ($file)"
-      }
+      error make { msg: $"Required file not found: ($file)" }
   }
   $file
 }
