@@ -291,7 +291,7 @@ def generate-docker-args-from-provider []: path -> list<string> {
       | where $it starts-with "RESTIC_REPOSITORY=" 
       | str replace "RESTIC_REPOSITORY=" ""
       | first
-      | [ "-v", ($it + : + $it)
+      | [ "-v", ($it + : + $it) ]
   } else {
     []
   }
