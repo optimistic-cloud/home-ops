@@ -290,6 +290,10 @@ export def "restic prune" [--provider-env-file: path] {
 }
 
 export def "restic restore" [--provider-env-file: path, --target: path] {
+  if ($target | path exists) {
+      error make {msg: "Restore path already exists" }
+  }
+
   const restore_path_in_docker_volume = "/data"
 
   $provider_env_file | with-restic --docker-args ["-v", $"($target):($restore_path_in_docker_volume):rw"] --restic-args ["restore", "latest", "--target", ($restore_path_in_docker_volume)]
