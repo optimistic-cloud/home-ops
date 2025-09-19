@@ -27,6 +27,10 @@ def "main forget" [--provider-env-file: path] {
     $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "forget", "--prune", "--keep-within", "180d"]
 }
 
+def "main prune" [--provider-env-file: path] { 
+    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "prune"]
+}
+
 def "main restore" [--provider-env-file: path, --restore-path: path] {
     if ($restore_path | path exists) {
         error make {msg: "Restore path already exists" }
