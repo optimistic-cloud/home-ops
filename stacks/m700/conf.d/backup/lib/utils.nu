@@ -171,7 +171,7 @@ export def backup [--provider-env-files: list<path>]: record -> record {
   # Export env from container
   $container_name | export-env-from-container --volume $volumes.config
 
-  $provider_env_files | each {|i|
+  $provider_env_files | par-each {|i|
     log debug $"Using provider env file: ($i)"
     let provider_env_file = $i | path expand | require
 
