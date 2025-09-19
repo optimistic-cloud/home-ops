@@ -207,10 +207,10 @@ def do-restic-backup [--provider-env-file: path]: record -> record {
 def restic-backup [--provider-env-file: path]: record -> record {
   let volumes = $in
 
-  const backup_path = "/backup"
+  const backup_path_in_docker_volume = "/backup"
   
   let vol_flags = $volumes
-    | items {|key, value| [ "-v" ($value + $":($backup_path)/" + ($key | str trim)) ] }
+    | items {|key, value| [ "-v" ($value + $":($backup_path_in_docker_volume)/" + ($key | str trim)) ] }
     | flatten
 
   do {
@@ -231,8 +231,9 @@ def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing 
 }
 
 export def restic-restore [--provider-env-file: path, --target: path] {
-  $provider_env_file | with-restic --docker-args ["-v", $"($target):/data:rw"] --restic-args ["restore", "latest", "--target", "/data"]
+  const restore_path_in_docker_volume = "/data"
 
+  $provider_env_file | with-restic --docker-args ["-v", $"($target):($restore_path_in_docker_volume):rw"] --restic-args ["restore", "latest", "--target", ($restore_path_in_docker_volume)]
   log info $"Restored data is available at: ($target)"
 }
 
