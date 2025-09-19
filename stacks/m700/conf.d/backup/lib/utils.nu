@@ -217,7 +217,7 @@ def restic-backup [--provider-env-file: path]: record -> record {
     # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
     let ra = [
       "--json", "--quiet", 
-      "backup", $backup_path, 
+      "backup", $backup_path_in_docker_volume, 
       "--skip-if-unchanged", 
       "--exclude-caches", 
       "--tag", $"git_commit=(get-current-git-commit)"]
