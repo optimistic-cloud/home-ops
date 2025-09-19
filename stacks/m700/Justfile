@@ -69,6 +69,15 @@ prune app provider:
     nu ./conf.d/backup/restic.nu prune --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
 
 [group('backup')]
+[doc('Prune snapshots')]
+prune-all app:
+    #!/usr/bin/env nu
+    ls conf.d/backup/{{app}}.*.restic.env | get name | each { 
+        let provider_env_file = $it
+        nu ./conf.d/backup/restic.nu prune --provider-env-file $provider_env_file
+    }
+
+[group('backup')]
 [doc('Backup application')]
 backup-all app:
     #!/usr/bin/env nu
