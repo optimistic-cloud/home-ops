@@ -182,7 +182,6 @@ export def backup [--provider-env-files: list<path>]: record -> record {
     log debug $"Using provider env file: ($i)"
     let provider_env_file = $i | path expand | require
 
-    print $"====> Before backup ($provider_env_file)"
     $volumes | do-restic-backup --provider-env-file $provider_env_file
     #$volumes | do-kopia-backup
   }
@@ -216,7 +215,6 @@ def restic-backup [--provider-env-file: path]: record -> record {
     | flatten
 
   do {
-    print $provider_env_file
     let docker_args_from_provider = $provider_env_file | generate-docker-args-from-provider
     let da = [
       "--hostname", $env.HOSTNAME,
@@ -235,9 +233,6 @@ def restic-backup [--provider-env-file: path]: record -> record {
 }
 
 def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> record {
-  #let envs = $provider_env_file | path expand | require
-
-  print $provider_env_file
   let docker_args_from_provider = $provider_env_file | generate-docker-args-from-provider
   let ra = ["--json", "--quiet", "check", "--read-data-subset", $subset]
 
@@ -245,9 +240,6 @@ def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing 
 }
 
 export def restic-restore [--provider-env-file: path, --target: path] {
-  #let envs = $provider_env_file | path expand | require
-
-  print $provider_env_file
   let docker_args_from_provider = $provider_env_file | generate-docker-args-from-provider
   let da = [
     "-v", $"($target):/data:rw",
@@ -262,7 +254,6 @@ export def restic-restore [--provider-env-file: path, --target: path] {
 def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: string -> nothing {
   let snapshot_id = $in
 
-  print $provider_env_file
   let docker_args_from_provider = $provider_env_file | generate-docker-args-from-provider
   let ra = ["snapshots", $snapshot_id, "--json"]
 
@@ -283,7 +274,6 @@ def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: str
 
 def generate-docker-args-from-provider []: path -> list<string> {
   let provider_env_file = $in
-  print $provider_env_file
   let common_args = [
     "--env-file", $provider_env_file,
     "-v", $"($env.HOME)/.cache/restic:/root/.cache/restic"
@@ -304,9 +294,6 @@ def generate-docker-args-from-provider []: path -> list<string> {
   }
 
   let out = $common_args ++ $local_repository
-  print "Generated docker args"
-  $out | print
-  print "===> Generated docker args"
   $out
 }
 
