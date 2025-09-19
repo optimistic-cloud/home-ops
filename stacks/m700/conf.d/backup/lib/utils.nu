@@ -268,7 +268,7 @@ def generate-docker-args-from-provider []: path -> list<string> {
   $out
 }
 
-export def "main init" [--provider-env-file: path] { 
+export def "restic init" [--provider-env-file: path] { 
   $provider_env_file | with-restic --docker-args [] --restic-args ["init"]
 }
 
