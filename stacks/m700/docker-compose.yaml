@@ -218,7 +218,7 @@ services:
     restart: "no"
 
   pocket-id:
-    image: ghcr.io/pocket-id/pocket-id:v1.10.0-distroless@sha256:53aaee4ded66e2e163cd74b4bcfcf748c912672501346b08fa1bd8f21d295b81
+    image: ghcr.io/pocket-id/pocket-id:v1.11.1-distroless@sha256:28f7c5b73d8fdb42db36e755f0c4bcd3190e02fb2b2c75c6e0cb16a09efb9d8a
     container_name: pocket-id
     restart: unless-stopped
     user: "65532:65532"
