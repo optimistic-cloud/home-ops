@@ -216,10 +216,7 @@ def restic-backup [--provider-env-file: path]: record -> record {
 
   do {
     let docker_args_from_provider = $provider_env_file | generate-docker-args-from-provider
-    let da = [
-      "--hostname", $env.HOSTNAME,
-      ...$vol_flags,
-    ]
+
     # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
     let ra = [
       "--json", "--quiet", 
@@ -228,7 +225,7 @@ def restic-backup [--provider-env-file: path]: record -> record {
       "--exclude-caches", 
       "--tag", $"git_commit=(get-current-git-commit)"]
 
-    with-restic --docker-args ($docker_args_from_provider ++ $da) --restic-args $ra
+    with-restic --docker-args ($docker_args_from_provider ++ $vol_flags) --restic-args $ra
   }
 }
 
@@ -275,6 +272,7 @@ def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: str
 def generate-docker-args-from-provider []: path -> list<string> {
   let provider_env_file = $in
   let common_args = [
+    "--hostname", $env.HOSTNAME,
     "--env-file", $provider_env_file,
     "-v", $"($env.HOME)/.cache/restic:/root/.cache/restic"
     "-e", "TZ=Europe/Berlin"
