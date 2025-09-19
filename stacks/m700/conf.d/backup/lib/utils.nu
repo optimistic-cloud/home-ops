@@ -182,7 +182,7 @@ export def backup [--provider-env-files: list<path>]: record -> record {
     log debug $"Using provider env file: ($i)"
     let provider_env_file = $i | path expand | require
 
-    $volumes | do-restic-backup $provider_env_file
+    $volumes | do-restic-backup --provider-env-file $provider_env_file
     #$volumes | do-kopia-backup
   }
 }
