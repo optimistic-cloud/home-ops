@@ -62,7 +62,7 @@ export def export-sqlite-database-in-volume [--volume: string, prefix: string = 
 
   do {
     let da = [
-      "-v", $"($src_volume):/data:ro"
+      "-v", $"($src_volume):/data:rw", # needs rw for sqlite 
       "-v", $"($volume):/export:rw",
     ]
     let args = [$src_path, $".backup '/export/($db_name)'"]
