@@ -16,7 +16,7 @@ def "main stats" [--provider-env-file: path] {
 }
 
 def "main ls" [--provider-env-file: path] { 
-    with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["--quiet", "ls", "latest"]
+    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "ls", "latest"]
 }
 
 def "main snapshots" [--provider-env-file: path] { 
