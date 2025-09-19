@@ -288,12 +288,12 @@ def generate-docker-args-from-provider []: path -> list<string> {
   # Check for local repository
   let is_local = $provider_env_file | str contains ".local."
   let local_repository = if $is_local {
-    open $provider_env_file
+    let a = open $provider_env_file
       | lines 
       | where $it starts-with "RESTIC_REPOSITORY=" 
       | str replace "RESTIC_REPOSITORY=" ""
       | first
-      | [ "-v", ($it + : + $it) ]
+    [ "-v", ($a + : + $a) ]
   } else {
     []
   }
