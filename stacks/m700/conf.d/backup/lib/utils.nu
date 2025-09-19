@@ -217,13 +217,6 @@ def do-restic-backup [--provider-env-file: path]: record -> record {
   }
 }
 
-export def restic-restore [--provider-env-file: path, --target: path] {
-  const restore_path_in_docker_volume = "/data"
-
-  $provider_env_file | with-restic --docker-args ["-v", $"($target):($restore_path_in_docker_volume):rw"] --restic-args ["restore", "latest", "--target", ($restore_path_in_docker_volume)]
-  log info $"Restored data is available at: ($target)"
-}
-
 def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: string -> nothing {
   let snapshot_id = $in
 
@@ -294,6 +287,13 @@ export def "restic forget" [--provider-env-file: path] {
 
 export def "restic prune" [--provider-env-file: path] { 
     $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "prune"]
+}
+
+export def "restic restore" [--provider-env-file: path, --target: path] {
+  const restore_path_in_docker_volume = "/data"
+
+  $provider_env_file | with-restic --docker-args ["-v", $"($target):($restore_path_in_docker_volume):rw"] --restic-args ["restore", "latest", "--target", ($restore_path_in_docker_volume)]
+  log info $"Restored data is available at: ($target)"
 }
 
 export def with-restic [--docker-args: list<string>, --restic-args: list<string>]: path -> record {
