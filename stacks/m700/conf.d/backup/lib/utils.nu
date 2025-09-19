@@ -1,6 +1,6 @@
 use ./with-healthcheck.nu *
 
-export def require []: path -> path {
+def require []: path -> path {
   let file = $in | path expand
   if not ($file | path exists) {
       error make { msg: $"Required file not found: ($file)" }
@@ -8,7 +8,7 @@ export def require []: path -> path {
   $file
 }
 
-export def log-debug []: record -> nothing {
+def log-debug []: record -> nothing {
   let exit_code = $in.exit_code
   let stdout = $in.stdout
   let stderr = $in.stderr
@@ -149,7 +149,7 @@ def export-env-from-container [--volume: string, name?: string]: string -> nothi
   }
 }
 
-export def get-current-git-commit []: nothing -> string {
+def get-current-git-commit []: nothing -> string {
   (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 }
 
@@ -300,7 +300,7 @@ export def "restic restore" [--provider-env-file: path, --target: path] {
   log info $"Restored data is available at: ($target)"
 }
 
-export def with-restic [--docker-args: list<string>, --restic-args: list<string>]: path -> record {
+def with-restic [--docker-args: list<string>, --restic-args: list<string>]: path -> record {
   let docker_args_from_provider = $in | generate-docker-args-from-provider
   with-docker-run $env.RESTIC_DOCKER_IMAGE --docker-args ($docker_args_from_provider ++ $docker_args) --args $restic_args
 }
