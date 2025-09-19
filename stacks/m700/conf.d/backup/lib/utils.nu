@@ -171,7 +171,8 @@ export def backup [--provider-env-files: list<path>]: record -> record {
   # Export env from container
   $container_name | export-env-from-container --volume $volumes.config
 
-  $provider_env_files | par-each {|i|
+  # TODO: replace each with par-each. Needs ping adjustments due to 429
+  $provider_env_files | each {|i|
     log debug $"Using provider env file: ($i)"
     let provider_env_file = $i | path expand | require
 
@@ -212,9 +213,7 @@ def do-restic-backup [--provider-env-file: path]: record -> record {
   }
 
   # restic forget
-  with-ping {
-    restic forget --provider-env-file $provider_env_file
-  }
+  restic forget --provider-env-file $provider_env_file
 }
 
 def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: string -> nothing {
