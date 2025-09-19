@@ -278,7 +278,7 @@ def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: str
 
 def generate-docker-args-from-provider []: path -> list<string> {
   let provider_env_file = $in
-  
+  print $provider_env_file
   let common_args = [
     "--env-file", $provider_env_file,
     "-v", $"($env.HOME)/.cache/restic:/root/.cache/restic"
@@ -299,7 +299,9 @@ def generate-docker-args-from-provider []: path -> list<string> {
   }
 
   let out = $common_args ++ $local_repository
+  print "Generated docker args"
   $out | print
+  print "===> Generated docker args"
   $out
 }
 
