@@ -8,8 +8,8 @@ const app = "pocket-id"
 const container_name = "pocket-id"
 const data_docker_volume = "m700_pocket-id-data"
 
-def main [--provider-env-file: path] {
-    $app | with-backup-template --provider-env-file $provider_env_file {
+def main [...provider_env_files: path] {
+    $app | with-backup-template --provider-env-files $provider_env_files {
         # The data in this volume will be backed up under /backup/config
         let backup_docker_volume = $in
     
