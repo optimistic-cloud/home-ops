@@ -180,9 +180,9 @@ export def backup [--provider-env-files: list<path>]: record -> record {
 
   $provider_env_files | each {|i|
     log debug $"Using provider env file: ($i)"
-    let provider-env-file = $i | path expand | require
+    let provider_env_file = $i | path expand | require
 
-    $volumes | do-restic-backup $provider-env-file
+    $volumes | do-restic-backup $provider_env_file
     #$volumes | do-kopia-backup
   }
 }
@@ -192,15 +192,15 @@ def do-restic-backup [--provider-env-file: path]: record -> record {
 
   # restic backup
   with-ping {
-    let out = $volumes | restic-backup --provider-env-file $provider-env-file
-    'latest' | assert_snapshot --provider-env-file $provider-env-file
+    let out = $volumes | restic-backup --provider-env-file $provider_env_file
+    'latest' | assert_snapshot --provider-env-file $provider_env_file
     $out
   }
 
   # restic check
   with-ping {
     # TODO: refactor to check the json and for errors
-    restic-check --provider-env-file provider-env-file
+    restic-check --provider-env-file provider_env_file
   }
 }
 
