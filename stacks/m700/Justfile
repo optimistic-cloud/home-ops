@@ -46,7 +46,7 @@ init app provider:
 [group('backup')]
 [doc('Get snapshots')]
 snapshots app provider:
-    nu ./conf.d/backup/restic.nu snapshots snapshot --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    nu ./conf.d/backup/restic.nu snapshots --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
 
 [group('backup')]
 [doc('List files in the snapshot')]
