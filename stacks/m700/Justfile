@@ -53,6 +53,16 @@ stats app provider:
     nu ./conf.d/backup/restic.nu stats --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
 
 [group('restic')]
+[doc('Forget snapshots')]
+stats app provider:
+    nu ./conf.d/backup/restic.nu forget --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+
+[group('restic')]
+[doc('Prune snapshots')]
+prune app provider:
+    nu ./conf.d/backup/restic.nu prune --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+
+[group('restic')]
 [doc('Backup application')]
 backup app:
     #!/usr/bin/env nu
