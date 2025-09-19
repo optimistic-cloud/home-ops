@@ -54,7 +54,7 @@ stats app provider:
 
 [group('restic')]
 [doc('Forget snapshots')]
-stats app provider:
+forget app provider:
     nu ./conf.d/backup/restic.nu forget --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
 
 [group('restic')]
