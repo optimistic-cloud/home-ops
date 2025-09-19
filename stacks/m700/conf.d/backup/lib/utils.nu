@@ -195,6 +195,11 @@ def do-restic-backup [--provider-env-file: path]: record -> record {
     # TODO: refactor to check the json and for errors
     restic-check --provider-env-file $provider_env_file
   }
+
+  # restic forget
+  with-ping {
+    
+  }
 }
 
 def restic-backup [--provider-env-file: path]: record -> record {
