@@ -32,9 +32,5 @@ def "main prune" [--provider-env-file: path] {
 }
 
 def "main restore" [--provider-env-file: path, --restore-path: path] {
-    if ($restore_path | path exists) {
-        error make {msg: "Restore path already exists" }
-    }
-
-    restic-restore --provider-env-file $provider_env_file --target $restore_path
+  restic restore --provider-env-file $provider_env_file --target $restore_path
 }
