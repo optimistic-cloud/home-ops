@@ -35,7 +35,8 @@ logs service:
 [group('backup')]
 [doc('List providers for an application')]
 providers app:
-    nu -c "ls conf.d/backup/{{app}}.*.restic.env | get name"
+    #!/usr/bin/env nu
+    ls conf.d/backup/{{app}}.*.restic.env | get name | each { split row '.' | get 2 }
 
 [group('backup')]
 [doc('Init repository')]
