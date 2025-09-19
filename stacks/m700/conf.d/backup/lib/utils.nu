@@ -192,7 +192,7 @@ def do-restic-backup [--provider-env-file: path]: record -> record {
       | flatten
 
     # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
-    let restic-args = [
+    let restic_args = [
       "--json", "--quiet",
       "backup", $backup_path_in_docker_volume,
       "--skip-if-unchanged",
@@ -200,7 +200,7 @@ def do-restic-backup [--provider-env-file: path]: record -> record {
       "--tag", $"git_commit=(get-current-git-commit)"
     ]
     
-    let $out = $provider_env_file | with-restic --docker-args $docker_args --restic-args $restic-args
+    let $out = $provider_env_file | with-restic --docker-args $docker_args --restic-args $restic_args
     'latest' | assert_snapshot --provider-env-file $provider_env_file
 
     $out
