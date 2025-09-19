@@ -6,7 +6,7 @@ use ./lib/utils.nu *
 
 const app = "pocket-id"
 const container_name = "pocket-id"
-const data_docker_volume = "m700_pocket-id-data"
+const data_docker_volume = "pocket-id-data"
 
 def main [...provider_env_files: path] {
     $app | with-backup-template --provider-env-files $provider_env_files {

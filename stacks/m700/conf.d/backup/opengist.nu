@@ -6,7 +6,7 @@ use ./lib/utils.nu *
 
 const app = "opengist"
 const container_name = "opengist"
-const data_docker_volume = "m700_opengist-data"
+const data_docker_volume = "opengist-data"
 
 def main [...provider_env_files: path] {
     $app | with-backup-template --provider-env-files $provider_env_files {
