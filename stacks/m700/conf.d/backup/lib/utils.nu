@@ -180,8 +180,7 @@ export def backup [--provider-env-files: list<path>]: record -> record {
 
   $provider_env_files | each {|i|
     log debug $"Using provider env file: ($i)"
-    let provider_env_file = $i | path expand
-    $provider_env_file | require
+    let provider_env_file = $i | path expand | require
 
     $volumes | do-restic-backup --provider-env-file $provider_env_file
     #$volumes | do-kopia-backup
@@ -234,7 +233,7 @@ def restic-backup [--provider-env-file: path]: record -> record {
 }
 
 def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> record {
-  let envs = $provider_env_file | path expand | require
+  #let envs = $provider_env_file | path expand | require
 
   let docker_args_from_provider = $provider_env_file | generate-docker-args-from-provider
   let ra = ["--json", "--quiet", "check", "--read-data-subset", $subset]
@@ -243,7 +242,7 @@ def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing 
 }
 
 export def restic-restore [--provider-env-file: path, --target: path] {
-  let envs = $provider_env_file | path expand | require
+  #let envs = $provider_env_file | path expand | require
 
   let docker_args_from_provider = $provider_env_file | generate-docker-args-from-provider
   let da = [
