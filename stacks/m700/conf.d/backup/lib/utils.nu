@@ -182,42 +182,28 @@ export def backup [--provider-env-files: list<path>]: record -> record {
     log debug $"Using provider env file: ($i)"
     let provider_config = $i | path expand
 
-    let v = do {
-      # TODO: refactor this block
-      # this is a check if the restic repository is local
-      let is_local = $provider_config | str contains ".local."
-      if $is_local {
-        let repository = open $provider_config
-          | lines 
-          | where $it starts-with "RESTIC_REPOSITORY=" 
-          | str replace "RESTIC_REPOSITORY=" ""
+    $volumes | do-restic-backup
+    #$volumes | do-kopia-backup
+  }
+}
 
-        ($volumes | insert $repository $repository)
-      }
-    }
+def do-restic-backup [--provider-env-file: path]: record -> record {
+  # Run restic backup with ping
+  with-ping {
+    let out = $volumes | restic-backup --provider-env-file $provider_config
+    'latest' | assert_snapshot --provider-env-file $provider_config
+    $out
+  }
 
-
-
-
-
-    # Run backup with ping
-    with-ping {
-      let out = $v | restic-backup --provider-env-file $provider_config
-      'latest' | assert_snapshot --provider-env-file $provider_config
-      $out
-    }
-  
-    # Run check with ping
-    with-ping {
-      # TODO: refactor to check the json and for errors
-      restic-check --provider-env-file $provider_config
-    }
+  # Run check with ping
+  with-ping {
+    # TODO: refactor to check the json and for errors
+    restic-check --provider-env-file $provider_config
   }
 }
 
 def restic-backup [--provider-env-file: path]: record -> record {
   let envs = $provider_env_file | path expand | require
-
   let volumes = $in
 
   const backup_path = "/backup"
@@ -227,12 +213,10 @@ def restic-backup [--provider-env-file: path]: record -> record {
     | flatten
 
   do {
+    let docker-args-from-provider = $provider_env_file | generate-docker-args-from-provider
     let da = [
       "--hostname", $env.HOSTNAME,
-      "--env-file", $provider_env_file,
       ...$vol_flags,
-      "-v", $"($env.HOME)/.cache/restic:/root/.cache/restic",
-      "-e", "TZ=Europe/Berlin"
     ]
     # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
     let ra = [
@@ -242,33 +226,29 @@ def restic-backup [--provider-env-file: path]: record -> record {
       "--exclude-caches", 
       "--tag", $"git_commit=(get-current-git-commit)"]
 
-    with-restic --docker-args $da --restic-args $ra
+    with-restic --docker-args ($docker-args-from-provider ++ $da) --restic-args $ra
   }
 }
 
 def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> record {
   let envs = $provider_env_file | path expand | require
 
-  let da = [
-    "--env-file", $provider_env_file,
-    "-v", $"($env.HOME)/.cache/restic:/root/.cache/restic"
-  ]
+  let docker-args-from-provider = $provider_env_file | generate-docker-args-from-provider
   let ra = ["--json", "--quiet", "check", "--read-data-subset", $subset]
 
-  with-restic --docker-args $da --restic-args $ra
+  with-restic --docker-args $docker-args-from-provider --restic-args $ra
 }
 
 export def restic-restore [--provider-env-file: path, --target: path] {
   let envs = $provider_env_file | path expand | require
 
+  let docker-args-from-provider = $provider_env_file | generate-docker-args-from-provider
   let da = [
-    "--env-file", $provider_env_file,
     "-v", $"($target):/data:rw",
-    "-v", $"($env.HOME)/.cache/restic:/root/.cache/restic"
   ]
   let ra = ["restore", "latest", "--target", "/data"]
 
-  with-restic --docker-args $da --restic-args $ra
+  with-restic --docker-args ($docker-args-from-provider ++ $da) --restic-args $ra
 
   log info $"Restored data is available at: ($target)"
 }
@@ -276,7 +256,11 @@ export def restic-restore [--provider-env-file: path, --target: path] {
 def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: string -> nothing {
   let snapshot_id = $in
 
-  let out = with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["snapshots", $snapshot_id, "--json"]
+  let docker-args-from-provider = $provider_env_file | generate-docker-args-from-provider
+  let ra = ["snapshots", $snapshot_id, "--json"]
+
+  let out = with-restic --docker-args $docker-args-from-provider --restic-args $ra
+  $out | log-debug
   if $out.exit_code != 0 {
     error make { msg: "Failed to get snapshots: ($out.stderr)" }
   }
@@ -288,6 +272,33 @@ def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: str
   if not $result {
       error make { msg: $"Snapshot assertion failed! Snapshot time: ($snapshot_time), Current time: (date now)" }
   }
+}
+
+def generate-docker-args-from-provider []: path -> list<string> {
+  let provider_env_file = $in
+  
+  let common-args = [
+    "--env-file", $provider_env_file,
+    "-v", $"($env.HOME)/.cache/restic:/root/.cache/restic"
+    "-e", "TZ=Europe/Berlin"
+  ]
+
+  # Check for local repository
+  let is_local = $provider_config | str contains ".local."
+  let local_repository = if $is_local {
+    open $provider_config
+      | lines 
+      | where $it starts-with "RESTIC_REPOSITORY=" 
+      | str replace "RESTIC_REPOSITORY=" ""
+      | first
+      | [ "-v", ($it + : + $it)
+  } else {
+    []
+  }
+
+  let out = $common-args ++ $local_repository
+  $out | print
+  $out
 }
 
 export def with-restic [--docker-args: list<string>, --restic-args: list<string>]: nothing -> record {
