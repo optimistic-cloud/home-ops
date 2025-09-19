@@ -205,7 +205,6 @@ def do-restic-backup [--provider-env-file: path]: record -> record {
 }
 
 def restic-backup [--provider-env-file: path]: record -> record {
-  #let envs = $provider_env_file | path expand 
   let volumes = $in
 
   const backup_path = "/backup"
@@ -215,8 +214,6 @@ def restic-backup [--provider-env-file: path]: record -> record {
     | flatten
 
   do {
-    let docker_args_from_provider = $provider_env_file | generate-docker-args-from-provider
-
     # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
     let ra = [
       "--json", "--quiet", 
@@ -225,25 +222,16 @@ def restic-backup [--provider-env-file: path]: record -> record {
       "--exclude-caches", 
       "--tag", $"git_commit=(get-current-git-commit)"]
 
-    with-restic --docker-args ($docker_args_from_provider ++ $vol_flags) --restic-args $ra
+    with-restic --docker-args $vol_flags --restic-args $ra
   }
 }
 
 def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> record {
-  let docker_args_from_provider = $provider_env_file | generate-docker-args-from-provider
-  let ra = ["--json", "--quiet", "check", "--read-data-subset", $subset]
-
-  with-restic --docker-args $docker_args_from_provider --restic-args $ra
+  with-restic --docker-args [] --restic-args ["--json", "--quiet", "check", "--read-data-subset", $subset]
 }
 
 export def restic-restore [--provider-env-file: path, --target: path] {
-  let docker_args_from_provider = $provider_env_file | generate-docker-args-from-provider
-  let da = [
-    "-v", $"($target):/data:rw",
-  ]
-  let ra = ["restore", "latest", "--target", "/data"]
-
-  with-restic --docker-args ($docker_args_from_provider ++ $da) --restic-args $ra
+  with-restic --docker-args ["-v", $"($target):/data:rw"] --restic-args ["restore", "latest", "--target", "/data"]
 
   log info $"Restored data is available at: ($target)"
 }
@@ -251,10 +239,7 @@ export def restic-restore [--provider-env-file: path, --target: path] {
 def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: string -> nothing {
   let snapshot_id = $in
 
-  let docker_args_from_provider = $provider_env_file | generate-docker-args-from-provider
-  let ra = ["snapshots", $snapshot_id, "--json"]
-
-  let out = with-restic --docker-args $docker_args_from_provider --restic-args $ra
+  let out = with-restic --docker-args [] --restic-args ["snapshots", $snapshot_id, "--json"]
   $out | log-debug
   if $out.exit_code != 0 {
     error make { msg: "Failed to get snapshots: ($out.stderr)" }
@@ -296,7 +281,8 @@ def generate-docker-args-from-provider []: path -> list<string> {
 }
 
 export def with-restic [--docker-args: list<string>, --restic-args: list<string>]: nothing -> record {
-  with-docker-run $env.RESTIC_DOCKER_IMAGE --docker-args $docker_args --args $restic_args
+  let docker_args_from_provider = $provider_env_file | generate-docker-args-from-provider
+  with-docker-run $env.RESTIC_DOCKER_IMAGE --docker-args ($docker_args_from_provider ++ $docker_args) --args $restic_args
 }
 
 def with-alpine [--docker-args: list<string>, --args: list<string>]: nothing -> record {
