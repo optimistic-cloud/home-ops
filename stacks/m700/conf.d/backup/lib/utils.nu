@@ -185,47 +185,36 @@ def do-restic-backup [--provider-env-file: path]: record -> record {
 
   # restic backup
   with-ping {
-    let out = $volumes | restic-backup --provider-env-file $provider_env_file
+    const backup_path_in_docker_volume = "/backup"
+
+    let docker_args = $volumes
+      | items {|key, value| [ "-v" ($value + $":($backup_path_in_docker_volume)/" + ($key | str trim)) ] }
+      | flatten
+
+    # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
+    let restic-args = [
+      "--json", "--quiet",
+      "backup", $backup_path_in_docker_volume,
+      "--skip-if-unchanged",
+      "--exclude-caches",
+      "--tag", $"git_commit=(get-current-git-commit)"
+    ]
+    
+    let $out = $provider_env_file | with-restic --docker-args $docker_args --restic-args $restic-args
     'latest' | assert_snapshot --provider-env-file $provider_env_file
+
     $out
   }
 
   # restic check
   with-ping {
-    # TODO: refactor to check the json and for errors
-    restic-check --provider-env-file $provider_env_file
+    $provider_env_file | with-restic --docker-args [] --restic-args ["--json", "--quiet", "check", "--read-data-subset", "33%"]
   }
 
   # restic forget
   with-ping {
-    
+    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "forget", "--prune", "--keep-within", "180d"]
   }
-}
-
-def restic-backup [--provider-env-file: path]: record -> record {
-  let volumes = $in
-
-  const backup_path_in_docker_volume = "/backup"
-  
-  let vol_flags = $volumes
-    | items {|key, value| [ "-v" ($value + $":($backup_path_in_docker_volume)/" + ($key | str trim)) ] }
-    | flatten
-
-  do {
-    # Note: --one-file-system is omitted because backup data spans multiple mounts (docker volumes)
-    let ra = [
-      "--json", "--quiet", 
-      "backup", $backup_path_in_docker_volume, 
-      "--skip-if-unchanged", 
-      "--exclude-caches", 
-      "--tag", $"git_commit=(get-current-git-commit)"]
-
-    $provider_env_file | with-restic --docker-args $vol_flags --restic-args $ra
-  }
-}
-
-def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> record {
-  $provider_env_file | with-restic --docker-args [] --restic-args ["--json", "--quiet", "check", "--read-data-subset", $subset]
 }
 
 export def restic-restore [--provider-env-file: path, --target: path] {
