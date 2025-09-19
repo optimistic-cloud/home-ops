@@ -7,8 +7,8 @@ use ./lib/utils.nu *
 const app = "gitea"
 const container_name = "gitea"
 
-def main [--provider-env-file: path] {
-    $app | with-backup-template --provider-env-file $provider_env_file {
+def main [...provider_env_files: path] {
+    $app | with-backup-template --provider-env-files $provider_env_files {
         let backup_docker_volume = $in
     
         let dump_location = '/var/lib/gitea'
