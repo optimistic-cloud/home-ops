@@ -7,28 +7,28 @@ use ./lib/utils.nu *
 
 def main [] { }
 
-def "main init" [--provider-env-file: path] { 
-  $provider_env_file | with-restic --docker-args [] --restic-args ["init"]
+def "main init" [--provider-env-file: path] {
+  restic init --provider-env-file $provider_env_file
 }
 
-def "main stats" [--provider-env-file: path] { 
-    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "stats"]
+def "main stats" [--provider-env-file: path] {
+  restic stats --provider-env-file $provider_env_file
 }
 
-def "main ls" [--provider-env-file: path] { 
-    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "ls", "latest"]
+def "main ls" [--provider-env-file: path] {
+  restic ls --provider-env-file $provider_env_file
 }
 
-def "main snapshots" [--provider-env-file: path] { 
-    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "snapshots", "--latest", "5"]
+def "main snapshots" [--provider-env-file: path] {
+  restic snapshots --provider-env-file $provider_env_file
 }
 
-def "main forget" [--provider-env-file: path] { 
-    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "forget", "--prune", "--keep-within", "180d"]
+def "main forget" [--provider-env-file: path] {
+  restic forget --provider-env-file $provider_env_file
 }
 
-def "main prune" [--provider-env-file: path] { 
-    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "prune"]
+def "main prune" [--provider-env-file: path] {
+  restic prune --provider-env-file $provider_env_file
 }
 
 def "main restore" [--provider-env-file: path, --restore-path: path] {
