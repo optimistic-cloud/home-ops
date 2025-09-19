@@ -222,16 +222,16 @@ def restic-backup [--provider-env-file: path]: record -> record {
       "--exclude-caches", 
       "--tag", $"git_commit=(get-current-git-commit)"]
 
-    with-restic --docker-args $vol_flags --restic-args $ra
+    $provider_env_file | with-restic --docker-args $vol_flags --restic-args $ra
   }
 }
 
 def restic-check [--provider-env-file: path, --subset: string = "33%"]: nothing -> record {
-  with-restic --docker-args [] --restic-args ["--json", "--quiet", "check", "--read-data-subset", $subset]
+  $provider_env_file | with-restic --docker-args [] --restic-args ["--json", "--quiet", "check", "--read-data-subset", $subset]
 }
 
 export def restic-restore [--provider-env-file: path, --target: path] {
-  with-restic --docker-args ["-v", $"($target):/data:rw"] --restic-args ["restore", "latest", "--target", "/data"]
+  $provider_env_file | with-restic --docker-args ["-v", $"($target):/data:rw"] --restic-args ["restore", "latest", "--target", "/data"]
 
   log info $"Restored data is available at: ($target)"
 }
@@ -239,7 +239,7 @@ export def restic-restore [--provider-env-file: path, --target: path] {
 def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: string -> nothing {
   let snapshot_id = $in
 
-  let out = with-restic --docker-args [] --restic-args ["snapshots", $snapshot_id, "--json"]
+  let out = $provider_env_file | with-restic --docker-args [] --restic-args ["snapshots", $snapshot_id, "--json"]
   $out | log-debug
   if $out.exit_code != 0 {
     error make { msg: "Failed to get snapshots: ($out.stderr)" }
@@ -280,8 +280,8 @@ def generate-docker-args-from-provider []: path -> list<string> {
   $out
 }
 
-export def with-restic [--docker-args: list<string>, --restic-args: list<string>]: nothing -> record {
-  let docker_args_from_provider = $provider_env_file | generate-docker-args-from-provider
+export def with-restic [--docker-args: list<string>, --restic-args: list<string>]: path -> record {
+  let docker_args_from_provider = $in | generate-docker-args-from-provider
   with-docker-run $env.RESTIC_DOCKER_IMAGE --docker-args ($docker_args_from_provider ++ $docker_args) --args $restic_args
 }
 
