@@ -8,8 +8,8 @@ const app = "opengist"
 const container_name = "opengist"
 const data_docker_volume = "m700_opengist-data"
 
-def main [--provider-env-file: path] {
-    $app | with-backup-template --provider-env-file $provider_env_file {
+def main [...provider_env_files: path] {
+    $app | with-backup-template --provider-env-files $provider_env_files {
         let backup_docker_volume = $in
     
         with-stopped-docker-container --name $app {
