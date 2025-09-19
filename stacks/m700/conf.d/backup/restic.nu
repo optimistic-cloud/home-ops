@@ -8,11 +8,11 @@ use ./lib/utils.nu *
 def main [] { }
 
 def "main init" [--provider-env-file: path] { 
-  with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["init"]
+  $provider_env_file | with-restic --docker-args [] --restic-args ["init"]
 }
 
 def "main stats" [--provider-env-file: path] { 
-    with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["--quiet", "stats"]
+    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "stats"]
 }
 
 def "main ls" [--provider-env-file: path] { 
@@ -20,7 +20,7 @@ def "main ls" [--provider-env-file: path] {
 }
 
 def "main snapshots" [--provider-env-file: path] { 
-    with-restic --docker-args ["--env-file", $provider_env_file] --restic-args ["--quiet", "snapshots", "--latest", "5"]
+    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "snapshots", "--latest", "5"]
 }
 
 def "main restore" [--provider-env-file: path, --restore-path: path] {
