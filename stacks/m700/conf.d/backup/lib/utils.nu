@@ -208,12 +208,12 @@ def do-restic-backup [--provider-env-file: path]: record -> record {
 
   # restic check
   with-ping {
-    $provider_env_file | with-restic --docker-args [] --restic-args ["--json", "--quiet", "check", "--read-data-subset", "33%"]
+    restic check --provider-env-file $provider_env_file
   }
 
   # restic forget
   with-ping {
-    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "forget", "--prune", "--keep-within", "180d"]
+    restic forget --provider-env-file $provider_env_file
   }
 }
 
@@ -266,6 +266,34 @@ def generate-docker-args-from-provider []: path -> list<string> {
 
   let out = $common_args ++ $local_repository
   $out
+}
+
+export def "main init" [--provider-env-file: path] { 
+  $provider_env_file | with-restic --docker-args [] --restic-args ["init"]
+}
+
+export def "restic stats" [--provider-env-file: path] { 
+    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "stats"]
+}
+
+export def "restic ls" [--provider-env-file: path] { 
+    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "ls", "latest"]
+}
+
+export def "restic snapshots" [--provider-env-file: path] { 
+    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "snapshots", "--latest", "5"]
+}
+
+export def "restic check" [--provider-env-file: path] { 
+    $provider_env_file | with-restic --docker-args [] --restic-args ["--json", "--quiet", "check", "--read-data-subset", "33%"]
+}
+
+export def "restic forget" [--provider-env-file: path] { 
+    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "forget", "--prune", "--keep-within", "180d"]
+}
+
+export def "restic prune" [--provider-env-file: path] { 
+    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "prune"]
 }
 
 export def with-restic [--docker-args: list<string>, --restic-args: list<string>]: path -> record {
