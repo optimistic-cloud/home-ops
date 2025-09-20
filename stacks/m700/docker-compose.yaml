@@ -272,6 +272,32 @@ services:
       - "traefik.http.routers.pocket-id.tls.certresolver=letsencrypt"
       - "traefik.http.services.pocket-id.loadbalancer.server.port=1411"
 
+  redlib:
+    image: quay.io/redlib/redlib:latest
+    restart: unless-stopped
+    container_name: redlib
+    #ports:
+    #  - 8080:8080 # Specify `127.0.0.1:8080:8080` instead if using a reverse proxy
+    user: nobody
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+      # - seccomp=seccomp-redlib.json
+    cap_drop:
+      - ALL
+    environment:
+      TZ: Europe/Berlin
+
+      healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "--tries=1", "http://localhost:8080/settings"]
+      <<: *default-healthcheck
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.redlib.rule=Host(`redlib.${DOMAIN}`)"
+      - "traefik.http.routers.redlib.entrypoints=https"
+      - "traefik.http.routers.redlib.tls.certresolver=letsencrypt"
+      - "traefik.http.services.redlib.loadbalancer.server.port=8080"
+
 volumes:
   traefik-acme:
   traefik-config:
