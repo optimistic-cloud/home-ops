@@ -2,7 +2,7 @@ use std/log
 
 use ./lib/with-backup-template.nu *
 use ./lib/with-docker.nu *
-use ./lib.nu *
+use ./lib/lib.nu *
 
 const app = "pocket-id"
 const container_name = "pocket-id"
