@@ -1,7 +1,6 @@
 *.env**
-!example.env.toml
+!example.env*
 
-appdata/
-**/secret/
-**/secrets/
-**/*restic-password.txt
+acme.json
+pocket-id.encfile
+traefik.yml
