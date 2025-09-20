@@ -202,10 +202,10 @@ def do-restic-backup [--provider-env-file: path]: record -> record {
     ]
     
     let $out = $provider_env_file | with-restic --docker-args $docker_args --restic-args $restic_args
-    'latest' | assert_snapshot --provider-env-file $provider_env_file
-
     $out
   }
+
+  'latest' | assert_snapshot --provider-env-file $provider_env_file
 
   # restic check
   with-ping {
