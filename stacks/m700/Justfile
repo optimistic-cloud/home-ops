@@ -96,6 +96,7 @@ restore app provider restore_path:
 [group('backup')]
 [doc('Configure backup timers')]
 configure-backup-timers:
+    mkdir -p ~/.config/systemd/user
     cp -r ./conf.d/backup/* ~/.config/systemd/user/
     systemctl --user daemon-reload
     systemctl --user enable --now backup-vaultwarden.timer
