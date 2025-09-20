@@ -95,7 +95,7 @@ restore app provider restore_path:
 
 [group('systemd')]
 [doc('Configure backup timers')]
-install-timers: stop-timers && enable-timers
+install-timers: stop-timers && enable-timers start-timers
     mkdir -p ~/.config/systemd/user
     cp -r ./conf.d/backup/systemd/* ~/.config/systemd/user/
     systemctl --user daemon-reload
@@ -108,6 +108,7 @@ start-timers:
         let timer = ($e | path basename)
         systemctl --user start --now $timer
     }
+    ignore
 
 [group('systemd')]
 [doc('Stop backup timers')]
@@ -117,6 +118,7 @@ stop-timers:
         let timer = ($e | path basename)
         systemctl --user stop --now $timer
     }
+    ignore
 
 [group('systemd')]
 [doc('Enable backup timers')]
@@ -126,6 +128,7 @@ enable-timers:
         let timer = ($e | path basename)
         systemctl --user enable --now $timer
     }
+    ignore
 
 [group('systemd')]
 [doc('Log backup timer')]
