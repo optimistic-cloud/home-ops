@@ -1,0 +1,7 @@
+[Unit]
+Description=Weekly backup for Gitea
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/max/home-ops/stacks/m700/conf.d/backup
+ExecStart=/usr/bin/just backup-all gitea

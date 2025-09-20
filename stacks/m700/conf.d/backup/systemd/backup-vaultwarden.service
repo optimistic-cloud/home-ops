@@ -1,0 +1,7 @@
+[Unit]
+Description=Daily backup for Vaultwarden
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/max/home-ops/stacks/m700/conf.d/backup
+ExecStart=/usr/bin/just backup-all vaultwarden
