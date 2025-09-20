@@ -273,7 +273,7 @@ services:
       - "traefik.http.services.pocket-id.loadbalancer.server.port=1411"
 
   redlib:
-    image: quay.io/redlib/redlib:latest
+    image: quay.io/redlib/redlib:latest@sha256:c1fcda90dca9447d4aa7e18fd3ef85cc2044c29263490159e1ae4b472d0f285c
     restart: unless-stopped
     container_name: redlib
     #ports:
@@ -299,7 +299,7 @@ services:
       - "traefik.http.services.redlib.loadbalancer.server.port=8080"
 
   invidious:
-    image: quay.io/invidious/invidious:latest
+    image: quay.io/invidious/invidious:latest@sha256:2836b5b8226a53a9cc2afdbd5f5fe6bccdd200f2e17cd92a828b4dc8d8b5cc06
     container_name: invidious
     restart: unless-stopped
     #ports:
@@ -329,7 +329,7 @@ services:
       - "traefik.http.services.invidious.loadbalancer.server.port=3000"
 
   companion:
-    image: quay.io/invidious/invidious-companion:latest
+    image: quay.io/invidious/invidious-companion:latest@sha256:3c89f99234a78e36b04ca368dab118ad785a32bbf1858ca11d26f5d4731f75e7
     container_name: invidious-companion
     environment:
       TZ: Europe/Berlin
@@ -355,7 +355,7 @@ services:
       - no-new-privileges:true
 
   invidious-db:
-    image: docker.io/library/postgres:14
+    image: docker.io/library/postgres:14@sha256:e84397672fce21223933cd4f9b09fdea0c1c72daa834c57a613121c927b2ba61
     container_name: invidious-db
     restart: unless-stopped
     volumes:
