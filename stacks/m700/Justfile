@@ -112,6 +112,7 @@ start-backup-timers:
 [group('systemd')]
 [doc('Stop backup timers')]
 stop-backup-timers:
+    #!/usr/bin/env nu
     ls conf.d/backup/systemd/backup-*.timer | get name | each {|e| 
         let timer = $e
         systemctl --user stop --now $timer
@@ -120,6 +121,7 @@ stop-backup-timers:
 [group('systemd')]
 [doc('Enable backup timers')]
 enable-backup-timers:
+    #!/usr/bin/env nu
     ls conf.d/backup/systemd/backup-*.timer | get name | each {|e| 
         let timer = $e
         systemctl --user enable --now $timer
