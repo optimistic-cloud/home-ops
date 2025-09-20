@@ -4,4 +4,4 @@ Description=Weekly backup for Traefik
 [Service]
 Type=oneshot
 WorkingDirectory=/home/max/home-ops/stacks/m700
-ExecStart=/usr/bin/just backup-all traefik
+ExecStart=/usr/local/bin/just backup-all traefik

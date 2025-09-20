@@ -95,10 +95,19 @@ restore app provider restore_path:
 
 [group('backup')]
 [doc('Configure backup timers')]
-configure-backup-timers:
+configure-backup-timers: stop-backup-timers && enable-backup-timers
     mkdir -p ~/.config/systemd/user
     cp -r ./conf.d/backup/systemd/* ~/.config/systemd/user/
     systemctl --user daemon-reload
+
+stop-backup-timers:
+    systemctl --user stop --now backup-vaultwarden.timer
+    systemctl --user stop --now backup-opengist.timer
+    systemctl --user stop --now backup-gitea.timer
+    systemctl --user stop --now backup-pocket-id.timer
+    systemctl --user stop --now backup-traefik.timer
+
+enable-backup-timers:
     systemctl --user enable --now backup-vaultwarden.timer
     systemctl --user enable --now backup-opengist.timer
     systemctl --user enable --now backup-gitea.timer
