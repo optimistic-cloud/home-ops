@@ -6,16 +6,15 @@ export NU_LOG_LEVEL := "info"
 export RESTIC_DOCKER_IMAGE := "restic/restic:0.18.0"
 export HOSTNAME := "m700"
 
-alias u := update
+alias r := restart
 alias d := down
 
 help:
     just --list --list-submodules
 
 [group('docker')]
-[doc('Update the stack')]
-update: down && up
-    git pull origin main
+[doc('Restart the stack')]
+restart: down && up
 
 [group('docker')]
 [doc('Start the stack')]
