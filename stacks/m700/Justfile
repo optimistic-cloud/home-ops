@@ -101,6 +101,11 @@ install-timers: stop-timers && enable-timers start-timers
     systemctl --user daemon-reload
 
 [group('systemd')]
+[doc('Start manually backup timer for an application')]
+start-timer app:
+    systemctl --user start backup-{{app}}.service
+
+[group('systemd')]
 [doc('Start backup timers')]
 start-timers:
     #!/usr/bin/env nu
