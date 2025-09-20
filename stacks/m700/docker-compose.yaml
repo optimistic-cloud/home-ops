@@ -288,7 +288,7 @@ services:
     environment:
       TZ: Europe/Berlin
 
-      healthcheck:
+    healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "--tries=1", "http://localhost:8080/settings"]
       <<: *default-healthcheck
     labels:
