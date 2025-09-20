@@ -222,7 +222,7 @@ def assert_snapshot [--provider-env-file: path, threshold: duration = 1min]: str
   let out = $provider_env_file | with-restic --docker-args [] --restic-args ["snapshots", $snapshot_id, "--json"]
   $out | log-debug
   if $out.exit_code != 0 {
-    error make { msg: "Failed to get snapshots: ($out.stderr)" }
+    error make { msg: $"Failed to get snapshots: ($out.stderr)" }
   }
   
   let snapshot_time = $out.stdout | from json | get 0.time | into datetime
