@@ -94,6 +94,8 @@ backup app provider:
 restore app provider restore_path:
     nu ./conf.d/backup/restic.nu restore --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env --restore-path {{restore_path}}
 
+[group('backup')]
+[doc('Configure backup timers')]
 configure-backup-timers:
     cp -r ./conf.d/backup/* ~/.config/systemd/user/
     systemctl --user daemon-reload
@@ -103,5 +105,7 @@ configure-backup-timers:
     systemctl --user enable --now backup-pocket-id.timer
     systemctl --user enable --now backup-traefik.timer
 
+[group('backup')]
+[doc('List backup timers')]
 list-backup-timers:
     systemctl --user list-timers
