@@ -2,7 +2,7 @@ use std/log
 
 use ./lib/with-backup-template.nu *
 use ./lib/with-docker.nu *
-use ./lib/utils.nu *
+use ./lib/backup.nu *
 
 const app = "traefik"
 const container_name = "traefik"

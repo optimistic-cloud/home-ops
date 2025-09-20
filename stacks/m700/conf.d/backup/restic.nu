@@ -3,7 +3,7 @@ use std/log
 use ./lib/with-lockfile.nu *
 use ./lib/with-healthcheck.nu *
 use ./lib/with-docker.nu *
-use ./lib/utils.nu *
+use ./lib/backup.nu *
 
 def main [] { }
 
