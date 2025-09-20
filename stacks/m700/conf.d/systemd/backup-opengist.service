@@ -3,5 +3,5 @@ Description=Daily backup for Opengist
 
 [Service]
 Type=oneshot
-WorkingDirectory=$HOME/home-ops/stacks/m700
+WorkingDirectory=%h/home-ops/stacks/m700
 ExecStart=/usr/local/bin/just backup-all opengist
