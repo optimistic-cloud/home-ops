@@ -1,5 +1,5 @@
 use std/assert
-use backup.nu *
+use ./lib.nu *
 
 def run_docker_container_command [command: string, container_name: string] {
   try {

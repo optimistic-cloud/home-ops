@@ -1,7 +1,7 @@
 use ./with-lockfile.nu *
 use ./with-healthcheck.nu *
 use ./with-docker.nu *
-use ./backup.nu *
+use ./lib.nu *
 
 export def main [--provider-env-files: list<path>, operation: closure]: string -> nothing {
     let app = $in

@@ -2,7 +2,7 @@ use std/log
 
 use ./lib/with-backup-template.nu *
 use ./lib/with-docker.nu *
-use ./lib/backup.nu *
+use ./lib.nu *
 
 const app = "gitea"
 const container_name = "gitea"
