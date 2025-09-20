@@ -93,28 +93,44 @@ backup app provider:
 restore app provider restore_path:
     nu ./conf.d/backup/restic.nu restore --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env --restore-path {{restore_path}}
 
-[group('backup')]
+[group('systemd')]
 [doc('Configure backup timers')]
-configure-backup-timers: stop-backup-timers && enable-backup-timers
+install-backup-timers: stop-backup-timers && enable-backup-timers
     mkdir -p ~/.config/systemd/user
     cp -r ./conf.d/backup/systemd/* ~/.config/systemd/user/
     systemctl --user daemon-reload
 
+[group('systemd')]
+[doc('Start backup timers')]
+start-backup-timers:
+    #!/usr/bin/env nu
+    ls conf.d/backup/systemd/backup-*.timer | get name | each {|e| 
+        let timer = $e
+        systemctl --user start --now $timer
+    }
+
+[group('systemd')]
+[doc('Stop backup timers')]
 stop-backup-timers:
-    systemctl --user stop --now backup-vaultwarden.timer
-    systemctl --user stop --now backup-opengist.timer
-    systemctl --user stop --now backup-gitea.timer
-    systemctl --user stop --now backup-pocket-id.timer
-    systemctl --user stop --now backup-traefik.timer
+    ls conf.d/backup/systemd/backup-*.timer | get name | each {|e| 
+        let timer = $e
+        systemctl --user stop --now $timer
+    }
 
+[group('systemd')]
+[doc('Enable backup timers')]
 enable-backup-timers:
-    systemctl --user enable --now backup-vaultwarden.timer
-    systemctl --user enable --now backup-opengist.timer
-    systemctl --user enable --now backup-gitea.timer
-    systemctl --user enable --now backup-pocket-id.timer
-    systemctl --user enable --now backup-traefik.timer
+    ls conf.d/backup/systemd/backup-*.timer | get name | each {|e| 
+        let timer = $e
+        systemctl --user enable --now $timer
+    }
 
-[group('backup')]
+[group('systemd')]
+[doc('Log backup timer')]
+log-backup-timers app:
+    journalctl --user -xeu backup-{{app}}.service
+
+[group('systemd')]
 [doc('List backup timers')]
 list-backup-timers:
     systemctl --user list-timers
