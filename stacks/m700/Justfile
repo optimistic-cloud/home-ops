@@ -95,14 +95,14 @@ restore app provider restore_path:
 
 [group('systemd')]
 [doc('Configure backup timers')]
-install-backup-timers: stop-backup-timers && enable-backup-timers
+install-timers: stop-timers && enable-timers
     mkdir -p ~/.config/systemd/user
     cp -r ./conf.d/backup/systemd/* ~/.config/systemd/user/
     systemctl --user daemon-reload
 
 [group('systemd')]
 [doc('Start backup timers')]
-start-backup-timers:
+start-timers:
     #!/usr/bin/env nu
     ls conf.d/backup/systemd/backup-*.timer | get name | each {|e| 
         let timer = $e
@@ -111,7 +111,7 @@ start-backup-timers:
 
 [group('systemd')]
 [doc('Stop backup timers')]
-stop-backup-timers:
+stop-timers:
     #!/usr/bin/env nu
     ls conf.d/backup/systemd/backup-*.timer | get name | each {|e| 
         let timer = $e
@@ -120,7 +120,7 @@ stop-backup-timers:
 
 [group('systemd')]
 [doc('Enable backup timers')]
-enable-backup-timers:
+enable-timers:
     #!/usr/bin/env nu
     ls conf.d/backup/systemd/backup-*.timer | get name | each {|e| 
         let timer = $e
@@ -129,10 +129,10 @@ enable-backup-timers:
 
 [group('systemd')]
 [doc('Log backup timer')]
-log-backup-timers app:
+log-timer app:
     journalctl --user -xeu backup-{{app}}.service
 
 [group('systemd')]
 [doc('List backup timers')]
-list-backup-timers:
+list-timers:
     systemctl --user list-timers
