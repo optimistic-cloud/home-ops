@@ -5,3 +5,4 @@ Description=Weekly backup for Gitea
 Type=oneshot
 WorkingDirectory=/home/max/home-ops/stacks/m700
 ExecStart=/usr/local/bin/just backup-all gitea
+StandardInput=null
