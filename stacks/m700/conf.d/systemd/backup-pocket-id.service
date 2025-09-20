@@ -1,5 +1,5 @@
 [Unit]
-Description=Weekly backup for Pocket-ID
+Description=Weekly backup for Pocket ID
 
 [Service]
 Type=oneshot
