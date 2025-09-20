@@ -3,5 +3,5 @@ Description=Daily backup for Vaultwarden
 
 [Service]
 Type=oneshot
-WorkingDirectory=/home/max/home-ops/stacks/m700
+WorkingDirectory=$HOME/home-ops/stacks/m700
 ExecStart=/usr/local/bin/just backup-all vaultwarden
