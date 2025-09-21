@@ -1,0 +1,1 @@
+fish, docker over docker website, nushell over nushell website, neovim, git, hdparm, powertop, restic over github

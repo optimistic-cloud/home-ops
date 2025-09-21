@@ -1,0 +1,11 @@
+[Unit]
+Description=Set HDD spindown timeout
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/hdparm -S 36 /dev/disk/by-id/<YOUR_DISK_ID>
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

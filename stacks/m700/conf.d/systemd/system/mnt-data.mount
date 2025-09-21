@@ -1,0 +1,11 @@
+[Unit]
+Description=Mount /mnt/data
+
+[Mount]
+What=/dev/disk/by-uuid/<YOUR_DISK_UUID>
+Where=/mnt/data
+Type=ext4
+Options=defaults,noatime,nodiratime
+
+[Install]
+WantedBy=multi-user.target

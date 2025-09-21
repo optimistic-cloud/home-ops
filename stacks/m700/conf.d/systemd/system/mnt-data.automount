@@ -1,0 +1,10 @@
+[Unit]
+Description=Automount /mnt/data on access
+
+[Automount]
+Where=/mnt/data
+# unmount after 150s of inactivity
+TimeoutIdleSec=150
+
+[Install]
+WantedBy=multi-user.target
