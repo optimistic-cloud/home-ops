@@ -7,7 +7,7 @@ x-healthcheck: &default-healthcheck
 services:
   papra:
     container_name: papra
-    image: ghcr.io/papra-hq/papra:latest
+    image: ghcr.io/papra-hq/papra:latest@sha256:17a049bf8fae45e350eab0769acd6879bfe376e224f1497197fea1b70e68f503
     restart: unless-stopped
     #read_only: true
     volumes:
