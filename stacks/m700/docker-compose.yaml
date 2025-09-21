@@ -94,6 +94,9 @@ services:
       - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
       - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
 
+  # Deployment notes
+  # Opengist admin is provisioned via Pocket ID
+  # Opengist users are provisiond via Pocket ID
   opengist:
     image: ghcr.io/thomiceli/opengist:1.11@sha256:62406d9a08cbb20c3dd685d22240dfb7ad08ff21c106e04bb8da05619108031a
     container_name: opengist
@@ -122,8 +125,6 @@ services:
       OG_OIDC_PROVIDER_NAME: Optimistic Cloud
       OG_OIDC_DISCOVERY_URL: https://id.${DOMAIN}/.well-known/openid-configuration
       OG_OIDC_GROUP_CLAIM_NAME: groups
-      # TODO: request scopes missing in opengist https://github.com/thomiceli/opengist/issues/460
-      # TODO: https://github.com/thomiceli/opengist/pull/490
 
     volumes:
       - opengist-data:/opengist
@@ -149,6 +150,11 @@ services:
       "
     restart: "no"
 
+
+  # Deployment notes
+  # Gitea admin is created on first deployment
+  # Gitea users are provisiond via Pocket ID
+  # TODO: https://github.com/go-gitea/gitea/issues/31995
   gitea:
     image: docker.gitea.com/gitea:1.24.6-rootless@sha256:91f2b27e080739f0d19dba716c3214f17257c632cf762e545b44ca577e37052c
     container_name: gitea
