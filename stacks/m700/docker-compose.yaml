@@ -304,6 +304,8 @@ services:
       - "traefik.http.routers.redlib.tls.certresolver=letsencrypt"
       - "traefik.http.services.redlib.loadbalancer.server.port=8080"
 
+  # Deployment notes
+  # SSO auth https://github.com/iv-org/invidious/pull/3164
   invidious:
     image: quay.io/invidious/invidious:latest@sha256:2836b5b8226a53a9cc2afdbd5f5fe6bccdd200f2e17cd92a828b4dc8d8b5cc06
     container_name: invidious
