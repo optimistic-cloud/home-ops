@@ -1,0 +1,6 @@
+[Unit]
+Description=Wake the system
+
+[Service]
+Type=oneshot
+ExecStart=/bin/true

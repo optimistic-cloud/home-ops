@@ -1,0 +1,6 @@
+[Unit]
+Description=Suspend the system
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl suspend

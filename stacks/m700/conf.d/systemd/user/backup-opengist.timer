@@ -1,5 +1,5 @@
 [Unit]
-Description=Run Opengist backup daily at 21:02
+Description=Run Opengist backup daily
 
 [Timer]
 OnCalendar=Sun *-*-* 22:06:00
