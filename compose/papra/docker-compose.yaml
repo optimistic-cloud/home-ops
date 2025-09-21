@@ -1,0 +1,38 @@
+x-healthcheck: &default-healthcheck
+  interval: 180s
+  timeout: 10s
+  retries: 5
+  start_period: 60s
+
+services:
+  papra:
+    container_name: papra
+    image: ghcr.io/papra-hq/papra:latest
+    restart: unless-stopped
+    #read_only: true
+    volumes:
+      - ./papra:/app/app-data
+    user: "1000:1000"
+    environment:
+      TZ: ${TZ}
+
+      AUTH_SECRET: ${PAPRA_AUTH_SECRET}
+      AUTH_IS_REGISTRATION_ENABLED: false
+      AUTH_PROVIDERS_EMAIL_IS_ENABLED: false
+      APP_BASE_URL: https://documents.${DOMAIN}
+      DOCUMENTS_OCR_LANGUAGES: deu,eng
+      AUTH_PROVIDERS_CUSTOMS: ${AUTH_PROVIDERS_CUSTOMS}
+      EMAILS_DRIVER: smtp
+      EMAILS_FROM_ADDRESS: ${PAPRA_SMTP_FROM}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${PAPRA_SMTP_USER}
+      SMTP_PASSWORD: ${PAPRA_SMTP_PASSWORD}
+      SMTP_SECURE: false
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.papra.rule=Host(`documents.${DOMAIN}`)"
+      - "traefik.http.routers.papra.entrypoints=https"
+      - "traefik.http.routers.papra.tls.certresolver=letsencrypt"
+      - "traefik.http.services.papra.loadbalancer.server.port=1221"
