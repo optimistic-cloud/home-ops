@@ -2,7 +2,7 @@
 Description=Run Opengist backup daily at 21:02
 
 [Timer]
-OnCalendar=*-*-* 21:02:00
+OnCalendar=Sun *-*-* 22:06:00
 Persistent=true
 
 [Install]
