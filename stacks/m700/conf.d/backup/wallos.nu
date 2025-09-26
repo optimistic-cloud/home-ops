@@ -19,6 +19,9 @@ def main [...provider_env_files: path] {
                 src_volume: $data_docker_volume
                 src_path: "/data/db/wallos.db"
             } | export-sqlite-database-in-volume --volume $backup_docker_volume
+
+            # take files from volume
+            "/data/db/wallos.db" | files-from-volume --src-volume $data_docker_volume --dest-volume $backup_docker_volume
         }
 
         {

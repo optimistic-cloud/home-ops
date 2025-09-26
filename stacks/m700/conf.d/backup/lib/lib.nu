@@ -34,24 +34,41 @@ export def do_logging_for [command: string]: record -> nothing {
   }
 }
 
-export def add-file-to-volume [--volume: string]: path -> nothing {
+export def add-file-to-volume [--dest-volume: string]: path -> nothing {
   let file = $in | path expand -s
   let filename = ($file | path basename)
 
-  if (docker volume inspect $volume | complete | get exit_code) != 0 {
-    log error $"Docker volume ($volume) does not exist, cannot add file ($file)"
-    error make { msg: $"Docker volume ($volume) does not exist" }
+  if (docker volume inspect $dest_volume | complete | get exit_code) != 0 {
+    log error $"Docker volume ($dest_volume) does not exist, cannot add file ($file)"
+    error make { msg: $"Docker volume ($dest_volume) does not exist" }
   }
 
   do {
     let da = [
-      "-v", $"($volume):/data:rw",
-      "-v", $"($file):/import/($filename):ro"
+      "-v", $"($file):/import/($filename):ro",
+      "-v", $"($dest_volume):/data:rw",
     ]
     let args = ["sh", "-c", $"cp /import/($filename) /data"]
 
     with-alpine --docker-args $da --args $args
   }
+}
+
+export def file-from-volume [--src-volume: string --dest-volume: string, prefix: string = "file"]: path -> nothing {
+  let file = $in
+  let filename = ($file | path basename)
+
+  do {
+    let da = [
+      "-v", $"($src_volume):/data:rw",
+      "-v", $"($dest_volume):/export:rw",
+    ]
+    let args = ["sh", "-c", $"cp ($file) /export/($prefix)-($filename)"]
+
+    with-alpine --docker-args $da --args $args
+  }
+
+  ignore
 }
 
 export def export-sqlite-database-in-volume [--volume: string, prefix: string = "export"]: record -> nothing {
@@ -60,6 +77,7 @@ export def export-sqlite-database-in-volume [--volume: string, prefix: string = 
 
   let db_name = $"($prefix)-($src_path | path basename)"
 
+  # Export database
   do {
     let da = [
       "-v", $"($src_volume):/data:rw", # needs rw for sqlite 
@@ -70,6 +88,7 @@ export def export-sqlite-database-in-volume [--volume: string, prefix: string = 
     with-alpine-sqlite --docker-args $da --args $args
   }
 
+  # Integrity check of exported database
   do {
     let da = [
       "-v", $"($volume):/export:rw",
