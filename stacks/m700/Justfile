@@ -123,7 +123,7 @@ stop-timers:
     #!/usr/bin/env nu
     ls {{systemd_conf_path}}/backup-*.timer | get name | each {|e| 
         let timer = ($e | path basename)
-        systemctl --user stop --now $timer
+        systemctl --user stop --now $timer | ignore
     }
     ignore
 
