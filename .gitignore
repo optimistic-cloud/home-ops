@@ -1,5 +1,5 @@
 *.env**
-!example.env*
+!example*.env*
 
 acme.json
 pocket-id.encfile

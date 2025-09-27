@@ -1,0 +1,148 @@
+set dotenv-load
+set dotenv-filename := '.ops.env'
+
+# info, debug, warn, error
+export NU_LOG_LEVEL := "info"
+export RESTIC_DOCKER_IMAGE := "restic/restic:0.18.1"
+export HOSTNAME := "m700"
+
+alias r := restart
+alias d := down
+
+systemd_conf_path := "./conf.d/systemd/user"
+
+help:
+    just --list --list-submodules
+
+[group('docker')]
+[doc('Restart the stack')]
+restart: down && up
+
+[group('docker')]
+[doc('Start the stack')]
+up:
+    docker compose up -d
+
+[group('docker')]
+[doc('Stop the stack')]
+down:
+    docker compose down
+
+[group('docker')]
+[doc('Get logs for a service')]
+logs service:
+    docker compose logs -f {{service}}
+
+[group('backup')]
+[doc('List providers for an application')]
+providers app:
+    #!/usr/bin/env nu
+    ls conf.d/backup/{{app}}.*.restic.env | get name | each { split row '.' | get 2 }
+
+[group('backup')]
+[doc('Init repository')]
+init app provider:
+    nu ./conf.d/backup/restic.nu init --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+
+[group('backup')]
+[doc('Get snapshots')]
+snapshots app provider:
+    nu ./conf.d/backup/restic.nu snapshots --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+
+[group('backup')]
+[doc('List files in the snapshot')]
+ls app provider:
+    nu ./conf.d/backup/restic.nu ls --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+
+[group('backup')]
+[doc('Get stats of the repository')]
+stats app provider:
+    nu ./conf.d/backup/restic.nu stats --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+
+[group('backup')]
+[doc('Forget snapshots')]
+forget app provider:
+    nu ./conf.d/backup/restic.nu forget --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+
+[group('backup')]
+[doc('Prune snapshots')]
+prune app provider:
+    nu ./conf.d/backup/restic.nu prune --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+
+[group('backup')]
+[doc('Prune snapshots')]
+prune-all app:
+    #!/usr/bin/env nu
+    ls conf.d/backup/{{app}}.*.restic.env | get name | each {|e| 
+        let provider_env_file = $e
+        nu ./conf.d/backup/restic.nu prune --provider-env-file $provider_env_file
+    }
+
+[group('backup')]
+[doc('Backup application')]
+backup-all app:
+    #!/usr/bin/env nu
+    let env_files = (ls conf.d/backup/{{app}}.*.restic.env | get name)
+    nu ./conf.d/backup/{{app}}.nu ...$env_files
+
+[group('backup')]
+[doc('Backup application')]
+backup app provider:
+    nu ./conf.d/backup/{{app}}.nu conf.d/backup/{{app}}.{{provider}}.restic.env
+
+[group('backup')]
+[doc('Restore backup for an application')]
+restore app provider restore_path:
+    nu ./conf.d/backup/restic.nu restore --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env --restore-path {{restore_path}}
+
+[group('systemd')]
+[doc('Configure backup timers')]
+install-timers: stop-timers && enable-timers start-timers
+    mkdir -p ~/.config/systemd/user
+    cp -r {{systemd_conf_path}}/* ~/.config/systemd/user/
+    systemctl --user daemon-reload
+
+[group('systemd')]
+[doc('Start manually backup timer for an application')]
+start-timer app:
+    systemctl --user start backup-{{app}}.service
+
+[group('systemd')]
+[doc('Start backup timers')]
+start-timers:
+    #!/usr/bin/env nu
+    ls {{systemd_conf_path}}/backup-*.timer | get name | each {|e| 
+        let timer = ($e | path basename)
+        systemctl --user start --now $timer
+    }
+    ignore
+
+[group('systemd')]
+[doc('Stop backup timers')]
+stop-timers:
+    #!/usr/bin/env nu
+    ls {{systemd_conf_path}}/backup-*.timer | get name | each {|e| 
+        let timer = ($e | path basename)
+        systemctl --user stop --now $timer | ignore
+    }
+    ignore
+
+[group('systemd')]
+[doc('Enable backup timers')]
+enable-timers:
+    #!/usr/bin/env nu
+    ls {{systemd_conf_path}}/backup-*.timer | get name | each {|e| 
+        let timer = ($e | path basename)
+        systemctl --user enable --now $timer
+    }
+    ignore
+
+[group('systemd')]
+[doc('Log backup timer')]
+log-timer app:
+    journalctl --user -xeu backup-{{app}}.service
+
+[group('systemd')]
+[doc('List backup timers')]
+list-timers:
+    systemctl --user list-timers
