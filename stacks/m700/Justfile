@@ -21,12 +21,12 @@ restart: down && up
 [group('docker')]
 [doc('Start the stack')]
 up:
-    docker compose up -d
+    docker compose up -d --remove-orphans
 
 [group('docker')]
 [doc('Stop the stack')]
 down:
-    docker compose down
+    docker compose down --remove-orphans
 
 [group('docker')]
 [doc('Get logs for a service')]
