@@ -7,3 +7,18 @@ vaultwarden.optimistic.cloud {
 dozzle.optimistic.cloud {
     reverse_proxy dozzle:8080
 }
+gist.optimistic.cloud {
+    reverse_proxy opengist:6157
+}
+git.optimistic.cloud {
+    reverse_proxy gitea:3000
+}
+id.optimistic.cloud {
+    reverse_proxy pocket-id:1411
+}
+invidious.optimistic.cloud {
+    reverse_proxy invidious:3000
+}
+wallos.optimistic.cloud {
+    reverse_proxy wallos:80
+}

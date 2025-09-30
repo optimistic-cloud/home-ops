@@ -21,64 +21,6 @@ services:
       - ./config:/config
       - ./conf.d/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
 
-  # traefik:
-  #   image: traefik:v3.5.2@sha256:f0abbbd11ced29754d4d188c29e9320b613481ec162b6ea5d3a8b6bdd8e5fa54
-  #   container_name: traefik
-  #   restart: unless-stopped
-  #     #read_only: true
-  #   healthcheck:
-  #     test: ["CMD", "traefik", "healthcheck", "--ping"]
-  #     <<: *default-healthcheck
-  #   environment:
-  #     TZ: Europe/Berlin
-  #     CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #     - ./acme.json:/acme.json
-  #     - ./traefik.yml:/etc/traefik/traefik.yml:ro
-
-  #   labels:
-  #     - "traefik.enable=true"
-
-  #     - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.${DOMAIN}`)"
-  #     - "traefik.http.routers.traefik-dashboard.entrypoints=https"
-  #     - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
-  #     - "traefik.http.routers.traefik-dashboard.service=api@internal"
-  #     - "traefik.http.routers.traefik-dashboard.middlewares=dashboard-oidc@docker"
-
-  #     # https://main.traefik-oidc-auth.pages.dev/docs/getting-started
-  #     - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Secret=${TRAEFIK_OIDC_SECRET}"
-  #     - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.Url=https://id.${DOMAIN}"
-  #     - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.ClientId=${TRAEFIK_OIDC_CLIENT_ID}"
-  #     - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.ClientSecret=${TRAEFIK_OIDC_CLIENT_SECRET}"
-  #     - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.UsePkce=true"
-  #     - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.Scopes=openid,profile,email"
-  #     # - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.authorization.assertClaims[0].name=groups"
-  #     # - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.authorization.assertClaims[0].anyOf=optimistic_cloud_parents"
-
-  #     # 1) Catch domain1.com on HTTP and HTTPS
-  #     - "traefik.http.routers.redirect-domain1.rule=Host(`tryrocket.cloud`)"
-  #     - "traefik.http.routers.redirect-domain1.entrypoints=http,https"
-
-  #     # 2) Tell Traefik to terminate TLS here with the ACME resolver
-  #     - "traefik.http.routers.redirect-domain1.tls=true"
-  #     - "traefik.http.routers.redirect-domain1.tls.certresolver=letsencrypt"
-
-  #     # 3) Attach the redirectRegex middleware (defined inline below)
-  #     - "traefik.http.routers.redirect-domain1.middlewares=redirect-to-domain2@docker"
-  #     - "traefik.http.routers.redirect-domain1.service=noop-service"
-
-  #     # 4) Dummy “no-op” service so Traefik has something to bind
-  #     - "traefik.http.services.noop-service.loadbalancer.server.port=80"
-
-  #     # 5) Inline middleware definition:
-  #     - "traefik.http.middlewares.redirect-to-domain2.redirectregex.regex=^https?://tryrocket\\.cloud/(.*)"
-  #     - "traefik.http.middlewares.redirect-to-domain2.redirectregex.replacement=https://optimistic.cloud/$$1"
-  #     - "traefik.http.middlewares.redirect-to-domain2.redirectregex.permanent=true"
-
   dozzle:
     container_name: dozzle
     image: amir20/dozzle:latest@sha256:97131e414f57695249ce0af1b193927c93395e97b59ad0637df0606af59ceb63
@@ -87,12 +29,6 @@ services:
       - "8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    labels:    
-      - "traefik.enable=true"    
-      - "traefik.http.routers.dozzle.rule=Host(`dozzle.${DOMAIN}`)"
-      - "traefik.http.routers.dozzle.entrypoints=https"
-      - "traefik.http.routers.dozzle.tls.certresolver=letsencrypt"
-      - "traefik.http.services.dozzle.loadbalancer.server.port=8080"
 
   vaultwarden:
     image: vaultwarden/server:1.34.3@sha256:84fd8a47f58d79a1ad824c27be0a9492750c0fa5216b35c749863093bfa3c3d7
@@ -120,12 +56,6 @@ services:
       <<: *default-healthcheck
     volumes:
       - vaultwarden-data:/data/
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.vaultwarden.rule=Host(`vaultwarden.${DOMAIN}`)"
-      - "traefik.http.routers.vaultwarden.entrypoints=https"
-      - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
-      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
 
   # Deployment notes
   # Opengist admin is provisioned via Pocket ID
@@ -134,6 +64,8 @@ services:
     image: ghcr.io/thomiceli/opengist:1.11@sha256:62406d9a08cbb20c3dd685d22240dfb7ad08ff21c106e04bb8da05619108031a
     container_name: opengist
     restart: unless-stopped
+    expose:
+      - "6157"
     # user: "1000:1000"
     # read_only: true
     # ports:
@@ -161,12 +93,6 @@ services:
 
     volumes:
       - opengist-data:/opengist
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.gist.rule=Host(`gist.${DOMAIN}`)"
-      - "traefik.http.routers.gist.entrypoints=https"
-      - "traefik.http.routers.gist.tls.certresolver=letsencrypt"
-      - "traefik.http.services.gist.loadbalancer.server.port=6157"
 
   # Add init container to set permissions
   gitea-init:
@@ -192,6 +118,8 @@ services:
     image: docker.gitea.com/gitea:1.24.6-rootless@sha256:91f2b27e080739f0d19dba716c3214f17257c632cf762e545b44ca577e37052c
     container_name: gitea
     restart: unless-stopped
+    expose:
+      - "3000"
     user: "1000:1000"
     #read_only: true
     environment:
@@ -237,12 +165,6 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
       <<: *default-healthcheck
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.gitea.rule=Host(`git.${DOMAIN}`)"
-      - "traefik.http.routers.gitea.entrypoints=https"
-      - "traefik.http.routers.gitea.tls.certresolver=letsencrypt"
-      - "traefik.http.services.gitea.loadbalancer.server.port=3000"
 
   # Add init container to set permissions
   pocket-id-init:
@@ -260,6 +182,8 @@ services:
     image: ghcr.io/pocket-id/pocket-id:v1.11.2-distroless@sha256:0888ccc34d313cacef57d5e6004130cb1c63990d327cbad33621a7c5b665cdf4
     container_name: pocket-id
     restart: unless-stopped
+    expose:
+      - "1411"
     user: "65532:65532"
     #read_only: true
     #depends_on:
@@ -304,38 +228,6 @@ services:
     healthcheck:
       test: [ "CMD", "/app/pocket-id", "healthcheck" ]
       <<: *default-healthcheck
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.pocket-id.rule=Host(`id.${DOMAIN}`)"
-      - "traefik.http.routers.pocket-id.entrypoints=https"
-      - "traefik.http.routers.pocket-id.tls.certresolver=letsencrypt"
-      - "traefik.http.services.pocket-id.loadbalancer.server.port=1411"
-
-  redlib:
-    image: quay.io/redlib/redlib:latest@sha256:c1fcda90dca9447d4aa7e18fd3ef85cc2044c29263490159e1ae4b472d0f285c
-    restart: unless-stopped
-    container_name: redlib
-    #ports:
-    #  - 8080:8080 # Specify `127.0.0.1:8080:8080` instead if using a reverse proxy
-    user: nobody
-    read_only: true
-    security_opt:
-      - no-new-privileges:true
-      # - seccomp=seccomp-redlib.json
-    cap_drop:
-      - ALL
-    environment:
-      TZ: Europe/Berlin
-      REDLIB_DEFAULT_LAYOUT: clean
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "--tries=1", "http://localhost:8080/settings"]
-      <<: *default-healthcheck
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.redlib.rule=Host(`redlib.${DOMAIN}`)"
-      - "traefik.http.routers.redlib.entrypoints=https"
-      - "traefik.http.routers.redlib.tls.certresolver=letsencrypt"
-      - "traefik.http.services.redlib.loadbalancer.server.port=8080"
 
   # Deployment notes
   # SSO auth https://github.com/iv-org/invidious/pull/3164
@@ -343,8 +235,8 @@ services:
     image: quay.io/invidious/invidious:latest@sha256:2836b5b8226a53a9cc2afdbd5f5fe6bccdd200f2e17cd92a828b4dc8d8b5cc06
     container_name: invidious
     restart: unless-stopped
-    #ports:
-    #  - "127.0.0.1:3000:3000"
+    expose:
+      - "3000"
     environment:
       TZ: Europe/Berlin
       # Please read the following file for a comprehensive list of all available
@@ -415,17 +307,13 @@ services:
   wallos:
     container_name: wallos
     image: bellamy/wallos:latest
+    expose:
+      - "80"
     environment:
       TZ: 'Europe/Berlin'
     volumes:
       - wallos-data:/var/www/html
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.wallos.rule=Host(`wallos.${DOMAIN}`)"
-      - "traefik.http.routers.wallos.entrypoints=https"
-      - "traefik.http.routers.wallos.tls.certresolver=letsencrypt"
-      - "traefik.http.services.wallos.loadbalancer.server.port=80"
 
 volumes:
   traefik-acme:

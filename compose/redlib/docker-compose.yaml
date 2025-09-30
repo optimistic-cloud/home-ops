@@ -1,0 +1,26 @@
+x-healthcheck: &default-healthcheck
+  interval: 180s
+  timeout: 10s
+  retries: 5
+  start_period: 60s
+
+services:
+  redlib:
+    image: quay.io/redlib/redlib:latest@sha256:c1fcda90dca9447d4aa7e18fd3ef85cc2044c29263490159e1ae4b472d0f285c
+    restart: unless-stopped
+    container_name: redlib
+    #ports:
+    #  - 8080:8080 # Specify `127.0.0.1:8080:8080` instead if using a reverse proxy
+    user: nobody
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+      # - seccomp=seccomp-redlib.json
+    cap_drop:
+      - ALL
+    environment:
+      TZ: Europe/Berlin
+      REDLIB_DEFAULT_LAYOUT: clean
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "--tries=1", "http://localhost:8080/settings"]
+      <<: *default-healthcheck
