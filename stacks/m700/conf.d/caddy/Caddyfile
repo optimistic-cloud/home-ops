@@ -1,6 +1,9 @@
+{
+    acme_dns cloudflare {env.CF_DNS_API_TOKEN}
+}
 vaultwarden.optimistic.cloud {
     reverse_proxy vaultwarden:80
-    tls {
-	    dns cloudflare {env.CF_DNS_API_TOKEN}
-    }
+}
+dozzle.optimistic.cloud {
+    reverse_proxy dozzle:8080
 }
