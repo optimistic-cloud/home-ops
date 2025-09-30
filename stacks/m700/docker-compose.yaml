@@ -258,9 +258,9 @@ services:
     restart: unless-stopped
     user: "65532:65532"
     #read_only: true
-    depends_on:
-      traefik:
-        condition: service_healthy
+    #depends_on:
+    #  traefik:
+    #    condition: service_healthy
     environment:
       TZ: Europe/Berlin
 
