@@ -6,7 +6,6 @@ x-healthcheck: &default-healthcheck
 
 services:
   caddy:
-    image: caddy
     container_name: caddy
     build:
       context: ./conf.d/caddy
