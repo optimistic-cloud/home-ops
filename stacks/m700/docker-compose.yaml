@@ -5,63 +5,80 @@ x-healthcheck: &default-healthcheck
   start_period: 60s
 
 services:
-  traefik:
-    image: traefik:v3.5.2@sha256:f0abbbd11ced29754d4d188c29e9320b613481ec162b6ea5d3a8b6bdd8e5fa54
-    container_name: traefik
+  caddy:
+    image: caddy
+    container_name: caddy
+    build:
+      context: ./conf.d/caddy
+      dockerfile: Dockerfile 
     restart: unless-stopped
-      #read_only: true
-    healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
-      <<: *default-healthcheck
     environment:
-      TZ: Europe/Berlin
-      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
+      ${CF_DNS_API_TOKEN}: ${CF_DNS_API_TOKEN}
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./acme.json:/acme.json
-      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./data:/data
+      - ./config:/config
+      - ./conf.d/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
 
-    labels:
-      - "traefik.enable=true"
+  # traefik:
+  #   image: traefik:v3.5.2@sha256:f0abbbd11ced29754d4d188c29e9320b613481ec162b6ea5d3a8b6bdd8e5fa54
+  #   container_name: traefik
+  #   restart: unless-stopped
+  #     #read_only: true
+  #   healthcheck:
+  #     test: ["CMD", "traefik", "healthcheck", "--ping"]
+  #     <<: *default-healthcheck
+  #   environment:
+  #     TZ: Europe/Berlin
+  #     CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #     - ./acme.json:/acme.json
+  #     - ./traefik.yml:/etc/traefik/traefik.yml:ro
 
-      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.${DOMAIN}`)"
-      - "traefik.http.routers.traefik-dashboard.entrypoints=https"
-      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.traefik-dashboard.service=api@internal"
-      - "traefik.http.routers.traefik-dashboard.middlewares=dashboard-oidc@docker"
+  #   labels:
+  #     - "traefik.enable=true"
 
-      # https://main.traefik-oidc-auth.pages.dev/docs/getting-started
-      - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Secret=${TRAEFIK_OIDC_SECRET}"
-      - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.Url=https://id.${DOMAIN}"
-      - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.ClientId=${TRAEFIK_OIDC_CLIENT_ID}"
-      - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.ClientSecret=${TRAEFIK_OIDC_CLIENT_SECRET}"
-      - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.UsePkce=true"
-      - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.Scopes=openid,profile,email"
-      # - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.authorization.assertClaims[0].name=groups"
-      # - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.authorization.assertClaims[0].anyOf=optimistic_cloud_parents"
+  #     - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.${DOMAIN}`)"
+  #     - "traefik.http.routers.traefik-dashboard.entrypoints=https"
+  #     - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+  #     - "traefik.http.routers.traefik-dashboard.service=api@internal"
+  #     - "traefik.http.routers.traefik-dashboard.middlewares=dashboard-oidc@docker"
 
-      # 1) Catch domain1.com on HTTP and HTTPS
-      - "traefik.http.routers.redirect-domain1.rule=Host(`tryrocket.cloud`)"
-      - "traefik.http.routers.redirect-domain1.entrypoints=http,https"
+  #     # https://main.traefik-oidc-auth.pages.dev/docs/getting-started
+  #     - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Secret=${TRAEFIK_OIDC_SECRET}"
+  #     - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.Url=https://id.${DOMAIN}"
+  #     - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.ClientId=${TRAEFIK_OIDC_CLIENT_ID}"
+  #     - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.ClientSecret=${TRAEFIK_OIDC_CLIENT_SECRET}"
+  #     - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.UsePkce=true"
+  #     - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.Provider.Scopes=openid,profile,email"
+  #     # - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.authorization.assertClaims[0].name=groups"
+  #     # - "traefik.http.middlewares.dashboard-oidc.plugin.traefik-oidc-auth.authorization.assertClaims[0].anyOf=optimistic_cloud_parents"
 
-      # 2) Tell Traefik to terminate TLS here with the ACME resolver
-      - "traefik.http.routers.redirect-domain1.tls=true"
-      - "traefik.http.routers.redirect-domain1.tls.certresolver=letsencrypt"
+  #     # 1) Catch domain1.com on HTTP and HTTPS
+  #     - "traefik.http.routers.redirect-domain1.rule=Host(`tryrocket.cloud`)"
+  #     - "traefik.http.routers.redirect-domain1.entrypoints=http,https"
 
-      # 3) Attach the redirectRegex middleware (defined inline below)
-      - "traefik.http.routers.redirect-domain1.middlewares=redirect-to-domain2@docker"
-      - "traefik.http.routers.redirect-domain1.service=noop-service"
+  #     # 2) Tell Traefik to terminate TLS here with the ACME resolver
+  #     - "traefik.http.routers.redirect-domain1.tls=true"
+  #     - "traefik.http.routers.redirect-domain1.tls.certresolver=letsencrypt"
 
-      # 4) Dummy “no-op” service so Traefik has something to bind
-      - "traefik.http.services.noop-service.loadbalancer.server.port=80"
+  #     # 3) Attach the redirectRegex middleware (defined inline below)
+  #     - "traefik.http.routers.redirect-domain1.middlewares=redirect-to-domain2@docker"
+  #     - "traefik.http.routers.redirect-domain1.service=noop-service"
 
-      # 5) Inline middleware definition:
-      - "traefik.http.middlewares.redirect-to-domain2.redirectregex.regex=^https?://tryrocket\\.cloud/(.*)"
-      - "traefik.http.middlewares.redirect-to-domain2.redirectregex.replacement=https://optimistic.cloud/$$1"
-      - "traefik.http.middlewares.redirect-to-domain2.redirectregex.permanent=true"
+  #     # 4) Dummy “no-op” service so Traefik has something to bind
+  #     - "traefik.http.services.noop-service.loadbalancer.server.port=80"
+
+  #     # 5) Inline middleware definition:
+  #     - "traefik.http.middlewares.redirect-to-domain2.redirectregex.regex=^https?://tryrocket\\.cloud/(.*)"
+  #     - "traefik.http.middlewares.redirect-to-domain2.redirectregex.replacement=https://optimistic.cloud/$$1"
+  #     - "traefik.http.middlewares.redirect-to-domain2.redirectregex.permanent=true"
 
   dozzle:
     container_name: dozzle
