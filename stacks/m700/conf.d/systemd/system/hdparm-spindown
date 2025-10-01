@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+# /usr/lib/systemd/system-sleep/hdparm-spindown
+
+DISK="/dev/disk/by-id/<YOUR_DISK_ID>"
+TIMEOUT=60
+
+case "$1/$2" in
+  post/*)
+    sleep 5
+    /usr/sbin/hdparm -S $TIMEOUT "$DISK"
+    ;;
+  *)
+    ;;
+esac

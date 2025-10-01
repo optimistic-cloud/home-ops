@@ -18,3 +18,6 @@ systemctl disable wake.timer suspend.timer
 systemctl start wake.timer suspend.timer
 systemctl stop wake.timer suspend.timer
 ```
+
+
+mv hdparm-spindown /usr/lib/systemd/system-sleep/hdparm-spindown
