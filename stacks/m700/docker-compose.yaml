@@ -61,7 +61,7 @@ services:
   # Opengist admin is provisioned via Pocket ID
   # Opengist users are provisiond via Pocket ID
   opengist:
-    image: ghcr.io/thomiceli/opengist:1.11@sha256:62406d9a08cbb20c3dd685d22240dfb7ad08ff21c106e04bb8da05619108031a
+    image: ghcr.io/thomiceli/opengist:1.11@sha256:86e7eb1f9fb2aa7b5d620fe452406de331c6e4d1c47b4d23d46b4b01e1ebf69d
     container_name: opengist
     restart: unless-stopped
     expose:
