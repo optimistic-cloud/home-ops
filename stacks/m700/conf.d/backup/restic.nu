@@ -34,3 +34,7 @@ def "main prune" [--provider-env-file: path] {
 def "main restore" [--provider-env-file: path, --restore-path: path] {
   restic restore --provider-env-file $provider_env_file --target $restore_path
 }
+
+def "main unlock" [--provider-env-file: path] {
+  restic unlock --provider-env-file $provider_env_file
+}
