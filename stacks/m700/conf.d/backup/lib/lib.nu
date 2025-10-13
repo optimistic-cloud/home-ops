@@ -318,6 +318,10 @@ export def "restic restore" [--provider-env-file: path, --target: path] {
   log info $"Restored data is available at: ($target)"
 }
 
+export def "restic unlock" [--provider-env-file: path] { 
+    $provider_env_file | with-restic --docker-args [] --restic-args ["--quiet", "unlock"]
+}
+
 def with-restic [--docker-args: list<string>, --restic-args: list<string>]: path -> record {
   let docker_args_from_provider = $in | generate-docker-args-from-provider
   with-docker-run $env.RESTIC_DOCKER_IMAGE --docker-args ($docker_args_from_provider ++ $docker_args) --args $restic_args
