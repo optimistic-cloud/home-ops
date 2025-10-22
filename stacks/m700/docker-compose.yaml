@@ -310,7 +310,7 @@ services:
 
   wallos:
     container_name: wallos
-    image: bellamy/wallos:latest
+    image: bellamy/wallos:latest@sha256:1277c83dc626853ac14658c1b0aaf003e1bced213c37370d149fdd9622b5747f
     expose:
       - "80"
     environment:

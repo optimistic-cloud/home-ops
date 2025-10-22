@@ -41,7 +41,7 @@ services:
       UMASK_SET: "002"
     healthcheck:
       disable: false
-    image: ghcr.io/immich-app/immich-machine-learning:v2.1.0
+    image: ghcr.io/immich-app/immich-machine-learning:v2.1.0@sha256:24bfef29bc5c0923c64c98810931eda1449a4b237e6704a715605761bc107ae4
     platform: linux/amd64
     privileged: false
     restart: unless-stopped
@@ -81,7 +81,7 @@ services:
         type: bind
 
   pgvecto:
-    image: tensorchord/pgvecto-rs:pg15-v0.2.0
+    image: tensorchord/pgvecto-rs:pg15-v0.2.0@sha256:104a26ad4d0446c54a46d3a694c6193ef018c5ad4f9d9faf7765ab09cb9ffe06
     cap_drop:
       - ALL
     environment:
@@ -190,7 +190,7 @@ services:
       UMASK_SET: "002"
     healthcheck:
       disable: false
-    image: ghcr.io/immich-app/immich-server:v2.1.0
+    image: ghcr.io/immich-app/immich-server:v2.1.0@sha256:72a9b9de6c6abfa7a9c9cdc244ae4d2bd9fea2ae00997f194cbd10aca72ea210
     #platform: linux/amd64
     #ports:
     #  - mode: ingress
