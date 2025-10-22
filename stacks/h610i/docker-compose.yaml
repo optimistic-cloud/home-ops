@@ -19,9 +19,10 @@ services:
   dozzle:
     container_name: dozzle
     image: amir20/dozzle:latest@sha256:b9071a733bb53d612cc27e997ec017bf14b0c54e809da2e1a403f7a1aaf83c57
+    command: agent
     restart: unless-stopped
-    expose:
-      - "8080"
+    ports:
+      - "31000:7007"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
