@@ -71,7 +71,6 @@ services:
       UMASK: "002"
       UMASK_SET: "002"
       DB_STORAGE_TYPE: 'HDD'
-    restart: unless-stopped
     volumes:
       - bind:
           create_host_path: false
