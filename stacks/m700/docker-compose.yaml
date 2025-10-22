@@ -30,6 +30,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
+      DOZZLE_ENABLE_ACTIONS: true
       DOZZLE_REMOTE_HOST: ${DOZZLE_REMOTE_HOST}
 
   vaultwarden:
