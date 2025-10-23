@@ -292,7 +292,7 @@ services:
       - no-new-privileges:true
 
   invidious-db:
-    image: docker.io/library/postgres:14@sha256:f7b28597c837f7b83adf763cdb128a0e7f5ddcfe87ad154f69967b1f92781e04
+    image: docker.io/library/postgres:14@sha256:243f71f3d081feef552b291dad715cdf583fe0ecdc166f01b69d00eab29b5bb1
     container_name: invidious-db
     restart: unless-stopped
     volumes:
