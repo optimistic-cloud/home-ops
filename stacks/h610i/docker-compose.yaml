@@ -289,8 +289,4 @@ services:
     #   - "3901:3901"   # Admin API
 
 volumes:
-  garage_data:
-
-
-volumes:
   redis-data: {}
