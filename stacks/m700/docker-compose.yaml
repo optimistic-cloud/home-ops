@@ -183,7 +183,7 @@ services:
     restart: "no"
 
   pocket-id:
-    image: ghcr.io/pocket-id/pocket-id:v1.13.1-distroless@sha256:fa9dd24ed11d94218110c2c3f8814120d661ea6dc490ff21cf1562f710bc3f0d
+    image: ghcr.io/pocket-id/pocket-id:v1.14.0-distroless@sha256:b260c9158162a14f1305bd43f62561e8e76120629f7684cf503793395ac92b3b
     container_name: pocket-id
     restart: unless-stopped
     expose:
