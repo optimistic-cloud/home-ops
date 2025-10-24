@@ -34,6 +34,31 @@ services:
       DOZZLE_NO_ANALYTICS: true
       DOZZLE_REMOTE_AGENT: ${DOZZLE_REMOTE_AGENT}
 
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
+    restart: unless-stopped
+    expose:
+      - 8090
+    volumes:
+      - beszel-data:/beszel_data
+      - beszel-socket:/beszel_socket
+
+  beszel-agent:
+    image: henrygd/beszel-agent:latest
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - beszel-agent-data:/var/lib/beszel-agent
+      - beszel-socket:/beszel_socket
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      LISTEN: /beszel_socket/beszel.sock
+      HUB_URL: http://beszel:8090
+      TOKEN: <token>
+      KEY: "<key>"
+
   vaultwarden:
     image: vaultwarden/server:1.34.3@sha256:84fd8a47f58d79a1ad824c27be0a9492750c0fa5216b35c749863093bfa3c3d7
     container_name: vaultwarden
@@ -334,3 +359,9 @@ volumes:
   companioncache:
   wallos-data:
     name: wallos-data
+  beszel-data:
+    name: beszel-data
+  beszel-socket:
+    name: beszel-socket
+  beszel-agent-data:
+    name: beszel-agent-data

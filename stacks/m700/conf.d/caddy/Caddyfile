@@ -7,6 +7,9 @@ vaultwarden.optimistic.cloud {
 dozzle.optimistic.cloud {
     reverse_proxy dozzle:8080
 }
+beszel.optimistic.cloud {
+    reverse_proxy beszel:8090
+}
 gist.optimistic.cloud {
     reverse_proxy opengist:6157
 }
