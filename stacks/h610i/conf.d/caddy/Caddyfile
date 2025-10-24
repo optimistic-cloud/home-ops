@@ -4,3 +4,9 @@
 immich.optimistic.cloud {
     reverse_proxy server:30041
 }
+s3.optimistic.cloud {
+    reverse_proxy garage:3900
+}
+garage.optimistic.cloud {
+    reverse_proxy garage:3901
+}
