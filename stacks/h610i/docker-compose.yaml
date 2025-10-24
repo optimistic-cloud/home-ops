@@ -272,21 +272,21 @@ services:
   #     - /mnt/tank/apps/immich/traefik.yml:/etc/traefik/traefik.yml:ro
 
 
-  garage:
-    image: dxflrs/garage:v2.1.0
-    container_name: garage
-    restart: unless-stopped
-    environment:
-      # Node identity (used for cluster membership)
-      GARAGE_ID: node1
-      GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN}
-      GARAGE_PUBLIC_ADDR: https://garage.optimistic.cloud
-    volumes:
-      - /mnt/tank/apps/garage:/var/lib/garage
-      - ./conf.d/garage/garage.toml:/etc/garage/garage.toml:ro
-    # ports:
-    #   - "3900:3900"   # S3 API
-    #   - "3901:3901"   # Admin API
+  # garage:
+  #   image: dxflrs/garage:v2.1.0
+  #   container_name: garage
+  #   restart: unless-stopped
+  #   environment:
+  #     # Node identity (used for cluster membership)
+  #     GARAGE_ID: node1
+  #     GARAGE_ADMIN_TOKEN: ${GARAGE_ADMIN_TOKEN}
+  #     GARAGE_PUBLIC_ADDR: https://garage.optimistic.cloud
+  #   volumes:
+  #     - /mnt/tank/apps/garage:/var/lib/garage
+  #     - ./conf.d/garage/garage.toml:/etc/garage/garage.toml:ro
+  #   # ports:
+  #   #   - "3900:3900"   # S3 API
+  #   #   - "3901:3901"   # Admin API
 
 volumes:
   redis-data: {}
