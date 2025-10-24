@@ -273,7 +273,7 @@ services:
 
 
   garage:
-    image: dxflrs/garage:latest
+    image: dxflrs/garage:v2.1.0
     container_name: garage
     restart: unless-stopped
     environment:
