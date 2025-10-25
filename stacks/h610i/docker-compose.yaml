@@ -26,6 +26,21 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
+  beszel-agent:
+    image: henrygd/beszel-agent:latest
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - beszel-agent-data:/var/lib/beszel-agent
+      - beszel-socket:/beszel_socket
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      LISTEN: /beszel_socket/beszel.sock
+      HUB_URL: https://beszel.optimistic.cloud
+      TOKEN: ${BESZEL_TOKEN}
+      KEY: ${BESZEL_KEY}
+
   machine-learning:
     cap_drop:
       - ALL
@@ -290,3 +305,7 @@ services:
 
 volumes:
   redis-data: {}
+  beszel-socket:
+    name: beszel-socket
+  beszel-agent-data:
+    name: beszel-agent-data
