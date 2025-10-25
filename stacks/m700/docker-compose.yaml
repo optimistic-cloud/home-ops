@@ -46,6 +46,7 @@ services:
     environment:
       TZ: Europe/Berlin
       USER_CREATION: true
+      DISABLE_PASSWORD_AUTH: true
 
   beszel-agent:
     image: henrygd/beszel-agent:latest@sha256:b77124f969972f8dfbe24f521cabdf463c21e53fe2fdc857bf1274525ed01ab5
