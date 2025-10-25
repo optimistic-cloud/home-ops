@@ -54,10 +54,10 @@ services:
       - beszel-socket:/beszel_socket
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      LISTEN: /beszel_socket/beszel.sock
+      LISTEN: 45876
       HUB_URL: http://beszel:8090
-      TOKEN: ${BESZEL_TOKEN}
-      KEY: ${BESZEL_KEY}
+      TOKEN: "${BESZEL_TOKEN}"
+      KEY: "${BESZEL_KEY}"
 
   vaultwarden:
     image: vaultwarden/server:1.34.3@sha256:84fd8a47f58d79a1ad824c27be0a9492750c0fa5216b35c749863093bfa3c3d7
