@@ -293,6 +293,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./conf.d/garage/garage.toml:/etc/garage.toml:ro
+    ports:
+      - 3909:3909
     environment:
       API_BASE_URL: "http://127.0.0.1:3903"
       S3_ENDPOINT_URL: "http://127.0.0.1:3900"
