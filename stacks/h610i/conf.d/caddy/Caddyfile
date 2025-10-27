@@ -8,8 +8,16 @@ garage.optimistic.cloud {
     reverse_proxy garage-webui:3909
 }
 *.api.s3.optimistic.cloud {
+    log {
+        output file /home/admin/home-ops/stacks/h610i/api-s3-access.log
+        format single_field common_log
+    }
     reverse_proxy garage:3900 {
-        header_up Host {host}
+        header_up Host {http.request.host}
+        header_up Authorization {>Authorization}
+        header_up X-Amz-Date {>X-Amz-Date}
+        header_up X-Amz-Content-Sha256 {>X-Amz-Content-Sha256}
+        header_up X-Amz-Security-Token {>X-Amz-Security-Token}
     }
 }
 *.web.s3.optimistic.cloud {
