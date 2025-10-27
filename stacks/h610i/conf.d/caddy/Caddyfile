@@ -8,10 +8,12 @@ garage.optimistic.cloud {
     reverse_proxy garage-webui:3909
 }
 *.api.s3.optimistic.cloud {
-    reverse_proxy garage:3900
-    header_up Host {host}
+    reverse_proxy garage:3900 {
+        header_up Host {host}
+    }
 }
 *.web.s3.optimistic.cloud {
-    reverse_proxy garage:3902
-    header_up Host {host}
+    reverse_proxy garage:3902 {
+        header_up Host {host}
+    }
 }
