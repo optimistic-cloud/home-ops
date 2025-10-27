@@ -10,8 +10,9 @@ garage.optimistic.cloud {
 *.api.s3.optimistic.cloud {
     log {
         output file /home/admin/home-ops/stacks/h610i/api-s3-access.log
-        format single_field common_log
+        format json
     }
+
     reverse_proxy garage:3900 {
         header_up Host {http.request.host}
         header_up Authorization {>Authorization}
