@@ -7,7 +7,7 @@ immich.optimistic.cloud {
 garage.optimistic.cloud {
     reverse_proxy garage-webui:3909
 }
-*.api.s3.optimistic.cloud {
+test.api.s3.optimistic.cloud {
     log {
         output file /home/admin/home-ops/stacks/h610i/api-s3-access.log
         format json
