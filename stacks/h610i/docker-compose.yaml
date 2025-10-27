@@ -286,13 +286,20 @@ services:
   #     - /mnt/tank/apps/immich/acme.json:/acme.json
   #     - /mnt/tank/apps/immich/traefik.yml:/etc/traefik/traefik.yml:ro
 
+
+  webui:
+    image: khairul169/garage-webui:latest
+    container_name: garage-webui
+    restart: unless-stopped
+    volumes:
+      - ./conf.d/garage/garage.toml:/etc/garage.toml:ro
+    environment:
+      API_BASE_URL: "http://127.0.0.1:3903"
+      S3_ENDPOINT_URL: "http://127.0.0.1:3900"
   garage:
     image: dxflrs/garage:v2.1.0
     container_name: garage
     restart: unless-stopped
-    environment:
-      GARAGE_PUBLIC_ADDR: https://garage.optimistic.cloud
-      GARAGE_ADMIN_TOKEN: test_admin_token
     volumes:
       - /mnt/tank/apps/garage/meta:/var/lib/garage/meta
       - /mnt/tank/apps/garage/data:/var/lib/garage/data
