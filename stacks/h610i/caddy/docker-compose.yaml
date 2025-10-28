@@ -17,3 +17,7 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
     networks:
       - garage
+
+networks:
+  garage:
+    external: true
