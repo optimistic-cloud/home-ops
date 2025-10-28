@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      TZ: ${TZ}
+      TZ: Europe/Berlin
       CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
     ports:
       - 80:80
