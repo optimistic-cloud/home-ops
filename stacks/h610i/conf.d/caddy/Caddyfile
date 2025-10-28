@@ -7,22 +7,44 @@ immich.optimistic.cloud {
 garage.optimistic.cloud {
     reverse_proxy garage-webui:3909
 }
-test.api.s3.optimistic.cloud {
-    log {
-        output file /home/admin/home-ops/stacks/h610i/api-s3-access.log
-        format json
-    }
+// test.api.s3.optimistic.cloud {
+//     reverse_proxy garage:3900 {
+//         header_up Host {http.request.host}
+//         header_up Authorization {>Authorization}
+//         header_up X-Amz-Date {>X-Amz-Date}
+//         header_up X-Amz-Content-Sha256 {>X-Amz-Content-Sha256}
+//         header_up X-Amz-Security-Token {>X-Amz-Security-Token}
+//     }
+// }
+// *.web.s3.optimistic.cloud {
+//     reverse_proxy garage:3902 {
+//         header_up Host {host}
+//     }
+// }
 
-    reverse_proxy garage:3900 {
-        header_up Host {http.request.host}
-        header_up Authorization {>Authorization}
-        header_up X-Amz-Date {>X-Amz-Date}
-        header_up X-Amz-Content-Sha256 {>X-Amz-Content-Sha256}
-        header_up X-Amz-Security-Token {>X-Amz-Security-Token}
+s3.optimistic.cloud, *.s3.optimistic.cloud {
+	reverse_proxy garage:3900 {
+        health_uri       /health
+        health_port      3903
+        #health_interval 15s
+        #health_timeout  5s
     }
 }
-*.web.s3.optimistic.cloud {
-    reverse_proxy garage:3902 {
-        header_up Host {host}
+
+*.web1.s3.optimistic.cloud {
+	reverse_proxy garage:3902 {
+        health_uri       /health
+        health_port      3903
+        #health_interval 15s
+        #health_timeout  5s
+    }
+}
+
+admin.s3.optimistic.cloud {
+	reverse_proxy garage:3903 {
+        health_uri       /health
+        health_port      3903
+        #health_interval 15s
+        #health_timeout  5s
     }
 }
