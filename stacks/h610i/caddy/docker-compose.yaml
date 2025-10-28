@@ -2,7 +2,7 @@ services:
   caddy:
     container_name: caddy
     build:
-      context: ./conf.d/caddy
+      context: ../conf.d/caddy
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
