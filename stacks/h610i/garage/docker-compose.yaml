@@ -1,0 +1,30 @@
+services:
+  garage-webui:
+    image: khairul169/garage-webui:1.1.0
+    container_name: garage-webui
+    restart: unless-stopped
+    volumes:
+      - ./garage.toml:/etc/garage.toml:ro
+    expose:
+      - 3909
+    environment:
+      API_BASE_URL: "http://garage:3903"
+      S3_ENDPOINT_URL: "http://garage:3900"
+
+  garage:
+    image: dxflrs/garage:v2.1.0
+    container_name: garage
+    restart: unless-stopped
+    volumes:
+      - /mnt/tank/apps/garage/meta:/var/lib/garage/meta
+      - /mnt/tank/apps/garage/data:/var/lib/garage/data
+      - ./garage.toml:/etc/garage.toml:ro
+    expose:
+      - "3900"
+      - "3901"
+      - "3902"
+      - "3903"
+
+networks:
+  default:
+    name: garage
