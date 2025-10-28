@@ -8,17 +8,8 @@ garage.optimistic.cloud {
     reverse_proxy garage-webui:3909
 }
 
-s3.optimistic.cloud, *.s3.optimistic.cloud {
+s3.optimistic.cloud {
 	reverse_proxy garage:3900 {
-        health_uri       /health
-        health_port      3903
-        #health_interval 15s
-        #health_timeout  5s
-    }
-}
-
-*.web1.s3.optimistic.cloud {
-	reverse_proxy garage:3902 {
         health_uri       /health
         health_port      3903
         #health_interval 15s
