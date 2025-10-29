@@ -2,7 +2,7 @@
 Description=Daily Gitea backup -> local
 
 [Timer]
-OnCalendar=OnCalendar=Fri 12:10:00
+OnCalendar=Fri 12:10:00
 Persistent=true
 Unit=gitea-backup@local.service
 

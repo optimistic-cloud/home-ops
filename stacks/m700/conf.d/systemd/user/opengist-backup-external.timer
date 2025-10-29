@@ -2,7 +2,7 @@
 Description=Daily Opengist backup -> external
 
 [Timer]
-OnCalendar=OnCalendar=Fri 22:12:00
+OnCalendar=Fri 22:12:00
 Persistent=true
 Unit=opengist-backup@ionos.service
 

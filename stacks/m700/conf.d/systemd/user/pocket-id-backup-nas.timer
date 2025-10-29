@@ -2,7 +2,7 @@
 Description=Weekly Pocket ID backup -> nas (Fri 20:10)
 
 [Timer]
-OnCalendar=OnCalendar=Fri 20:14:00
+OnCalendar=Fri 20:14:00
 Persistent=true
 Unit=pocket-id-backup@nas.service
 

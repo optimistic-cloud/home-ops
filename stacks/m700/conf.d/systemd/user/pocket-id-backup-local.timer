@@ -2,7 +2,7 @@
 Description=Daily Pocket ID backup -> local
 
 [Timer]
-OnCalendar=OnCalendar=Fri 12:14:00
+OnCalendar=Fri 12:14:00
 Persistent=true
 Unit=pocket-id-backup@local.service
 
