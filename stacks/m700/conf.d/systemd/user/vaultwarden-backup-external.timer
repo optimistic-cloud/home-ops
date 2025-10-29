@@ -2,7 +2,7 @@
 Description=Daily Vaultwarden backup -> external
 
 [Timer]
-OnCalendar=OnCalendar=Fri *-*-* 22:16:00
+OnCalendar=OnCalendar=Fri 22:16:00
 Persistent=true
 Unit=vaultwarden-backup@ionos.service
 

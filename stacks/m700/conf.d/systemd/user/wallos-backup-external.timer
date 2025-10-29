@@ -2,7 +2,7 @@
 Description=Daily Wallos backup -> external
 
 [Timer]
-OnCalendar=OnCalendar=Fri *-*-* 22:18:00
+OnCalendar=OnCalendar=Fri 22:18:00
 Persistent=true
 Unit=wallos-backup@external.service
 

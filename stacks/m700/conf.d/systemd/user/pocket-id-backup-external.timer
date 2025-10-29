@@ -2,7 +2,7 @@
 Description=Daily Pocket ID backup -> external
 
 [Timer]
-OnCalendar=OnCalendar=Fri *-*-* 22:14:00
+OnCalendar=OnCalendar=Fri 22:14:00
 Persistent=true
 Unit=pocket-id-backup@ionos.service
 
