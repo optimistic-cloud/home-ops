@@ -116,7 +116,7 @@ start-timer app:
 [doc('Start backup timers')]
 start-timers:
     #!/usr/bin/env nu
-    ls {{systemd_conf_path}}/backup-*.timer | get name | each {|e| 
+    ls {{systemd_conf_path}}/*.timer | get name | each {|e| 
         let timer = ($e | path basename)
         systemctl --user start --now $timer
     }
@@ -126,7 +126,7 @@ start-timers:
 [doc('Stop backup timers')]
 stop-timers:
     #!/usr/bin/env nu
-    ls {{systemd_conf_path}}/backup-*.timer | get name | each {|e| 
+    ls {{systemd_conf_path}}/*.timer | get name | each {|e| 
         let timer = ($e | path basename)
         systemctl --user stop --now $timer | ignore
     }
