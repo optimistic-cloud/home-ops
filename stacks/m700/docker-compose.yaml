@@ -35,7 +35,7 @@ services:
       DOZZLE_REMOTE_AGENT: ${DOZZLE_REMOTE_AGENT}
 
   beszel:
-    image: henrygd/beszel:latest@sha256:be72eb297dd60e419536f8e76c8dc8469b9bd2d93f49330af6f7fef7d7c6d8c8
+    image: henrygd/beszel:latest@sha256:04477bdcb2670e99d70d8b1d0b778e0f7df51e77506a900ea59a044e33ac9951
     container_name: beszel
     restart: unless-stopped
     expose:
