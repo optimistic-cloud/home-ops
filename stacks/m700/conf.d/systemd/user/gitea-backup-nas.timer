@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly Gitea backup -> nas (Fri 20:10)
+
+[Timer]
+OnCalendar=OnCalendar=Fri *-*-* 20:10:00
+Persistent=true
+Unit=gitea-backup@nas.service
+
+[Install]
+WantedBy=timers.target

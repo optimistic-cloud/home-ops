@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Opengist backup -> local
+
+[Timer]
+OnCalendar=OnCalendar=Fri *-*-* 12:12:00
+Persistent=true
+Unit=opengist-backup@local.service
+
+[Install]
+WantedBy=timers.target

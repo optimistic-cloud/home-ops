@@ -1,7 +1,0 @@
-[Unit]
-Description=Weekly backup for Wallos
-
-[Service]
-Type=oneshot
-WorkingDirectory=%h/home-ops/stacks/m700
-ExecStart=/usr/local/bin/just backup-all wallos

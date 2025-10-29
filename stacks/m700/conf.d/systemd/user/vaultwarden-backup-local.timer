@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Vaultwarden backup -> local
+
+[Timer]
+OnCalendar=OnCalendar=Fri *-*-* 12:16:00
+Persistent=true
+Unit=vaultwarden-backup@local.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly Wallos backup -> nas (Fri 20:10)
+
+[Timer]
+OnCalendar=OnCalendar=Fri *-*-* 20:18:00
+Persistent=true
+Unit=wallos-backup@nas.service
+
+[Install]
+WantedBy=timers.target

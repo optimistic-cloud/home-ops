@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Wallos backup -> local
+
+[Timer]
+OnCalendar=OnCalendar=Fri *-*-* 12:18:00
+Persistent=true
+Unit=wallos-backup@local.service
+
+[Install]
+WantedBy=timers.target
