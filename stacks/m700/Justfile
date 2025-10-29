@@ -137,7 +137,7 @@ stop-timers:
 [doc('Enable backup timers')]
 enable-timers:
     #!/usr/bin/env nu
-    ls {{systemd_conf_path}}/backup-*.timer | get name | each {|e| 
+    ls {{systemd_conf_path}}/*.timer | get name | each {|e| 
         let timer = ($e | path basename)
         systemctl --user enable --now $timer
     }
