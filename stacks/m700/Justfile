@@ -103,14 +103,15 @@ restore app provider restore_path:
 [group('systemd')]
 [doc('Configure backup timers')]
 install-timers: stop-timers && enable-timers start-timers
+    rm -rf ~/.config/systemd/user
     mkdir -p ~/.config/systemd/user
     cp -r {{systemd_conf_path}}/* ~/.config/systemd/user/
     systemctl --user daemon-reload
 
-[group('systemd')]
-[doc('Start manually backup timer for an application')]
-start-timer app:
-    systemctl --user start backup-{{app}}.service
+#[group('systemd')]
+#[doc('Start manually backup timer for an application')]
+#start-timer app:
+#    systemctl --user start {{app}}-backup-.service
 
 [group('systemd')]
 [doc('Start backup timers')]
