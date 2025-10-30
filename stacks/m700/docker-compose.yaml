@@ -348,6 +348,7 @@ services:
       - wallos-data:/var/www/html
     restart: unless-stopped
 
+  # https://docs.tasktrove.io
   tasktrove:
     image: ghcr.io/dohsimpson/tasktrove:v0.8.0
     container_name: tasktrove
