@@ -349,7 +349,7 @@ services:
     restart: unless-stopped
 
   tasktrove:
-    image: ghcr.io/dohsimpson/tasktrove:v0.8.0
+    image: ghcr.io/dohsimpson/tasktrove:v0.8.0@sha256:9e6ae8201d532dabf073f1abf540abdca60641bdd75ba44cb5a51a0e70ced355
     container_name: tasktrove
     ports:
       - "3000"
