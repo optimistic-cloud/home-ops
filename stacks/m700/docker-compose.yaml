@@ -348,7 +348,20 @@ services:
       - wallos-data:/var/www/html
     restart: unless-stopped
 
+  tasktrove:
+    image: ghcr.io/dohsimpson/tasktrove:v0.8.0
+    container_name: tasktrove
+    ports:
+      - "3000"
+    volumes:
+      - tasktrove-data:/app/data
+    environment:
+      - AUTH_SECRET=${AUTH_SECRET}
+    restart: unless-stopped
+
 volumes:
+  tasktrove-data:
+    name: tasktrove-data
   traefik-acme:
   traefik-config:
   vaultwarden-data:
