@@ -25,6 +25,3 @@ invidious.optimistic.cloud {
 wallos.optimistic.cloud {
     reverse_proxy wallos:80
 }
-task.optimistic.cloud {
-    reverse_proxy tasktrove:3000
-}
