@@ -157,3 +157,15 @@ log-timer app:
 [doc('List backup timers')]
 list-timers:
     systemctl --user list-timers
+
+[group('systemd')]
+[doc('Uninstall backup timers (disable + remove unit files)')]
+uninstall-timers:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for t in $(systemctl --user list-unit-files --type=timer | awk '/backup/ {print $1}'); do
+        systemctl --user disable --now "$t" || true
+    done
+    rm -f ~/.config/systemd/user/*backup*.timer ~/.config/systemd/user/*backup*@.service
+    systemctl --user daemon-reload
+    systemctl --user reset-failed
