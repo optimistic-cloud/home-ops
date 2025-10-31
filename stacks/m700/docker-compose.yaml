@@ -1,6 +1,6 @@
 x-healthcheck: &default-healthcheck
   interval: 180s
-  timeout: 10s
+  timeout: 30s
   retries: 5
   start_period: 60s
 
@@ -33,6 +33,9 @@ services:
       DOZZLE_ENABLE_ACTIONS: true
       DOZZLE_NO_ANALYTICS: true
       DOZZLE_REMOTE_AGENT: ${DOZZLE_REMOTE_AGENT}
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      <<: *default-healthcheck
 
   beszel:
     image: henrygd/beszel:latest@sha256:04477bdcb2670e99d70d8b1d0b778e0f7df51e77506a900ea59a044e33ac9951
@@ -47,6 +50,9 @@ services:
       TZ: Europe/Berlin
       USER_CREATION: true
       DISABLE_PASSWORD_AUTH: true
+    healthcheck:
+      test: ['CMD', '/agent', 'health']
+      <<: *default-healthcheck
 
   beszel-agent:
     image: henrygd/beszel-agent:latest@sha256:b47f2efab5dc612f9f6d9bfad4e3cc3a4d95022c0546744927fe4702ba5b36b9
