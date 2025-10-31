@@ -1,0 +1,6 @@
+[Unit]
+Description=Daily shutdown at midnight
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl poweroff
