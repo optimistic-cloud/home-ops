@@ -138,14 +138,6 @@ stop-timers:
 run-timer app backup_type:
     systemctl --user start {{app}}-backup@{{backup_type}}.service
 
-    #!/usr/bin/env nu
-    ls {{systemd_conf_path}}/*.timer | get name | each {|e| 
-        let timer = ($e | path basename)
-        systemctl --user enable --now $timer
-    }
-    ignore
-
-
 [group('systemd')]
 [doc('Enable backup timers')]
 enable-timers:
