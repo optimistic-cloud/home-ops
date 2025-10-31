@@ -1,10 +1,10 @@
 [Unit]
-Description=Daily Wallos backup -> external
+Description=Daily Wallos backup -> offsite
 
 [Timer]
 OnCalendar=Fri 22:18:00
 Persistent=true
-Unit=wallos-backup@external.service
+Unit=wallos-backup@offsite.service
 
 [Install]
 WantedBy=timers.target

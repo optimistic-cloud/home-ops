@@ -1,10 +1,10 @@
 [Unit]
-Description=Daily Pocket ID backup -> external
+Description=Daily Pocket ID backup -> offsite
 
 [Timer]
 OnCalendar=Fri 22:14:00
 Persistent=true
-Unit=pocket-id-backup@ionos.service
+Unit=pocket-id-backup@offsite.service
 
 [Install]
 WantedBy=timers.target

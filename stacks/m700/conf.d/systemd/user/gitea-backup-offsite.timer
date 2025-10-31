@@ -1,10 +1,10 @@
 [Unit]
-Description=Daily Gitea backup -> external
+Description=Daily Gitea backup -> offsite
 
 [Timer]
 OnCalendar=Fri 22:10:00
 Persistent=true
-Unit=gitea-backup@ionos.service
+Unit=gitea-backup@offsite.service
 
 [Install]
 WantedBy=timers.target

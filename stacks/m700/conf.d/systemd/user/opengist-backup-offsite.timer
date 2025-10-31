@@ -1,10 +1,10 @@
 [Unit]
-Description=Daily Opengist backup -> external
+Description=Daily Opengist backup -> offsite
 
 [Timer]
 OnCalendar=Fri 22:12:00
 Persistent=true
-Unit=opengist-backup@ionos.service
+Unit=opengist-backup@offsite.service
 
 [Install]
 WantedBy=timers.target
