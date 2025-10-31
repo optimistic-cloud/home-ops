@@ -3,7 +3,7 @@ use ./with-healthcheck.nu *
 use ./with-docker.nu *
 use ./lib.nu *
 
-export def main [provider_name: string, provider-env-file: path, operation: closure]: string -> nothing {
+export def main [provider_name: string, provider_env_file: path, operation: closure]: string -> nothing {
     let app = $in
     with-lockfile $app {
         with-healthcheck $"($app)-($provider_name)" {
