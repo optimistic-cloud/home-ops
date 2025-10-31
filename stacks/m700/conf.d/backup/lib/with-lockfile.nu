@@ -33,7 +33,6 @@ export def main [app: string, operation: closure] {
         # https://github.com/nushell/nushell/issues/15279
         release-lock
         log error $err
-        error $err
+        error make $err
     }
 }
-    
