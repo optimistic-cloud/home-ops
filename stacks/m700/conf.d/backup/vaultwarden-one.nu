@@ -1,6 +1,6 @@
 use std/log
 
-use ./lib/with-backup-template.nu *
+use ./lib/with-backup-template-one.nu *
 use ./lib/with-docker.nu *
 use ./lib/lib.nu *
 
@@ -8,8 +8,8 @@ const app = "vaultwarden"
 const container_name = "vaultwarden"
 const data_docker_volume = "vaultwarden-data"
 
-def main [...provider_env_files: path] {
-    $app | with-backup-template --provider-env-files $provider_env_files {
+def main [provider_name: string, provider_env_file: path] {
+    $app | with-backup-template provider_name --provider-env-file $provider_env_file {
         let backup_docker_volume = $in
 
         # Stops the container if it is running, and starts it again afterwards

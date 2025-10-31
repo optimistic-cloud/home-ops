@@ -172,7 +172,7 @@ def get-current-git-commit []: nothing -> string {
   (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 }
 
-export def backup [--provider-env-files: list<path>]: record -> record {
+export def backup-many [--provider-env-files: list<path>]: record -> record {
   if not ($in | columns | any {|col| $col == 'container_name'}) {
     error make { msg: "Mandatory key 'container_name' is missing in input record" }
   }
@@ -198,6 +198,30 @@ export def backup [--provider-env-files: list<path>]: record -> record {
     $volumes | do-restic-backup --provider-env-file $provider_env_file
     #$volumes | do-kopia-backup
   }
+}
+
+export def backup-one [--provider-env-file: path]: record -> record {
+  if not ($in | columns | any {|col| $col == 'container_name'}) {
+    error make { msg: "Mandatory key 'container_name' is missing in input record" }
+  }
+  if not ($in | columns | any {|col| $col == 'volumes'}) {
+    error make { msg: "Mandatory key 'volumes' is missing in input record" }
+  }
+  
+  let container_name = $in.container_name
+  let volumes = $in.volumes
+  
+  if not ($volumes | columns | any {|col| $col == 'config'}) {
+    error make { msg: "Mandatory volume with key 'config' is missing" }
+  }
+
+  # Export env from container
+  $container_name | export-env-from-container --volume $volumes.config
+
+  log debug $"Using provider env file: ($provider_env_file)"
+  let provider_env_file = $provider_env_file | path expand | require
+
+  $volumes | do-restic-backup --provider-env-file $provider_env_file
 }
 
 def do-restic-backup [--provider-env-file: path]: record -> record {

@@ -93,7 +93,7 @@ backup-all app:
 [group('backup')]
 [doc('Backup application')]
 backup app provider:
-    nu ./conf.d/backup/{{app}}.nu conf.d/backup/{{app}}.{{provider}}.restic.env
+    nu ./conf.d/backup/{{app}}-one.nu {{provider}} ./conf.d/backup/{{app}}.{{provider}}.restic.env
 
 [group('backup')]
 [doc('Restore backup for an application')]

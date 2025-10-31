@@ -1,0 +1,32 @@
+use std/log
+
+use ./lib/with-backup-template-many.nu *
+use ./lib/with-docker.nu *
+use ./lib/lib.nu *
+
+const app = "vaultwarden"
+const container_name = "vaultwarden"
+const data_docker_volume = "vaultwarden-data"
+
+def main [...provider_env_files: path] {
+    $app | with-backup-template --provider-env-files $provider_env_files {
+        let backup_docker_volume = $in
+
+        # Stops the container if it is running, and starts it again afterwards
+        with-stopped-docker-container --name $app {
+            # Export sqlite database
+            {
+                src_volume: $data_docker_volume
+                src_path: "/data/db.sqlite3"
+            } | export-sqlite-database-in-volume --volume $backup_docker_volume
+        }
+
+        {
+            container_name: $container_name
+            volumes: {
+                data: $data_docker_volume
+                config: $backup_docker_volume
+            }
+        }
+    }
+}
