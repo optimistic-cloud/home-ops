@@ -1,6 +1,6 @@
 use std/log
 
-use ./lib/with-backup-template.nu *
+use ./lib/with-backup-template-many.nu *
 use ./lib/with-docker.nu *
 use ./lib/lib.nu *
 
