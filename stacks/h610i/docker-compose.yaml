@@ -40,7 +40,7 @@ services:
       UMASK_SET: "002"
     healthcheck:
       disable: false
-    image: ghcr.io/immich-app/immich-machine-learning:v2.2.0@sha256:457b58ddb1d4ee44ac897c68ff9f05191fab90eef7046f09c8a474d3a13500d5
+    image: ghcr.io/immich-app/immich-machine-learning:v2.2.1@sha256:590a76bba3d88ccf78b03cde0c0fb8788f7d76ae6caf90ad33a34b5b4cc35f11
     platform: linux/amd64
     privileged: false
     restart: unless-stopped
