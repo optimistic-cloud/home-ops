@@ -18,9 +18,12 @@ services:
     networks:
       - garage
       - immich
+      - monitoring
 
 networks:
   garage:
     external: true
   immich:
+    external: true
+  monitoring:
     external: true

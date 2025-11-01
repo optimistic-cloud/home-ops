@@ -1,28 +1,28 @@
 services:
-  dozzle:
-    container_name: dozzle
-    image: amir20/dozzle:latest@sha256:a53cabe919f87b39d07a5ced17cf28bbe3f01a47b2cd0f37864bdf1f562a205a
-    command: agent
-    restart: unless-stopped
-    ports:
-      - "7007:7007"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+  # dozzle:
+  #   container_name: dozzle
+  #   image: amir20/dozzle:latest@sha256:a53cabe919f87b39d07a5ced17cf28bbe3f01a47b2cd0f37864bdf1f562a205a
+  #   command: agent
+  #   restart: unless-stopped
+  #   ports:
+  #     - "7007:7007"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
 
-  beszel-agent:
-    image: henrygd/beszel-agent:latest@sha256:b47f2efab5dc612f9f6d9bfad4e3cc3a4d95022c0546744927fe4702ba5b36b9
-    container_name: beszel-agent
-    restart: unless-stopped
-    network_mode: host
-    volumes:
-      - beszel-agent-data:/var/lib/beszel-agent
-      - beszel-socket:/beszel_socket
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    environment:
-      LISTEN: /beszel_socket/beszel.sock
-      HUB_URL: https://beszel.optimistic.cloud
-      TOKEN: ${BESZEL_TOKEN}
-      KEY: ${BESZEL_KEY}
+  # beszel-agent:
+  #   image: henrygd/beszel-agent:latest@sha256:b47f2efab5dc612f9f6d9bfad4e3cc3a4d95022c0546744927fe4702ba5b36b9
+  #   container_name: beszel-agent
+  #   restart: unless-stopped
+  #   network_mode: host
+  #   volumes:
+  #     - beszel-agent-data:/var/lib/beszel-agent
+  #     - beszel-socket:/beszel_socket
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   environment:
+  #     LISTEN: /beszel_socket/beszel.sock
+  #     HUB_URL: https://beszel.optimistic.cloud
+  #     TOKEN: ${BESZEL_TOKEN}
+  #     KEY: ${BESZEL_KEY}
 
   machine-learning:
     cap_drop:
