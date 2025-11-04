@@ -21,6 +21,27 @@ services:
       - ./config:/config
       - ./conf.d/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
 
+  healthchecks:
+    image: healthchecks/healthchecks:latest
+    container_name: healthchecks
+    environment:
+      - DB=sqlite
+      - DB_NAME=/data/hc.sqlite
+      - DEBUG=False
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+      - SECRET_KEY=${SECRET_KEY}
+      - SITE_ROOT=https://hc.${DOMAIN}
+    expose:
+      - 8000
+    volumes:
+      - healthchecks-data:/data
+    restart: unless-stopped
+
   dozzle:
     container_name: dozzle
     image: amir20/dozzle:latest@sha256:a53cabe919f87b39d07a5ced17cf28bbe3f01a47b2cd0f37864bdf1f562a205a
@@ -376,3 +397,5 @@ volumes:
     name: beszel-socket
   beszel-agent-data:
     name: beszel-agent-data
+  healthchecks-data:
+    name: healthchecks-data

@@ -25,3 +25,6 @@ invidious.optimistic.cloud {
 wallos.optimistic.cloud {
     reverse_proxy wallos:80
 }
+hc.optimistic.cloud {
+    reverse_proxy healthchecks:8000
+}
