@@ -38,6 +38,7 @@ services:
       - SITE_ROOT=https://hc.${DOMAIN}
       - SITE_LOGO_URL=
       - SITE_NAME=Optimistic Cloud
+      - REGISTRATION_OPEN=False
     expose:
       - 8000
     volumes:
