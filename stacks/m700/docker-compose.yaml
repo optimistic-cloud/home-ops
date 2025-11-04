@@ -22,7 +22,7 @@ services:
       - ./conf.d/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
 
   healthchecks:
-    image: healthchecks/healthchecks:latest
+    image: healthchecks/healthchecks:latest@sha256:cd8d65cabc30bccf96ed9741f6dcfe1a93521c754cbce7af155560fda3d54526
     container_name: healthchecks
     environment:
       - DB=sqlite
