@@ -24,24 +24,6 @@ def is-json [data: string] {
     do -i { $data | from json } | complete | get success
 }
 
-export def --env configure-hc-api []: string -> nothing {
-  let slug = $in
-  let run_id = (random uuid -v 4)
-
-  let config = {
-    "scheme": "https",
-    "host": $"($env.HC_HOST)",
-    "path": $"($env.HC_PING_KEY)/($slug)",
-    "params":
-    {
-      create: 1,
-      rid: $run_id
-    }
-  }
-  
-  $env.BACKUP_CONFIG = $config
-}
-
 def is-bool []: any -> bool {
   ($in | describe) == "bool"
 }
@@ -72,6 +54,24 @@ export def with-ping [operation: closure] {
         $out.stdout | from json | to json --indent 2 | do_post $url
     }
   }
+}
+
+export def --env configure-hc-api []: string -> nothing {
+  let slug = $in
+  let run_id = (random uuid -v 4)
+
+  let config = {
+    "scheme": "https",
+    "host": $"($env.HC_HOST)",
+    "path": $"ping/($env.HC_PING_KEY)/($slug)",
+    "params":
+    {
+      create: 1,
+      rid: $run_id
+    }
+  }
+  
+  $env.BACKUP_CONFIG = $config
 }
 
 export def main [hc_slug: string, operation: closure] {
