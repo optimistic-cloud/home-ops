@@ -2,7 +2,7 @@
 Description=Daily Vaultwarden backup -> local
 
 [Timer]
-OnCalendar=Fri 12:16:00
+OnCalendar=16 12 * * *
 Persistent=true
 Unit=vaultwarden-backup@local.service
 
