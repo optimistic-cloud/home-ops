@@ -2,7 +2,7 @@
 Description=Weekly Vaultwarden backup -> onsite (Fri 20:10)
 
 [Timer]
-OnCalendar=Fri 20:16:00
+OnCalendar=16 20 * * *
 Persistent=true
 Unit=vaultwarden-backup@onsite.service
 
