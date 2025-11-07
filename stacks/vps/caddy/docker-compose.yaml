@@ -1,0 +1,23 @@
+services:
+  caddy:
+    container_name: caddy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Berlin
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./data:/data
+      - ./config:/config
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      - caddy
+
+networks:
+  caddy:
+    name: caddy
