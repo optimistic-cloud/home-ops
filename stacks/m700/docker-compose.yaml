@@ -21,29 +21,29 @@ services:
       - ./config:/config
       - ./conf.d/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
 
-  healthchecks:
-    image: healthchecks/healthchecks:latest@sha256:cd8d65cabc30bccf96ed9741f6dcfe1a93521c754cbce7af155560fda3d54526
-    container_name: healthchecks
-    environment:
-      - DB=sqlite
-      - DB_NAME=/data/hc.sqlite
-      - DEBUG=False
-      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
-      - EMAIL_HOST=${SMTP_HOST}
-      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
-      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
-      - EMAIL_PORT=${SMTP_PORT}
-      - EMAIL_USE_TLS=${EMAIL_USE_TLS}
-      - SECRET_KEY=${SECRET_KEY}
-      - SITE_ROOT=https://hc.${DOMAIN}
-      - SITE_LOGO_URL=
-      - SITE_NAME=Optimistic Cloud
-      - REGISTRATION_OPEN=False
-    expose:
-      - 8000
-    volumes:
-      - healthchecks-data:/data
-    restart: unless-stopped
+  # healthchecks:
+  #   image: healthchecks/healthchecks:latest@sha256:cd8d65cabc30bccf96ed9741f6dcfe1a93521c754cbce7af155560fda3d54526
+  #   container_name: healthchecks
+  #   environment:
+  #     - DB=sqlite
+  #     - DB_NAME=/data/hc.sqlite
+  #     - DEBUG=False
+  #     - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+  #     - EMAIL_HOST=${SMTP_HOST}
+  #     - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+  #     - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+  #     - EMAIL_PORT=${SMTP_PORT}
+  #     - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+  #     - SECRET_KEY=${SECRET_KEY}
+  #     - SITE_ROOT=https://hc.${DOMAIN}
+  #     - SITE_LOGO_URL=
+  #     - SITE_NAME=Optimistic Cloud
+  #     - REGISTRATION_OPEN=False
+  #   expose:
+  #     - 8000
+  #   volumes:
+  #     - healthchecks-data:/data
+  #   restart: unless-stopped
 
   dozzle:
     container_name: dozzle
@@ -400,5 +400,5 @@ volumes:
     name: beszel-socket
   beszel-agent-data:
     name: beszel-agent-data
-  healthchecks-data:
-    name: healthchecks-data
+  # healthchecks-data:
+  #   name: healthchecks-data
