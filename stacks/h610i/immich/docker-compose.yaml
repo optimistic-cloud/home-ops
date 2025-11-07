@@ -187,10 +187,12 @@ services:
         source: /mnt/tank/apps/immich/data/immich-data/upload
         target: /data/upload
         type: bind
+    networks:
+      - caddy
 
 networks:
-  default:
-    name: immich
+  caddy:
+    external: true
 
 volumes:
   redis-data: {}

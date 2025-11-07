@@ -8,6 +8,8 @@ services:
       - "7007"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - caddy
 
   beszel-agent:
     image: henrygd/beszel-agent:latest@sha256:bc6c4068ce99d20e66ea28830d853339145552704497496d1d0cfd6999413070
@@ -23,10 +25,12 @@ services:
       HUB_URL: https://beszel.optimistic.cloud
       TOKEN: ${BESZEL_TOKEN}
       KEY: ${BESZEL_KEY}
+    networks:
+      - caddy
 
 networks:
-  default:
-    name: monitoring
+  caddy:
+    external: true
 
 volumes:
   beszel-socket:

@@ -16,14 +16,7 @@ services:
       - ./config:/config
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
     networks:
-      - garage
-      - immich
-      - monitoring
+      - caddy
 
 networks:
-  garage:
-    external: true
-  immich:
-    external: true
-  monitoring:
-    external: true
+  caddy:

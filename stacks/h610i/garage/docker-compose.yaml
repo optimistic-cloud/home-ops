@@ -24,7 +24,9 @@ services:
       - "3901"
       - "3902"
       - "3903"
+    networks:
+      - caddy
 
 networks:
-  default:
-    name: garage
+  caddy:
+    external: true
