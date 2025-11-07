@@ -1,5 +1,6 @@
 services:
   machine-learning:
+    container_name: immich_machine_learning
     cap_drop:
       - ALL
     environment:
@@ -32,6 +33,7 @@ services:
       - immich
 
   database:
+    container_name: immich_database
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23
     restart: unless-stopped
     shm_size: 128mb
@@ -57,44 +59,44 @@ services:
     networks:
       - immich
 
-  pgvecto:
-    image: tensorchord/pgvecto-rs:pg15-v0.2.0@sha256:104a26ad4d0446c54a46d3a694c6193ef018c5ad4f9d9faf7765ab09cb9ffe06
-    cap_drop:
-      - ALL
-    environment:
-      NVIDIA_VISIBLE_DEVICES: void
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_PORT: "5433"
-      POSTGRES_USER: ${POSTGRES_USER}
-      TZ: Europe/Berlin
-      UMASK: "002"
-      UMASK_SET: "002"
-      DB_STORAGE_TYPE: 'HDD'
-    healthcheck:
-      interval: 10s
-      retries: 30
-      start_period: 10s
-      test: pg_isready -h 127.0.0.1 -p 5432 -U $$POSTGRES_USER -d $$POSTGRES_DB
-      timeout: 5s
-    platform: linux/amd64
-    privileged: false
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges=true
-    stdin_open: false
-    tty: false
-    user: "3000:3000"
-    volumes:
-      - bind:
-          create_host_path: false
-          propagation: rprivate
-        read_only: false
-        source: /mnt/tank/apps/immich/postgres-data/postgres-data
-        target: /var/lib/postgresql/data
-        type: bind
-    networks:
-      - immich
+  # pgvecto:
+  #   image: tensorchord/pgvecto-rs:pg15-v0.2.0@sha256:104a26ad4d0446c54a46d3a694c6193ef018c5ad4f9d9faf7765ab09cb9ffe06
+  #   cap_drop:
+  #     - ALL
+  #   environment:
+  #     NVIDIA_VISIBLE_DEVICES: void
+  #     POSTGRES_DB: ${POSTGRES_DB}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     POSTGRES_PORT: "5433"
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     TZ: Europe/Berlin
+  #     UMASK: "002"
+  #     UMASK_SET: "002"
+  #     DB_STORAGE_TYPE: 'HDD'
+  #   healthcheck:
+  #     interval: 10s
+  #     retries: 30
+  #     start_period: 10s
+  #     test: pg_isready -h 127.0.0.1 -p 5432 -U $$POSTGRES_USER -d $$POSTGRES_DB
+  #     timeout: 5s
+  #   platform: linux/amd64
+  #   privileged: false
+  #   restart: unless-stopped
+  #   security_opt:
+  #     - no-new-privileges=true
+  #   stdin_open: false
+  #   tty: false
+  #   user: "3000:3000"
+  #   volumes:
+  #     - bind:
+  #         create_host_path: false
+  #         propagation: rprivate
+  #       read_only: false
+  #       source: /mnt/tank/apps/immich/postgres-data/postgres-data
+  #       target: /var/lib/postgresql/data
+  #       type: bind
+  #   networks:
+  #     - immich
 
   redis:
     container_name: immich_redis
@@ -106,7 +108,7 @@ services:
       - immich
 
   server:
-    container_name: immich-server
+    container_name: immich_server
     cap_drop:
       - ALL
     depends_on:
