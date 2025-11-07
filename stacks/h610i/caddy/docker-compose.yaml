@@ -20,3 +20,4 @@ services:
 
 networks:
   caddy:
+    name: caddy
