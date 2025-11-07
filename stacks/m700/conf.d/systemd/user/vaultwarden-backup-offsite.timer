@@ -2,7 +2,7 @@
 Description=Daily Vaultwarden backup -> offsite
 
 [Timer]
-OnCalendar=*-*-* 20:16:00
+OnCalendar=*-*-* 22:16:00
 Persistent=true
 Unit=vaultwarden-backup@offsite.service
 
