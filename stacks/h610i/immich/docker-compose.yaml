@@ -114,8 +114,6 @@ services:
     depends_on:
       machine-learning:
         condition: service_healthy
-      pgvecto:
-        condition: service_healthy
       redis:
         condition: service_healthy
     environment:
