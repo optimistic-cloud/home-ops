@@ -4,3 +4,6 @@
 hc.optimistic.cloud {
     reverse_proxy healthchecks:8000
 }
+yt.optimistic.cloud {
+    reverse_proxy invidious:3000
+}
