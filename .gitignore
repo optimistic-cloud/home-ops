@@ -6,3 +6,7 @@ pocket-id.encfile
 traefik.yml
 
 garage.toml
+
+# TODO: 
+stacks/vps/caddy/config/
+stacks/vps/caddy/data/
