@@ -27,7 +27,7 @@ services:
 
 networks:
   caddy:
-    name: caddy
+    external: true
 
 volumes:
   healthchecks-data:
