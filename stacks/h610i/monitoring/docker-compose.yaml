@@ -25,8 +25,6 @@ services:
       HUB_URL: https://beszel.optimistic.cloud
       TOKEN: ${BESZEL_TOKEN}
       KEY: ${BESZEL_KEY}
-    networks:
-      - caddy
 
 networks:
   caddy:
