@@ -1,9 +1,0 @@
-{
-    acme_dns cloudflare {env.CF_DNS_API_TOKEN}
-}
-hc.optimistic.cloud {
-    reverse_proxy healthchecks:8000
-}
-yt.optimistic.cloud {
-    reverse_proxy invidious:3000
-}
