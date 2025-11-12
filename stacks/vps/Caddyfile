@@ -1,0 +1,12 @@
+{
+    acme_dns cloudflare {env.CF_DNS_API_TOKEN}
+}
+hc.optimistic.cloud {
+    reverse_proxy 127.0.0.1:8000
+}
+dozzle.optimistic.cloud {
+    reverse_proxy 127.0.0.1:8080
+}
+beszel.optimistic.cloud {
+    reverse_proxy 127.0.0.1:8090
+}

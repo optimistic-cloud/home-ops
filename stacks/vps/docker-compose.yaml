@@ -1,0 +1,107 @@
+x-healthcheck: &default-healthcheck
+  interval: 180s
+  timeout: 30s
+  retries: 5
+  start_period: 60s
+
+services:
+  caddy:
+    container_name: caddy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    network_mode: service:wg-easy
+    environment:
+      TZ: Europe/Berlin
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
+    volumes:
+      - ./data:/data
+      - ./config:/config
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest@sha256:ca0e25216d1d934f7b16274b765c853565e7ce8bb7edff26e30177e57c9ba038
+    network_mode: service:wg-easy
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DOZZLE_ENABLE_ACTIONS: true
+      DOZZLE_NO_ANALYTICS: true
+      DOZZLE_REMOTE_AGENT: ${DOZZLE_REMOTE_AGENT}
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      <<: *default-healthcheck
+
+  beszel:
+    image: henrygd/beszel:latest@sha256:37858df37c29cc532d9af103b90a4f2645bc7555f6a291ed3f15c9096a00731e
+    container_name: beszel
+    restart: unless-stopped
+    network_mode: service:wg-easy
+    expose:
+      - 8090
+    volumes:
+      - beszel-data:/beszel_data
+      - beszel-socket:/beszel_socket
+    environment:
+      TZ: Europe/Berlin
+      USER_CREATION: true
+      DISABLE_PASSWORD_AUTH: true
+    healthcheck:
+      test: ['CMD', '/beszel', 'health', '--url', 'http://localhost:8090']
+      <<: *default-healthcheck
+
+  healthchecks:
+    image: healthchecks/healthchecks:latest@sha256:cd8d65cabc30bccf96ed9741f6dcfe1a93521c754cbce7af155560fda3d54526
+    container_name: healthchecks
+    network_mode: service:wg-easy
+    environment:
+      - DB=sqlite
+      - DB_NAME=/data/hc.sqlite
+      - DEBUG=False
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+      - EMAIL_HOST=${SMTP_HOST}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_PORT=${SMTP_PORT}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+      - SECRET_KEY=${SECRET_KEY}
+      - SITE_ROOT=https://hc.${DOMAIN}
+      - SITE_LOGO_URL=https://raw.githubusercontent.com/optimistic-cloud/assets/refs/heads/main/logo-light.svg
+      - SITE_NAME=Optimistic Cloud
+      - REGISTRATION_OPEN=False
+    volumes:
+      - healthchecks-data:/data
+    restart: unless-stopped
+ 
+  wg-easy:
+    container_name: wg-easy
+    image: ghcr.io/wg-easy/wg-easy
+
+    environment:
+      PASSWORD_HASH: ${WG_PASSWORD_HASH}
+      WG_HOST: ${WG_HOST}
+
+    volumes:
+      - ./config:/etc/wireguard
+      - /lib/modules:/lib/modules
+    ports:
+      - "51820:51820/udp"
+      - "51821:51821/tcp"
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+
+volumes:
+  healthchecks-data:
+    name: healthchecks-data
+  beszel-data:
+    name: beszel-data
+  beszel-socket:
+    name: beszel-socket
