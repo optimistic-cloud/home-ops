@@ -40,8 +40,6 @@ services:
     container_name: beszel
     restart: unless-stopped
     network_mode: service:wg-easy
-    expose:
-      - 8090
     volumes:
       - beszel-data:/beszel_data
       - beszel-socket:/beszel_socket
