@@ -28,3 +28,6 @@ wallos.optimistic.cloud {
 hc.optimistic.cloud {
     reverse_proxy healthchecks:8000
 }
+jellyfin.optimistic.cloud {
+    reverse_proxy jellyfin:8096
+}

@@ -21,6 +21,19 @@ services:
       - ./config:/config
       - ./conf.d/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
 
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    expose:
+      - 8096:8096/tcp
+      - 7359:7359/udp
+    volumes:
+      - ./jellyfin/config:/config
+      - ./jellyfin/cache:/cache
+    restart: unless-stopped
+    environment:
+      - JELLYFIN_PublishedServerUrl=https://jellyfin.${DOMAIN}
+
   dozzle:
     container_name: dozzle
     image: amir20/dozzle:latest@sha256:82773cc7e7443de8ba7f23bd175a80d79c9e4d4ff1c0a5f8701e04e6c5e383bc
