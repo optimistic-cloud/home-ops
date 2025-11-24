@@ -10,3 +10,6 @@ garage.toml
 # TODO: 
 stacks/vps/caddy/config/
 stacks/vps/caddy/data/
+
+# m700
+conf.d/invidious/config.yml
