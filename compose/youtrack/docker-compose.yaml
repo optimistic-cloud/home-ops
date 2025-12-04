@@ -6,7 +6,7 @@ x-healthcheck: &default-healthcheck
 
 services:
   youtrack:
-    image: jetbrains/youtrack:2025.3.108924@sha256:bf05224a144a1638569ab8fd07209c0e3fcfbe7c9288ea2e0250c608e2037bfe
+    image: jetbrains/youtrack:2025.3.110568@sha256:db3f5d04ff46b30e041768cea7da5541948ee0cd9efd4086221c1c47be83ff73
     container_name: youtrack
     restart: unless-stopped
     volumes:
