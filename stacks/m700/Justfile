@@ -18,17 +18,19 @@ help:
 
 [group('docker')]
 [doc('Restart the stack')]
-restart: down && up
+restart:
+    docker compose down --remove-orphans
+    docker compose up -d --remove-orphans
 
 #[group('docker')]
 #[doc('Start the stack')]
 #up:
 #    docker compose up -d --remove-orphans
 
-[group('docker')]
-[doc('Stop the stack')]
-down:
-    docker compose down --remove-orphans
+#[group('docker')]
+#[doc('Stop the stack')]
+#down:
+#    docker compose down --remove-orphans
 
 [group('docker')]
 [doc('Get logs for a service')]
@@ -39,6 +41,11 @@ logs service:
 [doc('Start application stack')]
 up app:
     cd stacks/m700/{{app}} && docker compose up -d --remove-orphans
+
+[group('docker')]
+[doc('Stop application stack')]
+down app:
+    cd stacks/m700/{{app}} && docker compose down --remove-orphans
 
 [group('backup')]
 [doc('List providers for an application')]
