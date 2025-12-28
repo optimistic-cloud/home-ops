@@ -31,3 +31,6 @@ hc.optimistic.cloud {
 jellyfin.optimistic.cloud {
     reverse_proxy jellyfin:8096
 }
+outline.optimistic.cloud {
+    reverse_proxy gitea:3001
+}
