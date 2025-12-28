@@ -20,10 +20,10 @@ help:
 [doc('Restart the stack')]
 restart: down && up
 
-[group('docker')]
-[doc('Start the stack')]
-up:
-    docker compose up -d --remove-orphans
+#[group('docker')]
+#[doc('Start the stack')]
+#up:
+#    docker compose up -d --remove-orphans
 
 [group('docker')]
 [doc('Stop the stack')]
@@ -34,6 +34,11 @@ down:
 [doc('Get logs for a service')]
 logs service:
     docker compose logs -f {{service}}
+
+[group('docker')]
+[doc('Start application stack')]
+up app:
+    cd stacks/m700/{{app}} && docker compose up -d --remove-orphans
 
 [group('backup')]
 [doc('List providers for an application')]
