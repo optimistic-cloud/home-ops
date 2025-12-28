@@ -40,12 +40,12 @@ logs service:
 [group('docker')]
 [doc('Start application stack')]
 up app:
-    cd stacks/m700/{{app}} && docker compose up -d --remove-orphans
+    cd {{app}} && docker compose up -d --remove-orphans
 
 [group('docker')]
 [doc('Stop application stack')]
 down app:
-    cd stacks/m700/{{app}} && docker compose down --remove-orphans
+    cd {{app}} && docker compose down --remove-orphans
 
 [group('backup')]
 [doc('List providers for an application')]
