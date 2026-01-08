@@ -25,8 +25,8 @@ services:
     image: jellyfin/jellyfin@sha256:6d819e9ab067efcf712993b23455cc100ee5585919bb297ea5a109ac00cb626e
     container_name: jellyfin
     expose:
-      - 8096:8096/tcp
-      - 7359:7359/udp
+      - 8096/tcp
+      - 7359/udp
     volumes:
       - ./jellyfin/config:/config
       - ./jellyfin/cache:/cache
