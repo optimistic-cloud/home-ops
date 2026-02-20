@@ -15,7 +15,7 @@ services:
       - outline
 
   redis:
-    image: redis
+    image: redis@sha256:7b6fb55d8b0adcd77269dc52b3cfffe5f59ca5d43dec3c90dbe18aacce7942e1
     env_file: .env
     restart: unless-stopped
     expose:
@@ -32,7 +32,7 @@ services:
       - outline
 
   postgres:
-    image: postgres:18
+    image: postgres:18@sha256:b6b4d0b75c699a2c94dfc5a94fe09f38630f3b67ab0e1653ede1b7ac8e13c197
     env_file: .env
     restart: unless-stopped
     expose:
