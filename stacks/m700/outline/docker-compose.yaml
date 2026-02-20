@@ -3,7 +3,7 @@ services:
   outline:
     # https://hub.docker.com/r/outlinewiki/outline/tags
     # https://github.com/outline/outline/releases
-    image: outlinewiki/outline:1.5.0
+    image: outlinewiki/outline:1.5.0@sha256:f053574bb63b82846ec3cd7d89ab4b3019073b4dd25fda45f5cdcccc990a7401
     env_file: .env
     restart: unless-stopped
     expose:
