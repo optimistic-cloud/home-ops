@@ -86,7 +86,7 @@ services:
       <<: *default-healthcheck
 
   vaultwarden:
-    image: vaultwarden/server:1.35.0@sha256:a66735efe15d3a7ea63b5b3fe6913058756771349f6056e1be1ab7b4ef244b21
+    image: vaultwarden/server:1.35.3@sha256:1ca2e2098ba9ab9e46004f4ee61a3be6080ffee3ed41018a95c4b0fb6454a54b
     container_name: vaultwarden
     restart: unless-stopped
     read_only: true
