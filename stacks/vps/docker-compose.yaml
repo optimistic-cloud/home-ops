@@ -37,7 +37,7 @@ services:
       <<: *default-healthcheck
 
   healthchecks:
-    image: healthchecks/healthchecks:latest@sha256:228137b2fe50f8c4b3f6f1a8ef3970cc74ee84b56075bcf79381fc35a50b295d
+    image: healthchecks/healthchecks:latest@sha256:9e90336d412acd9b5045f366751e21c3329a7d9da201890b7c46d43c1ca0eddb
     container_name: healthchecks
     network_mode: service:wg-easy
     environment:
