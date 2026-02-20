@@ -293,7 +293,7 @@ services:
   # Deployment notes
   # SSO auth https://github.com/iv-org/invidious/pull/3164
   invidious:
-    image: quay.io/invidious/invidious:latest@sha256:2836b5b8226a53a9cc2afdbd5f5fe6bccdd200f2e17cd92a828b4dc8d8b5cc06
+    image: quay.io/invidious/invidious:latest@sha256:9d972ea5930c2e170b3c4d49bdd9fa09bf03f077d555f58747342062dffc5876
     container_name: invidious
     restart: unless-stopped
     expose:
