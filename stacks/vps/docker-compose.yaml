@@ -21,7 +21,7 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
 
   beszel:
-    image: henrygd/beszel:latest@sha256:185142e6c91bd44c77fef6cd31784aee0f782eb1d7193c3ee34a9902a936621c
+    image: henrygd/beszel:latest@sha256:d1326b5cd73838b1d1acc5f1764c4b993c9668aa26df149082695894cb2805ae
     container_name: beszel
     restart: unless-stopped
     network_mode: service:wg-easy
