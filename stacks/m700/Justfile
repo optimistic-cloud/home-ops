@@ -54,9 +54,10 @@ providers app:
     ls conf.d/backup/{{app}}.*.restic.env | get name | each { split row '.' | get 2 }
 
 [group('backup')]
-[doc('List all available backup types')]
-backup-types:
-    @printf "%s\n" local onsite offsite
+[doc('List available backup types for an application')]
+backup-types app:
+    #!/usr/bin/env nu
+    ls conf.d/backup/{{app}}.*.restic.env | get name | each { split row '.' | get 2 } | uniq | sort
 
 [group('backup')]
 [doc('Init repository')]
