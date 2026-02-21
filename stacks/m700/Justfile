@@ -54,6 +54,11 @@ providers app:
     ls conf.d/backup/{{app}}.*.restic.env | get name | each { split row '.' | get 2 }
 
 [group('backup')]
+[doc('List all available backup types')]
+backup-types:
+    @printf "%s\n" local onsite offsite
+
+[group('backup')]
 [doc('Init repository')]
 init app provider:
     just _restic-run {{app}} {{provider}} init
