@@ -28,6 +28,7 @@ Gitea: gitea admin auth add-oauth \
 ### Initialize a repository
 - Create `<app>.<backup_type>.restic.env`
 - Per app/type: `just init <app> <backup_type>`
+- Adjust systemd timers
 
 ### Run a backup
 - Single type: `just backup <app> <backup_type>`
