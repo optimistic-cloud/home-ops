@@ -21,6 +21,7 @@ services:
       - SITE_LOGO_URL=https://raw.githubusercontent.com/optimistic-cloud/assets/refs/heads/main/logo-light.svg
       - SITE_NAME=Optimistic Cloud
       - REGISTRATION_OPEN=False
+      - ADMINS=${ADMINS}
     volumes:
       - healthchecks-data:/data
     networks:
