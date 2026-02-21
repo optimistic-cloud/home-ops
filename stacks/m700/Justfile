@@ -81,7 +81,7 @@ unlock app provider:
 [group('backup')]
 [doc('Forget snapshots')]
 forget app provider:
-    just _restic-run {{app}} {{provider}} --quiet forget --prune --keep-within 180d
+    just _restic-run {{app}} {{provider}} --quiet forget --prune --keep-within 365d
 
 [group('backup')]
 [doc('Prune snapshots')]
