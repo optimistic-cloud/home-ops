@@ -1,0 +1,33 @@
+services:
+  healthchecks:
+    image: healthchecks/healthchecks:latest@sha256:9e90336d412acd9b5045f366751e21c3329a7d9da201890b7c46d43c1ca0eddb
+    container_name: healthchecks
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      - DB=sqlite
+      - DB_NAME=/data/hc.sqlite
+      - DEBUG=False
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+      - EMAIL_HOST=${SMTP_HOST}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_PORT=${SMTP_PORT}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+      - SECRET_KEY=${SECRET_KEY}
+      - SITE_ROOT=https://hc.${DOMAIN}
+      - SITE_LOGO_URL=https://raw.githubusercontent.com/optimistic-cloud/assets/refs/heads/main/logo-light.svg
+      - SITE_NAME=Optimistic Cloud
+      - REGISTRATION_OPEN=False
+    volumes:
+      - healthchecks-data:/data
+    networks:
+      - m700_default
+
+volumes:
+  healthchecks-data:
+
+networks:
+  m700_default:
+    external: true
