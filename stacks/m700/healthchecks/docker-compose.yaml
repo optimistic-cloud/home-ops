@@ -1,4 +1,5 @@
 services:
+  # https://healthchecks.io/docs/self_hosted_docker/
   healthchecks:
     image: healthchecks/healthchecks:latest@sha256:9e90336d412acd9b5045f366751e21c3329a7d9da201890b7c46d43c1ca0eddb
     container_name: healthchecks
