@@ -1,5 +1,3 @@
-# TODO: rename provider_env_file to backup_type where applicable
-
 set dotenv-load
 set dotenv-filename := '.ops.env'
 
@@ -55,33 +53,33 @@ backup-types app:
 
 [group('backup')]
 [doc('Init repository')]
-init app provider:
-    just _restic-run {{app}} {{provider}} init
+init app backup_type:
+    just _restic-run {{app}} {{backup_type}} init
 
 [group('backup')]
 [doc('Get snapshots')]
-snapshots app provider:
-    just _restic-run {{app}} {{provider}} --quiet snapshots --latest 5
+snapshots app backup_type:
+    just _restic-run {{app}} {{backup_type}} --quiet snapshots --latest 5
 
 [group('backup')]
 [doc('List files in the snapshot')]
-ls app provider:
-    just _restic-run {{app}} {{provider}} --quiet ls latest
+ls app backup_type:
+    just _restic-run {{app}} {{backup_type}} --quiet ls latest
 
 [group('backup')]
 [doc('Get stats of the repository')]
-stats app provider:
-    just _restic-run {{app}} {{provider}} --quiet stats
+stats app backup_type:
+    just _restic-run {{app}} {{backup_type}} --quiet stats
 
 [group('backup')]
 [doc('Unlock repository')]
-unlock app provider:
-    just _restic-run {{app}} {{provider}} --quiet unlock
+unlock app backup_type:
+    just _restic-run {{app}} {{backup_type}} --quiet unlock
 
 [group('backup')]
 [doc('Prune snapshots')]
-prune app provider:
-    just _restic-run {{app}} {{provider}} --quiet prune
+prune app backup_type:
+    just _restic-run {{app}} {{backup_type}} --quiet prune
 
 [group('backup')]
 [doc('Prune snapshots')]
@@ -101,21 +99,21 @@ backup-all app:
 
 [group('backup')]
 [doc('Backup application')]
-backup app provider:
-    nu ./conf.d/backup/{{app}}-one.nu {{provider}} ./conf.d/backup/{{app}}.{{provider}}.restic.env
+backup app backup_type:
+    nu ./conf.d/backup/{{app}}-one.nu {{backup_type}} ./conf.d/backup/{{app}}.{{backup_type}}.restic.env
 
 [group('backup')]
 [doc('Restore backup for an application')]
-restore app provider restore_path:
+restore app backup_type restore_path:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    if [[ "{{provider}}" != "local" && "{{provider}}" != "onsite" && "{{provider}}" != "offsite" ]]; then
-        echo "Invalid provider '{{provider}}'. Use: local, onsite, or offsite." >&2
+    if [[ "{{backup_type}}" != "local" && "{{backup_type}}" != "onsite" && "{{backup_type}}" != "offsite" ]]; then
+        echo "Invalid backup_type '{{backup_type}}'. Use: local, onsite, or offsite." >&2
         exit 1
     fi
 
-    env_file="./conf.d/backup/{{app}}.{{provider}}.restic.env"
+    env_file="./conf.d/backup/{{app}}.{{backup_type}}.restic.env"
     if [[ ! -f "$env_file" ]]; then
         echo "Env file not found: $env_file" >&2
         exit 1
@@ -136,7 +134,7 @@ restore app provider restore_path:
         "-v" "$target:/data:rw"
     )
 
-    if [[ "{{provider}}" == "local" ]]; then
+    if [[ "{{backup_type}}" == "local" ]]; then
         repo_path="$(grep -m1 '^RESTIC_REPOSITORY=' "$env_file" | cut -d'=' -f2-)"
         if [[ -z "$repo_path" ]]; then
             echo "RESTIC_REPOSITORY is missing in $env_file" >&2
