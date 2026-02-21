@@ -61,32 +61,32 @@ init app provider:
 [group('backup')]
 [doc('Get snapshots')]
 snapshots app provider:
-    just _restic-run {{app}} {{provider}} snapshots
+    just _restic-run {{app}} {{provider}} --quiet snapshots --latest 5
 
 [group('backup')]
 [doc('List files in the snapshot')]
 ls app provider:
-    nu ./conf.d/backup/restic.nu ls --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    just _restic-run {{app}} {{provider}} --quiet ls latest
 
 [group('backup')]
 [doc('Get stats of the repository')]
 stats app provider:
-    just _restic-run {{app}} {{provider}} stats
+    just _restic-run {{app}} {{provider}} --quiet stats
 
 [group('backup')]
 [doc('Unlock repository')]
 unlock app provider:
-    just _restic-run {{app}} {{provider}} unlock
+    just _restic-run {{app}} {{provider}} --quiet unlock
 
 [group('backup')]
 [doc('Forget snapshots')]
 forget app provider:
-    just _restic-run {{app}} {{provider}} forget
+    just _restic-run {{app}} {{provider}} --quiet forget --prune --keep-within 180d
 
 [group('backup')]
 [doc('Prune snapshots')]
 prune app provider:
-    just _restic-run {{app}} {{provider}} prune
+    just _restic-run {{app}} {{provider}} --quiet prune
 
 [group('backup')]
 [doc('Prune snapshots')]
@@ -112,7 +112,45 @@ backup app provider:
 [group('backup')]
 [doc('Restore backup for an application')]
 restore app provider restore_path:
-    nu ./conf.d/backup/restic.nu restore --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env --restore-path {{restore_path}}
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    if [[ "{{provider}}" != "local" && "{{provider}}" != "onsite" && "{{provider}}" != "offsite" ]]; then
+        echo "Invalid provider '{{provider}}'. Use: local, onsite, or offsite." >&2
+        exit 1
+    fi
+
+    env_file="./conf.d/backup/{{app}}.{{provider}}.restic.env"
+    if [[ ! -f "$env_file" ]]; then
+        echo "Env file not found: $env_file" >&2
+        exit 1
+    fi
+
+    target="{{restore_path}}"
+    if [[ -e "$target" ]]; then
+        echo "Restore path already exists: $target" >&2
+        exit 1
+    fi
+    mkdir -p "$target"
+
+    docker_args=(
+        "--hostname" "${HOSTNAME}"
+        "--env-file" "$env_file"
+        "-e" "TZ=Europe/Berlin"
+        "-v" "${HOME}/.cache/restic:/root/.cache/restic"
+        "-v" "$target:/data:rw"
+    )
+
+    if [[ "{{provider}}" == "local" ]]; then
+        repo_path="$(grep -m1 '^RESTIC_REPOSITORY=' "$env_file" | cut -d'=' -f2-)"
+        if [[ -z "$repo_path" ]]; then
+            echo "RESTIC_REPOSITORY is missing in $env_file" >&2
+            exit 1
+        fi
+        docker_args+=("-v" "$repo_path:$repo_path")
+    fi
+
+    docker run --rm -i "${docker_args[@]}" "{{RESTIC_DOCKER_IMAGE}}" restore latest --target /data
 
 [private]
 _restic-run app backup_type +args:
@@ -130,9 +168,23 @@ _restic-run app backup_type +args:
         exit 1
     fi
 
-    docker run --rm \
-        --env-file "$env_file" \
-        "{{RESTIC_DOCKER_IMAGE}}" {{args}}
+    docker_args=(
+        "--hostname" "${HOSTNAME}"
+        "--env-file" "$env_file"
+        "-e" "TZ=Europe/Berlin"
+        "-v" "${HOME}/.cache/restic:/root/.cache/restic"
+    )
+
+    if [[ "{{backup_type}}" == "local" ]]; then
+        repo_path="$(grep -m1 '^RESTIC_REPOSITORY=' "$env_file" | cut -d'=' -f2-)"
+        if [[ -z "$repo_path" ]]; then
+            echo "RESTIC_REPOSITORY is missing in $env_file" >&2
+            exit 1
+        fi
+        docker_args+=("-v" "$repo_path:$repo_path")
+    fi
+
+    docker run --rm -i "${docker_args[@]}" "{{RESTIC_DOCKER_IMAGE}}" {{args}}
 
 [group('backup')]
 [doc('Forget old snapshots and prune unused data')]
