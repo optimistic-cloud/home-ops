@@ -1,6 +1,7 @@
 services:
   # https://www.getoutline.com/
   outline:
+    container_name: outline
     # https://hub.docker.com/r/outlinewiki/outline/tags
     # https://github.com/outline/outline/releases
     image: outlinewiki/outline:1.5.0@sha256:f053574bb63b82846ec3cd7d89ab4b3019073b4dd25fda45f5cdcccc990a7401
@@ -35,6 +36,7 @@ services:
       - outline
 
   postgres:
+    container_name: outline-postgres
     image: postgres:18@sha256:b6b4d0b75c699a2c94dfc5a94fe09f38630f3b67ab0e1653ede1b7ac8e13c197
     env_file: .env
     restart: unless-stopped
