@@ -1,0 +1,54 @@
+set quiet
+set dotenv-filename := 'backup.offsite.env'
+
+hostname := "m700"
+restic_image := "restic/restic:0.18.1"
+
+slug := "outline-offsite"
+hc_url := "https://" + env('HC_HOST') + "/ping/" + env('HC_PING_KEY') + "/" + slug
+
+backup_dir := "./backup"
+
+run: hc-ping-start && hc-ping cleanup
+    mkdir -p "{{backup_dir}}"
+
+    just export-container-env "outline" "{{backup_dir}}"
+    just export-container-env "outline-postgres" "{{backup_dir}}"
+
+    docker stop outline
+
+    just create-postgres-dump "outline-postgres" "{{backup_dir}}"
+    just backup
+
+    docker start outline
+
+export-container-env container output_dir:
+    docker exec {{container}} printenv > "{{output_dir}}/{{container}}.env"
+
+create-postgres-dump container output_dir:
+    docker exec {{container}} pg_dumpall -U "$POSTGRES_USER" | gzip > "{{output_dir}}/{{container}}.sql.gz"
+
+backup:
+    docker run --rm --name {{slug}} \
+    --env-file "backup.offsite.env" \
+    -v "{{backup_dir}}:/backup" \
+    -v outline_storage-data:/data:ro \
+    -v "$HOME/.cache/restic:/root/.cache/restic" \
+    "{{restic_image}}" backup /data /backup --host "{{hostname}}"
+
+[private]
+_hc-ping action:
+    curl --fail --silent --show-error --output /dev/null "{{hc_url}}{{action}}?create=1"
+
+hc-ping:
+    just _hc-ping ""
+
+hc-ping-fail:
+    just _hc-ping "/fail"
+
+hc-ping-start:
+    just _hc-ping "/start"
+
+cleanup:
+  docker start outline >/dev/null 2>&1 || true
+  rm -rf "{{backup_dir}}"
