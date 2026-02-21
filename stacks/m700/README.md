@@ -26,6 +26,7 @@ Gitea: gitea admin auth add-oauth \
 - Discover available types for an app: `just backup-types <app>`
 
 ### Initialize a repository
+- Create `<app>.<backup_type>.restic.env`
 - Per app/type: `just init <app> <backup_type>`
 
 ### Run a backup
