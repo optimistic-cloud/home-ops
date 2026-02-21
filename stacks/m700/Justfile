@@ -139,6 +139,21 @@ _restic-run app backup_type +args:
 forget-prune app backup_type keep_last="7" keep_daily="7" keep_weekly="4" keep_monthly="6":
     just _restic-run {{app}} {{backup_type}} forget --keep-last {{keep_last}} --keep-daily {{keep_daily}} --keep-weekly {{keep_weekly}} --keep-monthly {{keep_monthly}} --prune
 
+[group('backup')]
+[doc('Send a test ping to Healthchecks for a slug')]
+healthcheck-ping slug:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    if [[ -z "${HC_HOST:-}" || -z "${HC_PING_KEY:-}" ]]; then
+        echo "HC_HOST and HC_PING_KEY must be set in .ops.env" >&2
+        exit 1
+    fi
+
+    url="https://${HC_HOST}/ping/${HC_PING_KEY}/{{slug}}?create=1"
+    curl --fail --silent --show-error "$url" >/dev/null
+    echo "Ping sent: $url"
+
 [group('systemd')]
 [doc('Configure backup timers')]
 install-timers: stop-timers && enable-timers start-timers
