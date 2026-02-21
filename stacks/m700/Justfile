@@ -48,12 +48,6 @@ down app:
     cd {{app}} && docker compose down --remove-orphans
 
 [group('backup')]
-[doc('List providers for an application')]
-providers app:
-    #!/usr/bin/env nu
-    ls conf.d/backup/{{app}}.*.restic.env | get name | each { split row '.' | get 2 }
-
-[group('backup')]
 [doc('List available backup types for an application')]
 backup-types app:
     #!/usr/bin/env nu
