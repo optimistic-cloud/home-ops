@@ -183,7 +183,7 @@ _restic-run app backup_type +args:
 
 [group('backup')]
 [doc('Forget old snapshots')]
-forget-prune app backup_type keep-within="365d":
+forget app backup_type keep-within="365d":
     just _restic-run {{app}} {{backup_type}} forget --keep-within {{keep-within}}
 
 [group('backup')]
