@@ -56,12 +56,12 @@ providers app:
 [group('backup')]
 [doc('Init repository')]
 init app provider:
-    nu ./conf.d/backup/restic.nu init --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    just _restic-run {{app}} {{provider}} init
 
 [group('backup')]
 [doc('Get snapshots')]
 snapshots app provider:
-    nu ./conf.d/backup/restic.nu snapshots --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    just _restic-run {{app}} {{provider}} snapshots
 
 [group('backup')]
 [doc('List files in the snapshot')]
@@ -71,22 +71,22 @@ ls app provider:
 [group('backup')]
 [doc('Get stats of the repository')]
 stats app provider:
-    nu ./conf.d/backup/restic.nu stats --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    just _restic-run {{app}} {{provider}} stats
 
 [group('backup')]
 [doc('Unlock repository')]
 unlock app provider:
-    nu ./conf.d/backup/restic.nu unlock --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    just _restic-run {{app}} {{provider}} unlock
 
 [group('backup')]
 [doc('Forget snapshots')]
 forget app provider:
-    nu ./conf.d/backup/restic.nu forget --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    just _restic-run {{app}} {{provider}} forget
 
 [group('backup')]
 [doc('Prune snapshots')]
 prune app provider:
-    nu ./conf.d/backup/restic.nu prune --provider-env-file ./conf.d/backup/{{app}}.{{provider}}.restic.env
+    just _restic-run {{app}} {{provider}} prune
 
 [group('backup')]
 [doc('Prune snapshots')]
@@ -135,29 +135,9 @@ _restic-run app backup_type +args:
         "{{RESTIC_DOCKER_IMAGE}}" {{args}}
 
 [group('backup')]
-[doc('List snapshots from app backup repository by type')]
-snapshots-repo app backup_type:
-    just _restic-run {{app}} {{backup_type}} snapshots
-
-[group('backup')]
-[doc('Get restic stats from app backup repository by type')]
-stats-repo app backup_type:
-    just _restic-run {{app}} {{backup_type}} stats
-
-[group('backup')]
 [doc('Forget old snapshots and prune unused data')]
 forget-prune app backup_type keep_last="7" keep_daily="7" keep_weekly="4" keep_monthly="6":
     just _restic-run {{app}} {{backup_type}} forget --keep-last {{keep_last}} --keep-daily {{keep_daily}} --keep-weekly {{keep_weekly}} --keep-monthly {{keep_monthly}} --prune
-
-[group('backup')]
-[doc('Prune unused data in app backup repository by type')]
-prune-repo app backup_type:
-    just _restic-run {{app}} {{backup_type}} prune
-
-[group('backup')]
-[doc('Unlock app backup repository by type')]
-unlock-repo app backup_type:
-    just _restic-run {{app}} {{backup_type}} unlock
 
 [group('systemd')]
 [doc('Configure backup timers')]
