@@ -96,7 +96,7 @@ services:
     healthcheck:
       <<: *celery-healthcheck
 
-  app:
+  journiv-app:
     <<: *app-common
     container_name: journiv-sqlite-app
     ports:

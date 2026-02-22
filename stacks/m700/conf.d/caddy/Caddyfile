@@ -34,3 +34,6 @@ jellyfin.optimistic.cloud {
 outline.optimistic.cloud {
     reverse_proxy outline:3001
 }
+journiv.optimistic.cloud {
+    reverse_proxy journiv-app:8000
+}
