@@ -148,3 +148,5 @@ networks:
     driver: bridge
   frontend:
     driver: bridge
+  m700_default:
+    external: true
