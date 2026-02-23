@@ -40,3 +40,9 @@ journiv.optimistic.cloud {
 matrix.optimistic.cloud {
     reverse_proxy synapse:8008
 }
+element.optimistic.cloud {
+    reverse_proxy element:80
+}
+chat.optimistic.cloud {
+    reverse_proxy fluffychat:80
+}

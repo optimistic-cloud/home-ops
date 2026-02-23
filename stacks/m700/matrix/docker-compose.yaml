@@ -45,6 +45,22 @@ services:
     networks:
       - m700_default
 
+  element:
+    image: vectorim/element-web:latest
+    container_name: element
+    volumes:
+      - ./element-config.json:/app/config.json:ro
+    restart: unless-stopped
+    networks:
+      - m700_default
+  fluffychat:
+    image: aceberg/fluffychat:latest
+    container_name: fluffychat
+    volumes:
+      - ./fluffychat-config.json:/usr/share/nginx/html/config.json:ro
+    restart: unless-stopped
+    networks:
+      - m700_default
 volumes:
   synapse-data:
 
