@@ -12,13 +12,13 @@ services:
     expose:
       - "5432"
     environment:
-      POSTGRES_DB: ${MATRIX_POSTGRES_DB}
-      POSTGRES_USER: ${MATRIX_POSTGRES_USER}
-      POSTGRES_PASSWORD: ${MATRIX_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - matrix-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${MATRIX_POSTGRES_USER} -d ${MATRIX_POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       <<: *default-healthcheck
 
   matrix-synapse:
@@ -34,8 +34,8 @@ services:
       - matrix-synapse-data:/data
     environment:
       TZ: Europe/Berlin
-      SYNAPSE_SERVER_NAME: ${MATRIX_SERVER_NAME}
-      SYNAPSE_REPORT_STATS: ${MATRIX_REPORT_STATS:-no}
+      SYNAPSE_SERVER_NAME: ${SYNAPSE_SERVER_NAME}
+      SYNAPSE_REPORT_STATS: ${SYNAPSE_REPORT_STATS:-no}
       SYNAPSE_NO_TLS: "true"
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8008/_matrix/client/versions"]
