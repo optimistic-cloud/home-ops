@@ -27,9 +27,9 @@ services:
     image: matrixdotorg/synapse:latest
     container_name: synapse
     restart: unless-stopped
-    depends_on:
-      matrix-postgres:
-        condition: service_healthy
+    # depends_on:
+      # matrix-post\g\res:
+        # condition: service_healthy
     expose:
       - "8008"
     volumes:
