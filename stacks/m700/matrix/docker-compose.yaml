@@ -1,3 +1,5 @@
+name: matrix
+
 x-healthcheck: &default-healthcheck
   interval: 180s
   timeout: 30s
@@ -5,25 +7,25 @@ x-healthcheck: &default-healthcheck
   start_period: 60s
 
 services:
-  matrix-postgres:
-    image: postgres:17-alpine
-    container_name: matrix-postgres
-    restart: unless-stopped
-    expose:
-      - "5432"
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - matrix-postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      <<: *default-healthcheck
+  # matrix-postgres:
+  #   image: postgres:17-alpine
+  #   container_name: matrix-postgres
+  #   restart: unless-stopped
+  #   expose:
+  #     - "5432"
+  #   environment:
+  #     POSTGRES_DB: ${POSTGRES_DB}
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #   volumes:
+  #     - matrix-postgres-data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+  #     <<: *default-healthcheck
 
-  matrix-synapse:
+  synapse:
     image: matrixdotorg/synapse:latest
-    container_name: matrix-synapse
+    container_name: synapse
     restart: unless-stopped
     depends_on:
       matrix-postgres:
@@ -31,7 +33,7 @@ services:
     expose:
       - "8008"
     volumes:
-      - matrix-synapse-data:/data
+      - synapse-data:/data
     environment:
       TZ: Europe/Berlin
       SYNAPSE_SERVER_NAME: ${SYNAPSE_SERVER_NAME}
@@ -42,5 +44,4 @@ services:
       <<: *default-healthcheck
 
 volumes:
-  matrix-postgres-data:
-  matrix-synapse-data:
+  synapse-data:
