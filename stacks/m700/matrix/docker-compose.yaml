@@ -42,6 +42,12 @@ services:
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8008/_matrix/client/versions"]
       <<: *default-healthcheck
+    networks:
+      - m700_default
 
 volumes:
   synapse-data:
+
+networks:
+  m700_default:
+    external: true
