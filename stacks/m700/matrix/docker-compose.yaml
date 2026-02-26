@@ -24,7 +24,7 @@ services:
   #     <<: *default-healthcheck
 
   synapse:
-    image: matrixdotorg/synapse:latest
+    image: matrixdotorg/synapse:latest@sha256:3a18f811c6269f0e814e38496e90869cf7aeb05fc4301526cdd31608fef63616
     container_name: synapse
     restart: unless-stopped
     # depends_on:
@@ -46,7 +46,7 @@ services:
       - m700_default
 
   element:
-    image: vectorim/element-web:latest
+    image: vectorim/element-web:latest@sha256:dd6696825002350e3fc7f6110ab9b4ebdf32b5c489fb195b74cff4cb1b87220a
     container_name: element
     volumes:
       - ./element-config.json:/app/config.json:ro
@@ -54,7 +54,7 @@ services:
     networks:
       - m700_default
   fluffychat:
-    image: aceberg/fluffychat:latest
+    image: aceberg/fluffychat:latest@sha256:427ed5c2c85627d3f764ec89681a22c698f3dc6d5f342dd4b27ed818a6326e58
     container_name: fluffychat
     volumes:
       - ./fluffychat-config.json:/usr/share/nginx/html/config.json:ro
