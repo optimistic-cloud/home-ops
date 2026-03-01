@@ -22,6 +22,9 @@ services:
       - SITE_NAME=Optimistic Cloud
       - REGISTRATION_OPEN=False
       - ADMINS=${ADMINS}
+      - MATRIX_ACCESS_TOKEN=${MATRIX_ACCESS_TOKEN}
+      - MATRIX_HOMESERVER=${MATRIX_HOMESERVER}
+      - MATRIX_USER_ID=${MATRIX_USER_ID}
     volumes:
       - healthchecks-data:/data
     networks:
