@@ -1,5 +1,12 @@
 {
     acme_dns cloudflare {env.CF_DNS_API_TOKEN}
+
+    #debug
+    
+    #servers {
+    #  # DANGEROUS: logs Authorization/Cookie headers unredacted
+    #  log_credentials
+    #}
 }
 vaultwarden.optimistic.cloud {
     reverse_proxy vaultwarden:80
@@ -38,11 +45,18 @@ journiv.optimistic.cloud {
     reverse_proxy journiv-app:8000
 }
 matrix.optimistic.cloud {
+    request_body {
+        max_size 50MB
+    }
     reverse_proxy synapse:8008
+}
+
+mas.optimistic.cloud {
+    reverse_proxy mas:8080
+}
+element-admin.optimistic.cloud {
+    reverse_proxy element-admin:8080
 }
 element.optimistic.cloud {
     reverse_proxy element:80
-}
-chat.optimistic.cloud {
-    reverse_proxy fluffychat:80
 }
