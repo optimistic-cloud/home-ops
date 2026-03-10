@@ -44,13 +44,14 @@ outline.optimistic.cloud {
 journiv.optimistic.cloud {
     reverse_proxy journiv-app:8000
 }
+
+# Matrix
 matrix.optimistic.cloud {
     request_body {
         max_size 50MB
     }
     reverse_proxy synapse:8008
 }
-
 mas.optimistic.cloud {
     reverse_proxy mas:8080
 }
