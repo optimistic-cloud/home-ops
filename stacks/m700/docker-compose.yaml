@@ -323,7 +323,7 @@ services:
       - "traefik.http.services.invidious.loadbalancer.server.port=3000"
 
   companion:
-    image: quay.io/invidious/invidious-companion:latest@sha256:7b97048c42f7577f4557de7767a3ade74444b8860ecbe369946b23d896fd51ea
+    image: quay.io/invidious/invidious-companion:latest@sha256:fb01ee2084848be6741a3e52f0941aa4300f8b29c3730c4d3327e74373a878fb
     container_name: invidious-companion
     environment:
       TZ: Europe/Berlin
