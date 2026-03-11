@@ -1,0 +1,6 @@
+help:
+  just --list
+
+export-subscriptions:
+  # https://docs.invidious.io/api/authenticated-endpoints/#post-apiv1authpreferences
+  curl https://invidious.optimistic.cloud/api/v1/auth/subscriptions
