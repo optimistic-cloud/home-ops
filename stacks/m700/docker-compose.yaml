@@ -367,7 +367,7 @@ services:
 
   wallos:
     container_name: wallos
-    image: bellamy/wallos:latest@sha256:46f25daeebedbe00f409abdc82f07d1bde6818dc9fee8b360b0b09c453c4b999
+    image: bellamy/wallos:4.6.2
     expose:
       - "80"
     environment:
