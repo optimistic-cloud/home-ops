@@ -47,6 +47,9 @@ backup backup_target:
   #!/usr/bin/env bash
   set -euo pipefail
 
+  run_id=$(cat /proc/sys/kernel/random/uuid)
+  curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-local/start?create=1&rid=${run_id}"
+
   export_path=./export-data
 
   cleanup() {
@@ -56,6 +59,11 @@ backup backup_target:
       exit "$status"
   }
 
+  on_error() {
+    curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-local/fail?rid=${run_id}"
+  }
+
+  trap on_error ERR
   trap cleanup EXIT
 
   mkdir -p "$export_path"
@@ -64,8 +72,9 @@ backup backup_target:
   just export-sqlite "$export_path"
 
   just ls-volume-data "$export_path"
-
   just restic-backup "{{backup_target}}"
+
+  curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-local?rid=${run_id}"
 
 [group("backup")]
 [private]
@@ -125,7 +134,15 @@ restic-snapshots backup_target:
 [group('restic')]
 [doc('List files in the latest snapshot')]
 restic-ls backup_target snapshot_id="latest":
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  run_id=$(cat /proc/sys/kernel/random/uuid)
+  curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-local/start?create=1&rid=${run_id}"
+
   just _restic-run {{backup_target}} --quiet ls {{snapshot_id}}
+ 
+  curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-local?rid=${run_id}"
 
 [group('restic')]
 [doc('Get stats of the repository')]
