@@ -36,7 +36,6 @@ ls-vaultwarden-data:
 [private]
 ls-volume-data export_path:
   docker run --rm -v {{export_path}}:/data:ro alpine ls -la /data
-  docker run --rm -v {{export_path}}:/data:ro alpine cat /data/db.sqlite3 | head -n 1
 
 ####################################
 ######## BACKUP             ########
@@ -71,8 +70,6 @@ backup backup_target:
   just down
   just export-sqlite "$export_path"
 
-  just ls-volume-data "$export_path"
-  
   log=$(just restic-backup "{{backup_target}}")
   exit_code=$?
   curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-{{backup_target}}/${exit_code}?rid=${run_id}"
