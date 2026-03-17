@@ -85,38 +85,38 @@ services:
       test: ['CMD', '/agent', 'health']
       <<: *default-healthcheck
 
-  vaultwarden:
-    image: vaultwarden/server:1.35.4@sha256:43498a94b22f9563f2a94b53760ab3e710eefc0d0cac2efda4b12b9eb8690664
-    container_name: vaultwarden
-    restart: unless-stopped
-    read_only: true
-    expose:
-      - "80"
-    environment:
-      TZ: Europe/Berlin
+  # vaultwarden:
+  #   image: vaultwarden/server:1.35.4@sha256:43498a94b22f9563f2a94b53760ab3e710eefc0d0cac2efda4b12b9eb8690664
+  #   container_name: vaultwarden
+  #   restart: unless-stopped
+  #   read_only: true
+  #   expose:
+  #     - "80"
+  #   environment:
+  #     TZ: Europe/Berlin
       
-      DOMAIN: https://vaultwarden.${DOMAIN}
-      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
-      SIGNUPS_ALLOWED: false
-      INVITATIONS_ALLOWED: false
+  #     DOMAIN: https://vaultwarden.${DOMAIN}
+  #     ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
+  #     SIGNUPS_ALLOWED: false
+  #     INVITATIONS_ALLOWED: false
 
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_SECURITY: ${SMTP_SECURITY}
-      SMTP_USERNAME: ${VAULTWARDEN_SMTP_USERNAME}
-      SMTP_PASSWORD: ${VAULTWARDEN_SMTP_PASSWORD}
-      SMTP_FROM: ${VAULTWARDEN_SMTP_FROM}
+  #     SMTP_HOST: ${SMTP_HOST}
+  #     SMTP_PORT: ${SMTP_PORT}
+  #     SMTP_SECURITY: ${SMTP_SECURITY}
+  #     SMTP_USERNAME: ${VAULTWARDEN_SMTP_USERNAME}
+  #     SMTP_PASSWORD: ${VAULTWARDEN_SMTP_PASSWORD}
+  #     SMTP_FROM: ${VAULTWARDEN_SMTP_FROM}
 
-      SSO_ENABLED: ${VAULTWARDEN_SSO_ENABLED}
-      SSO_ONLY: ${VAULTWARDEN_SSO_ONLY}
-      SSO_AUTHORITY: ${VAULTWARDEN_SSO_AUTHORITY}
-      SSO_CLIENT_ID: ${VAULTWARDEN_SSO_CLIENT_ID}
-      SSO_CLIENT_SECRET: ${VAULTWARDEN_SSO_CLIENT_SECRET}
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/api/alive"]
-      <<: *default-healthcheck
-    volumes:
-      - vaultwarden-data:/data/
+  #     SSO_ENABLED: ${VAULTWARDEN_SSO_ENABLED}
+  #     SSO_ONLY: ${VAULTWARDEN_SSO_ONLY}
+  #     SSO_AUTHORITY: ${VAULTWARDEN_SSO_AUTHORITY}
+  #     SSO_CLIENT_ID: ${VAULTWARDEN_SSO_CLIENT_ID}
+  #     SSO_CLIENT_SECRET: ${VAULTWARDEN_SSO_CLIENT_SECRET}
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost/api/alive"]
+  #     <<: *default-healthcheck
+  #   volumes:
+  #     - vaultwarden-data:/data/
 
   # Deployment notes
   # Opengist admin is provisioned via Pocket ID
@@ -377,8 +377,8 @@ services:
     restart: unless-stopped
 
 volumes:
-  vaultwarden-data:
-    name: vaultwarden-data
+  # vaultwarden-data:
+  #   name: vaultwarden-data
   opengist-data:
     name: opengist-data
   gitea-data:
