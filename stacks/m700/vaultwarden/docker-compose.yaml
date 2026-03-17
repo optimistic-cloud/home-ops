@@ -45,6 +45,5 @@ volumes:
     external: true
 
 networks:
-  matrix:
-    m700_default:
-      external: true
+  m700_default:
+    external: true
