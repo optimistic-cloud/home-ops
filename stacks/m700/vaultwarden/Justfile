@@ -175,9 +175,8 @@ restic-check backup_target read-data-subset="33%":
 [doc('For each restic command but not backup, as it needs additional volumes and environment variables')]
 _restic-run backup_target +restic_args:
   #!/usr/bin/env nu
+
   let backup_target = "{{backup_target}}"
-  
-  echo "==> {{backup_target}}"
 
   with-env { 
     HOSTNAME: "m700"
