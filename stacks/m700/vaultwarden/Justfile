@@ -51,10 +51,11 @@ backup +backup_targets:
   export_path=./export-data
 
   cleanup() {
-      status=$?
-      just up || true
-      rm -rf "$export_path"
-      exit "$status"
+    echo "Cleaning up..."
+    status=$?
+    just up || true
+    rm -rf "$export_path"
+    exit "$status"
   }
   
   trap cleanup EXIT
