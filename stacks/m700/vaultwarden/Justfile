@@ -1,0 +1,169 @@
+set dotenv-load
+
+help:
+  just --list --list-submodules
+
+####################################
+######## DOCKER             ########
+####################################
+
+[group('docker')]
+[doc('Start the stack')]
+up:
+  docker compose up -d --remove-orphans
+
+[group('docker')]
+[doc('Stop the stack')]
+down:
+  docker compose down --remove-orphans
+
+[group('docker')]
+[doc('Restart application stack')]
+restart: down && up
+
+[group('docker')]
+[doc('Get logs for the application')]
+logs:
+  docker compose logs -f
+
+[group("docker")]
+[doc('List data of the application')]
+ls-vaultwarden-data:
+  just ls-volume-data vaultwarden-data
+
+[group("docker")]
+[doc('List docker volume data')]
+[private]
+ls-volume-data export_path:
+  docker run --rm -v {{export_path}}:/data:ro alpine ls -la /data
+  docker run --rm -v {{export_path}}:/data:ro alpine cat /data/db.sqlite3 | head -n 1
+
+####################################
+######## BACKUP             ########
+####################################
+
+[group("backup")]
+backup backup_target:
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  export_path=./export-data
+
+  cleanup() {
+      status=$?
+      just up || true
+      rm -rf "$export_path"
+      exit "$status"
+  }
+
+  trap cleanup EXIT
+
+  mkdir -p "$export_path"
+  just export-env vaultwarden "$export_path"
+  just down
+  just export-sqlite "$export_path"
+
+  just ls-volume-data "$export_path"
+
+  just restic-backup "{{backup_target}}"
+
+[group("backup")]
+[private]
+export-sqlite export_path:
+  docker run --rm -v vaultwarden-data:/data:ro -v {{export_path}}:/export alpine/sqlite "/data/db.sqlite3" ".backup '/export/db.sqlite3'"
+  docker run --rm -v {{export_path}}:/data alpine/sqlite /data/db.sqlite3 "PRAGMA integrity_check;"
+
+[group("backup")]
+[private]
+export-env container_name export_path:
+  docker container inspect {{container_name}} | jq -r '.[0].Config.Env[]' > "{{export_path}}/{{container_name}}.env"
+
+[group("backup")]
+restore backup_target snapshot_id="latest" target_dir="./restore":
+  mkdir {{target_dir}}
+  just restic-restore {{backup_target}} {{snapshot_id}}
+
+####################################
+######## RESTIC             ########
+####################################
+
+[group('restic')]
+[doc('Init repository')]
+restic-init backup_target:
+  just _restic-run {{backup_target}} init
+
+[group('restic')]
+[doc('Backup data')]
+[private]
+restic-backup backup_target:
+  just _restic-run {{backup_target}} --exclude-caches --skip-if-unchanged --json --quiet backup /data | jq
+
+# [group('restic')]
+# [doc('Restore data')]
+# [private]
+# restic-restore backup_target snapshot_id:
+#   #!/usr/bin/env nu
+#   let backup_target = "{{backup_target}}"
+#   let restic_repo_type = (just get-repo-type $backup_target)
+
+#   with-env {
+#     RESTIC_ENV_FILE: $"($backup_target).restic.env"
+#   } {
+#     (
+#       ^docker compose
+#         -f docker-compose.restic.yaml
+#         -f docker-compose.restic-restore.yaml
+#         run --rm $"restic-($restic_repo_type)" restore {{snapshot_id}} --target /data
+#     )
+#   }  
+
+[group('restic')]
+[doc('Get snapshots')]
+restic-snapshots backup_target:
+  just _restic-run {{backup_target}} --quiet snapshots --latest 5
+
+[group('restic')]
+[doc('List files in the latest snapshot')]
+restic-ls backup_target snapshot_id="latest":
+  just _restic-run {{backup_target}} --quiet ls {{snapshot_id}}
+
+[group('restic')]
+[doc('Get stats of the repository')]
+restic-stats backup_target:
+  just _restic-run {{backup_target}} --json stats | jq
+
+[group('restic')]
+[doc('Unlock repository')]
+restic-unlock backup_target:
+  just _restic-run {{backup_target}} --quiet unlock
+
+[group('restic')]
+[doc('Forget old snapshots')]
+restic-forget backup_target keep-within="365d":
+  just _restic-run {{backup_target}} --quiet forget --keep-within {{keep-within}}
+
+[group('restic')]
+[doc('Prune snapshots')]
+restic-prune backup_target:
+  just _restic-run {{backup_target}} --quiet prune
+
+[group('restic')]
+[doc('Check snapshots')]
+restic-check backup_target read-data-subset="33%":
+  just _restic-run {{backup_target}} --json check --read-data-subset {{read-data-subset}} | jq
+
+[group('restic')]
+[private]
+[doc('For each restic command but not backup, as it needs additional volumes and environment variables')]
+_restic-run backup_target +restic_args:
+  #!/usr/bin/env nu
+  let backup_target = "{{backup_target}}"
+  
+  echo "==> {{backup_target}}"
+
+  with-env { 
+    HOSTNAME: "m700"
+    RESTIC_ENV_FILE: $"($backup_target).restic.env" 
+  } {
+    ^docker compose -f docker-compose.backup.yaml run --rm restic {{restic_args}}
+  }
