@@ -141,8 +141,9 @@ restic-ls backup_target snapshot_id="latest":
   curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-local/start?create=1&rid=${run_id}"
 
   just _restic-run {{backup_target}} --quiet ls {{snapshot_id}}
+  exit_code=$?
  
-  curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-local?rid=${run_id}"
+  curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-local/${exit_code}?rid=${run_id}"
 
 [group('restic')]
 [doc('Get stats of the repository')]
