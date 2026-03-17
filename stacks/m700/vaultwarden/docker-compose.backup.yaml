@@ -6,7 +6,7 @@ services:
     #   - restic
     restart: "no"
     stdin_open: true
-    user: "1000:1000"
+    user: "0:0" # TODO
     environment:
       TZ: Europe/Berlin
       RESTIC_CACHE_DIR: /root/.cache/restic
