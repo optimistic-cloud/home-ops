@@ -130,7 +130,7 @@ restic-ls backup_target snapshot_id="latest":
 [group('restic')]
 [doc('Get stats of the repository')]
 restic-stats backup_target:
-  just _restic-run {{backup_target}} --json stats --mode raw-data | jq
+  just _restic-run {{backup_target}} stats --mode raw-data
 
 [group('restic')]
 [doc('Unlock repository')]
