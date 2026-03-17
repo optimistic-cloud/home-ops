@@ -48,7 +48,7 @@ backup backup_target:
   set -euo pipefail
 
   run_id=$(cat /proc/sys/kernel/random/uuid)
-  curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-local/start?create=1&rid=${run_id}"
+  curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-{{backup_target}}/start?create=1&rid=${run_id}"
 
   export_path=./export-data
 
@@ -60,7 +60,7 @@ backup backup_target:
   }
 
   on_error() {
-    curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-local/fail?rid=${run_id}"
+    curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-{{backup_target}}/fail?rid=${run_id}"
   }
 
   trap on_error ERR
@@ -72,9 +72,18 @@ backup backup_target:
   just export-sqlite "$export_path"
 
   just ls-volume-data "$export_path"
-  just restic-backup "{{backup_target}}"
+  
+  log=$(just restic-backup "{{backup_target}}")
+  exit_code=$?
+  curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-{{backup_target}}/${exit_code}?rid=${run_id}"
 
-  curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-local?rid=${run_id}"
+  log=$(just restic-check "{{backup_target}}")
+  exit_code=$?
+  curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-{{backup_target}}/${exit_code}?rid=${run_id}"
+
+  log=$(just restic-forget "{{backup_target}}")
+  exit_code=$?
+  curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-{{backup_target}}/${exit_code}?rid=${run_id}"
 
 [group("backup")]
 [private]
@@ -140,10 +149,9 @@ restic-ls backup_target snapshot_id="latest":
   run_id=$(cat /proc/sys/kernel/random/uuid)
   curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-{{backup_target}}/start?create=1&rid=${run_id}"
 
-  just _restic-run {{backup_target}} --quiet ls {{snapshot_id}}
+  log=$(just _restic-run {{backup_target}} --quiet ls {{snapshot_id}})
   exit_code=$?
- 
-  curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-{{backup_target}}/${exit_code}?rid=${run_id}"
+  curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-{{backup_target}}/${exit_code}?rid=${run_id}"
 
 [group('restic')]
 [doc('Get stats of the repository')]
