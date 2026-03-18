@@ -89,7 +89,8 @@ backup +backup_targets:
 [group("backup")]
 [private]
 export-sqlite export_path:
-  docker run --rm -v vaultwarden-data:/data:ro -v {{export_path}}:/export alpine/sqlite "/data/db.sqlite3" ".backup '/export/db.sqlite3'"
+  # -v vaultwarden-data:/data :rw needed for taking backup
+  docker run --rm -v vaultwarden-data:/data -v {{export_path}}:/export alpine/sqlite "/data/db.sqlite3" ".backup '/export/db.sqlite3'"
   docker run --rm -v {{export_path}}:/data alpine/sqlite /data/db.sqlite3 "PRAGMA integrity_check;"
 
 [group("backup")]
