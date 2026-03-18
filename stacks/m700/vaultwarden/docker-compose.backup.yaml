@@ -16,8 +16,8 @@ services:
       - restic-cache:/root/.cache/restic
       - /mnt/data/m700/vaultwarden:/repo
       - vaultwarden-data:/data/vaultwarden-data:ro
-      - ./export-data:/data/export
-      - ./restore-data:/restore-data
+      - ${EXPORT_DATA}:/data/export
+      - ${RESTORE_DATA}:/restore-data
 
 volumes:
   restic-cache:

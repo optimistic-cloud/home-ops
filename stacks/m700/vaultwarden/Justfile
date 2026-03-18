@@ -48,13 +48,13 @@ backup +backup_targets:
 
   run_id=$(cat /proc/sys/kernel/random/uuid)
 
-  export_path=./export-data
+  export_path=${EXPORT_DATA}
 
   cleanup() {
     echo "Cleaning up..."
     status=$?
     just up || true
-    rm -rf "$export_path"
+    just _cleanup || true
     exit "$status"
   }
   
@@ -189,3 +189,10 @@ _restic-run backup_target +restic_args:
   } {
     ^docker compose -f docker-compose.backup.yaml run --rm restic {{restic_args}}
   }
+
+[group('utils')]
+[private]
+[doc('Removes temporary files created during backup')]
+_cleanup:
+  rm -rf "${EXPORT_DATA}"
+  rm -rf "${RESTORE_DATA}"
