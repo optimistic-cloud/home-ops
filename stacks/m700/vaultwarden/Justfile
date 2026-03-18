@@ -100,8 +100,8 @@ export-env container_name export_path:
 
 [group("backup")]
 restore backup_target snapshot_id="latest":
-  restore_path=${RESTORE_DATA}
-  mkdir -p "$restore_path"
+  #!/usr/bin/env bash
+  mkdir -p "${RESTORE_DATA}"
   just restic-restore {{backup_target}} {{snapshot_id}}
 
 ####################################
