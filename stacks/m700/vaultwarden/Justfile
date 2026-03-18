@@ -126,7 +126,7 @@ restic-backup backup_target:
 [doc('Restore data')]
 [private]
 restic-restore backup_target snapshot_id:
-  just _restic-run {{backup_target}} restore {{snapshot_id}} --target /data
+  just _restic-run {{backup_target}} restore {{snapshot_id}} --target /restore-data
 
 [group('restic')]
 [doc('Get snapshots')]
