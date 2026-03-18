@@ -99,8 +99,9 @@ export-env container_name export_path:
   docker container inspect {{container_name}} | jq -r '.[0].Config.Env[]' > "{{export_path}}/{{container_name}}.env"
 
 [group("backup")]
-restore backup_target snapshot_id="latest" target_dir="./restore":
-  mkdir {{target_dir}}
+restore backup_target snapshot_id="latest":
+  restore_path=${RESTORE_DATA}
+  mkdir -p "$restore_path"
   just restic-restore {{backup_target}} {{snapshot_id}}
 
 ####################################
@@ -121,24 +122,11 @@ restic-backup backup_target:
   git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
   just _restic-run {{backup_target}} --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet backup /data | jq
 
-# [group('restic')]
-# [doc('Restore data')]
-# [private]
-# restic-restore backup_target snapshot_id:
-#   #!/usr/bin/env nu
-#   let backup_target = "{{backup_target}}"
-#   let restic_repo_type = (just get-repo-type $backup_target)
-
-#   with-env {
-#     RESTIC_ENV_FILE: $"($backup_target).restic.env"
-#   } {
-#     (
-#       ^docker compose
-#         -f docker-compose.restic.yaml
-#         -f docker-compose.restic-restore.yaml
-#         run --rm $"restic-($restic_repo_type)" restore {{snapshot_id}} --target /data
-#     )
-#   }  
+[group('restic')]
+[doc('Restore data')]
+[private]
+restic-restore backup_target snapshot_id:
+  just _restic-run {{backup_target}} restore {{snapshot_id}} --target /data
 
 [group('restic')]
 [doc('Get snapshots')]
