@@ -1,4 +1,4 @@
-name: vaultwarden
+name: wallos
 
 services:
   wallos:
