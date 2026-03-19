@@ -120,7 +120,7 @@ restic-backup backup_target:
   #!/usr/bin/env bash
 
   git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
-  just _restic-run {{backup_target}} --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet backup /data | jq
+  just _restic-run {{backup_target}} --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet backup /data/db | jq
 
 [group('restic')]
 [doc('Restore data')]
