@@ -365,16 +365,16 @@ services:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       <<: *default-healthcheck
 
-  wallos:
-    container_name: wallos
-    image: bellamy/wallos:4.6.2@sha256:ff4f09d93b23ae7ec6aba61e6b4a9b02fdd4f572ef54f4017a890c2414892e2c
-    expose:
-      - "80"
-    environment:
-      TZ: 'Europe/Berlin'
-    volumes:
-      - wallos-data:/var/www/html
-    restart: unless-stopped
+  # wallos:
+  #   container_name: wallos
+  #   image: bellamy/wallos:4.6.2@sha256:ff4f09d93b23ae7ec6aba61e6b4a9b02fdd4f572ef54f4017a890c2414892e2c
+  #   expose:
+  #     - "80"
+  #   environment:
+  #     TZ: 'Europe/Berlin'
+  #   volumes:
+  #     - wallos-data:/var/www/html
+  #   restart: unless-stopped
 
 volumes:
   # vaultwarden-data:
@@ -387,8 +387,8 @@ volumes:
     name: pocket-id-data
   postgresdata:
   companioncache:
-  wallos-data:
-    name: wallos-data
+  # wallos-data:
+  #   name: wallos-data
   beszel-data:
     name: beszel-data
   beszel-socket:

@@ -1,0 +1,30 @@
+name: vaultwarden
+
+services:
+  wallos:
+    container_name: wallos
+    image: bellamy/wallos:4.6.2@sha256:ff4f09d93b23ae7ec6aba61e6b4a9b02fdd4f572ef54f4017a890c2414892e2c
+    expose:
+      - "80"
+    environment:
+      TZ: 'Europe/Berlin'
+    volumes:
+      - wallos-data:/var/www/html
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 180s
+      timeout: 30s
+      retries: 5
+      start_period: 60s
+    networks:
+      - m700_default
+
+volumes:
+  wallos-data:
+    name: wallos-data
+    external: true
+
+networks:
+  m700_default:
+    external: true
