@@ -93,6 +93,12 @@ export-sqlite export_path:
   docker run --rm -v opengist-data:/data -v {{export_path}}:/export alpine/sqlite "/data/db.sqlite3" ".backup '/export/db.sqlite3'"
   docker run --rm -v {{export_path}}:/data alpine/sqlite /data/db.sqlite3 "PRAGMA integrity_check;"
 
+  # Check that the backup file exists and is not empty
+  if [ ! -s "{{export_path}}/db.sqlite3" ]; then
+    echo "Backup failed: {{export_path}}/db.sqlite3 is missing or empty!" >&2
+    exit 1
+  fi
+
 [group("backup")]
 [private]
 export-env container_name export_path:
