@@ -62,6 +62,23 @@ backup +backup_targets:
   
   trap cleanup EXIT
 
+  create_backup_archive() {
+    local dump_location='/var/lib/gitea'
+    local gitea_archive='gitea-dump.tar.gz'
+
+    # remove old dump, create new dump 
+    docker exec -u git gitea rm -f "${dump_location}/${gitea_archive}"
+    # create backup archive
+    docker exec -u git gitea /usr/local/bin/gitea \
+      dump --work-path /tmp \
+      --file "${gitea_archive}" \
+      --config /etc/gitea/app.ini \
+      --database sqlite3 \
+      --type tar.gz
+    
+    docker cp gitea:"${dump_location}/${gitea_archive}" "$export_path"
+  }
+
   do_backup() {
     for backup_target in {{backup_targets}}; do
       curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/gitea-${backup_target}/start?create=1&rid=${run_id}"
@@ -87,25 +104,8 @@ backup +backup_targets:
 
   mkdir -p "$export_path"
   just export-env gitea "$export_path"
-  just down
-  just export-sqlite "gitea-data" "gitea.db" "$export_path"
-  do_backup
-
-[group("backup")]
-[private]
-export-sqlite volume_name db_name export_path:
-  #!/usr/bin/env bash
-  # -v gitea-data:/data :rw needed for taking backup
-  docker run --rm -v {{volume_name}}:/data -v {{export_path}}:/export alpine/sqlite "/data/{{db_name}}" ".backup '/export/{{db_name}}'"
-  result=$(docker run --rm -v {{export_path}}:/data alpine/sqlite /data/{{db_name}} 'PRAGMA integrity_check;')
-  if [ "$result" = "ok" ]; then
-    echo "Database is valid"
-  else
-    echo "Database is NOT valid"
-    exit 1
-  fi
-
-  docker run --rm -v {{export_path}}:/data alpine/sqlite /data/{{db_name}} ".tables"
+  create_backup_archive
+  #do_backup
 
 [group("backup")]
 [private]
