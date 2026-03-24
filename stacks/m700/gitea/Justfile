@@ -178,7 +178,8 @@ _restic-run backup_target +restic_args:
 [private]
 [doc('Removes temporary files created during backup')]
 _cleanup:
-  docker run --rm -v "${EXPORT_DATA}":/data:ro alpine rm -rf /data/*
-  docker run --rm -v "${RESTORE_DATA}":/data:ro alpine rm -rf /data/*
+  docker run --rm -v "${EXPORT_DATA}":/data:ro alpine ls -la /data/*
+  docker run --rm -v "${EXPORT_DATA}":/data alpine rm -rf /data/*
+  docker run --rm -v "${RESTORE_DATA}":/data alpine rm -rf /data/*
   rm -rf "${EXPORT_DATA}"
   rm -rf "${RESTORE_DATA}"
