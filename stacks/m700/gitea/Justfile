@@ -59,7 +59,7 @@ backup +backup_targets:
 
     rm -rf "${EXPORT_DATA}"
     rm -rf "${RESTORE_DATA}"
-    
+
     exit "$status"
   }
   
@@ -92,10 +92,6 @@ backup +backup_targets:
   bash prepare_backup_data.sh "$export_path"
   do_backup
 
-[group("backup")]
-[private]
-export-env container_name export_path:
-  docker container inspect {{container_name}} | jq -r '.[0].Config.Env[]' > "{{export_path}}/{{container_name}}.env"
 
 [group("backup")]
 restore backup_target snapshot_id="latest":
