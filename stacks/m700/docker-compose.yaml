@@ -34,21 +34,21 @@ services:
     environment:
       - JELLYFIN_PublishedServerUrl=https://jellyfin.${DOMAIN}
 
-  dozzle:
-    container_name: dozzle
-    image: amir20/dozzle:latest@sha256:ca18ce13851bb5b39b4296df498eeedc59849e833a6dc43e94cb04435435a9f2
-    restart: unless-stopped
-    expose:
-      - "8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      DOZZLE_ENABLE_ACTIONS: true
-      DOZZLE_NO_ANALYTICS: true
-      DOZZLE_REMOTE_AGENT: ${DOZZLE_REMOTE_AGENT}
-    healthcheck:
-      test: ["CMD", "/dozzle", "healthcheck"]
-      <<: *default-healthcheck
+  # dozzle:
+  #   container_name: dozzle
+  #   image: amir20/dozzle:latest@sha256:0895bff1da9e54786f2875bf0538805514f162c031d16f7a07b5756de2214ce7
+  #   restart: unless-stopped
+  #   expose:
+  #     - "8080"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   environment:
+  #     DOZZLE_ENABLE_ACTIONS: true
+  #     DOZZLE_NO_ANALYTICS: true
+  #     DOZZLE_REMOTE_AGENT: ${DOZZLE_REMOTE_AGENT}
+  #   healthcheck:
+  #     test: ["CMD", "/dozzle", "healthcheck"]
+  #     <<: *default-healthcheck
 
   beszel:
     image: henrygd/beszel:latest@sha256:64bcaa60d1ed4149f0628c70cf68044b5d1ea90b3437de41e009e873f50e3f36
