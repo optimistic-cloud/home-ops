@@ -3,6 +3,8 @@ set -eoux pipefail
 
 export_path="${EXPORT_DATA:?EXPORT_DATA is required}"
 
+ls -al "$export_path"
+
 # export container.env 
 docker container inspect gitea | jq -r '.[0].Config.Env[]' > "$export_path/gitea.env"
 

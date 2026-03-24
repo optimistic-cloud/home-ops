@@ -62,34 +62,6 @@ backup +backup_targets:
   
   trap cleanup EXIT
 
-  # create_backup_archive() {
-  #   local dump_location='/var/lib/gitea'
-  #   local gitea_archive='gitea-dump.tar.gz'
-
-  #   # remove old dump, create new dump 
-  #   docker exec -u git gitea rm -f "${dump_location}/${gitea_archive}"
-  #   # create backup dump
-  #   docker exec -u git gitea /usr/local/bin/gitea \
-  #     dump --work-path /tmp \
-  #     --file "${gitea_archive}" \
-  #     --config /etc/gitea/app.ini \
-  #     --database sqlite3 \
-  #     --type tar.gz
-    
-  #   # copy dump from container to export path
-  #   docker cp gitea:"${dump_location}/${gitea_archive}" "$export_path"
-  #   # remove dump from container
-  #   docker exec -u git gitea rm -f "${dump_location}/${gitea_archive}"
-    
-  #   # extract dump to export path
-  #   local tmp_dir
-  #   tmp_dir=$(mktemp -d)
-  #   tar -xzf "${export_path}/${gitea_archive}" -C "${tmp_dir}"
-  #   rm -f "${export_path}/${gitea_archive}"
-  #   docker run --rm -v "${export_path}:/data:rw" -v "${tmp_dir}:/import:ro" alpine sh -c "mkdir -p ${export_path}/gitea-dump && cp -r /import/* ${export_path}/gitea-dump"
-  #   rm -rf "${tmp_dir}"
-  # }
-
   do_backup() {
     for backup_target in {{backup_targets}}; do
       curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/gitea-${backup_target}/start?create=1&rid=${run_id}"
@@ -115,8 +87,6 @@ backup +backup_targets:
 
   mkdir -p "$export_path"
   bash prepare_backup.sh "$export_path"
-  #just export-env gitea "$export_path"
-  #create_backup_archive
   #do_backup
 
 [group("backup")]
