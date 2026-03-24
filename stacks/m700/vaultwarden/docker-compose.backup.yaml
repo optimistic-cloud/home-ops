@@ -22,6 +22,7 @@ services:
 volumes:
   restic-cache:
     name: restic-cache
+    external: true
   vaultwarden-data:
     name: vaultwarden-data
     external: true
