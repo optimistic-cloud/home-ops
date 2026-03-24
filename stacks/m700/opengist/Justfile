@@ -93,17 +93,20 @@ backup +backup_targets:
 
 [group("backup")]
 [private]
-export-sqlite export_path:
+export-sqlite src_path db_name export_path:
   #!/usr/bin/env bash
   # -v opengist-data:/data :rw needed for taking backup
-  docker run --rm -v opengist-data:/data -v {{export_path}}:/export alpine/sqlite "/data/db.sqlite3" ".backup '/export/db.sqlite3'"
-  docker run --rm -v {{export_path}}:/data alpine/sqlite /data/db.sqlite3 "PRAGMA integrity_check;"
-
-  # Check that the backup file exists and is not empty
-  if [ ! -s "{{export_path}}/db.sqlite3" ]; then
-    echo "Backup failed: {{export_path}}/db.sqlite3 is missing or empty!" >&2
+  docker run --rm -v opengist-data:/data -v {{export_path}}:/export alpine/sqlite "{{src_path}}/{{db_name}}" ".backup '/export/{{db_name}}'"
+  #docker run --rm -v {{export_path}}:/data alpine/sqlite /data/{{db_name}} "PRAGMA integrity_check;"
+  result=$(docker run --rm -v {{export_path}}:/data alpine/sqlite sqlite3 /data/{{db_name}} 'PRAGMA integrity_check;')
+  if [ "$result" = "ok" ]; then
+    echo "Database is valid"
+  else
+    echo "Database is NOT valid"
     exit 1
   fi
+
+  docker run --rm -v {{export_path}}:/data alpine/sqlite /data/{{db_name}} ".tables"
 
 [group("backup")]
 [private]
