@@ -79,7 +79,9 @@ services:
 
 volumes:
   gitea-data:
+    external: true
   gitea-config:
+    external: true
 
 networks:
   m700_default:
