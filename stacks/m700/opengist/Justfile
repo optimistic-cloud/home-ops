@@ -1,3 +1,5 @@
+set shell := ["bash", "-eoux", "pipefail", "-c"]
+
 set dotenv-load
 
 help:
