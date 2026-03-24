@@ -13,7 +13,7 @@ def main [provider_name: string, provider_env_file: path] {
     
         let dump_location = '/var/lib/gitea'
         let gitea_archive = 'gitea-dump.tar.gz'
-    
+     
         # Create gitea-dump.tar.gz
         # https://docs.gitea.com/administration/backup-and-restore
         do {
