@@ -1,0 +1,80 @@
+name: gitea
+
+services:
+  # Add init container to set permissions
+  gitea-init:
+    image: alpine:3.23.3@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+    volumes:
+      - gitea-data:/var/lib/gitea
+      - gitea-config:/etc/gitea
+    command: |
+      sh -c "
+        chown -R 1000:1000 /var/lib/gitea &&
+        chown -R 1000:1000 /etc/gitea &&
+        chmod -R 700 /var/lib/gitea &&
+        chmod -R 700 /etc/gitea
+      "
+    restart: "no"
+
+  # Deployment notes
+  # Gitea admin is created on first deployment
+  # Gitea users are provisiond via Pocket ID
+  # TODO: https://github.com/go-gitea/gitea/issues/31995
+  gitea:
+    image: docker.gitea.com/gitea:1.25.5-rootless@sha256:be0b89adf2fc8657df508303d919c3be33e6413605882919f702177d62960c9a
+    container_name: gitea
+    restart: unless-stopped
+    expose:
+      - "3000"
+    user: "1000:1000"
+    #read_only: true
+    environment:
+      TZ: Europe/Berlin
+
+      USER_UID: 1000
+      USER_GID: 1000
+
+      GITEA____APP_NAME: Optimistic Cloud
+
+      GITEA__mailer__ENABLED: true
+      GITEA__mailer__FROM: ${GITEA_MAILER_FROM}
+      GITEA__mailer__PROTOCOL: ${GITEA_MAILER_PROTOCOL}
+      GITEA__mailer__SMTP_ADDR: ${SMTP_HOST}
+      GITEA__mailer__SMTP_PORT: ${SMTP_PORT}
+      GITEA__mailer__USER: ${GITEA_MAILER_USER}
+      GITEA__mailer__PASSWD: ${GITEA_MAILER_PASSWD}
+
+      GITEA__server__ROOT_URL: https://git.${DOMAIN}
+      GITEA__server__DOMAIN: git.${DOMAIN}
+
+      GITEA__service__ENABLE_BASIC_AUTHENTICATION: false
+      GITEA__service__ENABLE_PASSWORD_SIGNIN_FORM: false
+      GITEA__service__DISABLE_REGISTRATION: false
+      GITEA__service__ALLOW_ONLY_EXTERNAL_REGISTRATION: true
+      GITEA__service__SHOW_REGISTRATION_BUTTON: false
+      GITEA__service__ENABLE_PASSKEY_AUTHENTICATION: false
+
+      GITEA__openid__ENABLE_OPENID_SIGNIN: false
+      GITEA__openid__ENABLE_OPENID_SIGNUP: false
+
+      GITEA__oauth2_client__UPDATE_AVATAR: true
+      GITEA__oauth2_client__USERNAME: preferred_username
+      GITEA__oauth2_client__OPENID_CONNECT_SCOPES: openid profile email
+      GITEA__oauth2_client__ACCOUNT_LINKING: login
+
+      GITEA__server__START_SSH_SERVER: false
+      GITEA__server__DISABLE_SSH: true
+    volumes:
+      - gitea-data:/var/lib/gitea
+      - gitea-config:/etc/gitea
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
+      interval: 180s
+      timeout: 30s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  gitea-data:
+  gitea-config:
