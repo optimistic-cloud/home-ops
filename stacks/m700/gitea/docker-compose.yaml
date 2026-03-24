@@ -74,7 +74,13 @@ services:
       timeout: 30s
       retries: 5
       start_period: 60s
+    networks:    
+      - m700_default
 
 volumes:
   gitea-data:
   gitea-config:
+
+networks:
+  m700_default:
+    external: true
