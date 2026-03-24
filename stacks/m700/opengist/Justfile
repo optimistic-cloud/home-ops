@@ -89,6 +89,7 @@ backup +backup_targets:
 [group("backup")]
 [private]
 export-sqlite export_path:
+  #!/usr/bin/env bash
   # -v opengist-data:/data :rw needed for taking backup
   docker run --rm -v opengist-data:/data -v {{export_path}}:/export alpine/sqlite "/data/db.sqlite3" ".backup '/export/db.sqlite3'"
   docker run --rm -v {{export_path}}:/data alpine/sqlite /data/db.sqlite3 "PRAGMA integrity_check;"
