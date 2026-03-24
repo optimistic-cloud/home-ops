@@ -60,11 +60,6 @@ backup +backup_targets:
   
   trap cleanup EXIT
 
-  mkdir -p "$export_path"
-  just export-env opengist "$export_path"
-  just down
-  just export-sqlite "$export_path"
-
   do_backup() {
     for backup_target in {{backup_targets}}; do
       curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/opengist-${backup_target}/start?create=1&rid=${run_id}"
@@ -88,6 +83,10 @@ backup +backup_targets:
     done
   }
 
+  mkdir -p "$export_path"
+  just export-env opengist "$export_path"
+  just down
+  just export-sqlite "$export_path"
   do_backup
 
 [group("backup")]
