@@ -38,6 +38,7 @@ docker exec -u git gitea /usr/local/bin/gitea \
 docker cp gitea:"${dump_location}/${gitea_archive_name}" "$export_path"
 tar -xzf "${export_path}/${gitea_archive_name}" -C "${tmp_dir}"
 docker run --rm \
+  -u 1000:1000 \
   -v "${export_path}:/data:rw" \
   -v "${tmp_dir}:/import:ro" \
   alpine sh -c "mkdir -p /data/gitea-dump && cp -r /import/* /data/gitea-dump"
