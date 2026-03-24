@@ -88,15 +88,15 @@ backup +backup_targets:
   mkdir -p "$export_path"
   just export-env opengist "$export_path"
   just down
-  just export-sqlite "$export_path"
+  just export-sqlite "opengist-data" "opengist.db" "$export_path"
   do_backup
 
 [group("backup")]
 [private]
-export-sqlite src_path db_name export_path:
+export-sqlite volume_name db_name export_path:
   #!/usr/bin/env bash
   # -v opengist-data:/data :rw needed for taking backup
-  docker run --rm -v opengist-data:/data -v {{export_path}}:/export alpine/sqlite "{{src_path}}/{{db_name}}" ".backup '/export/{{db_name}}'"
+  docker run --rm -v {{volume_name}}:/data -v {{export_path}}:/export alpine/sqlite "/data/{{db_name}}" ".backup '/export/{{db_name}}'"
   #docker run --rm -v {{export_path}}:/data alpine/sqlite /data/{{db_name}} "PRAGMA integrity_check;"
   result=$(docker run --rm -v {{export_path}}:/data alpine/sqlite sqlite3 /data/{{db_name}} 'PRAGMA integrity_check;')
   if [ "$result" = "ok" ]; then
