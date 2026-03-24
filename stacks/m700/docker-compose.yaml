@@ -121,39 +121,39 @@ services:
   # Deployment notes
   # Opengist admin is provisioned via Pocket ID
   # Opengist users are provisiond via Pocket ID
-  opengist:
-    image: ghcr.io/thomiceli/opengist:1.12@sha256:85361da4c2f259df6e0675c54574c991ae2601922cb56c4d0419fd3e15ceb139
-    container_name: opengist
-    restart: unless-stopped
-    expose:
-      - "6157"
-    # user: "1000:1000"
-    # read_only: true
-    # ports:
-    #   - "6157:6157" # HTTP port
-    #   - "2222:2222" # SSH port, can be removed if you don't use SSH
-    environment:
-      TZ: Europe/Berlin
-      # debug, info, warn, error, fatal
-      OG_LOG_LEVEL: info
+  # opengist:
+  #   image: ghcr.io/thomiceli/opengist:1.12@sha256:85361da4c2f259df6e0675c54574c991ae2601922cb56c4d0419fd3e15ceb139
+  #   container_name: opengist
+  #   restart: unless-stopped
+  #   expose:
+  #     - "6157"
+  #   # user: "1000:1000"
+  #   # read_only: true
+  #   # ports:
+  #   #   - "6157:6157" # HTTP port
+  #   #   - "2222:2222" # SSH port, can be removed if you don't use SSH
+  #   environment:
+  #     TZ: Europe/Berlin
+  #     # debug, info, warn, error, fatal
+  #     OG_LOG_LEVEL: info
 
-      UID: 1000
-      GID: 1000
+  #     UID: 1000
+  #     GID: 1000
 
-      OG_CUSTOM_NAME: Optimistic Cloud
+  #     OG_CUSTOM_NAME: Optimistic Cloud
 
-      OG_OIDC_CLIENT_KEY: ${OG_OIDC_CLIENT_KEY}
-      OG_OIDC_SECRET: ${OG_OIDC_SECRET}
-      OG_OIDC_ADMIN_GROUP: ${OG_OIDC_ADMIN_GROUP}
+  #     OG_OIDC_CLIENT_KEY: ${OG_OIDC_CLIENT_KEY}
+  #     OG_OIDC_SECRET: ${OG_OIDC_SECRET}
+  #     OG_OIDC_ADMIN_GROUP: ${OG_OIDC_ADMIN_GROUP}
 
-      OG_EXTERNAL_URL: https://gist.${DOMAIN}
-      OG_SSH_GIT_ENABLED: false
-      OG_OIDC_PROVIDER_NAME: Optimistic Cloud
-      OG_OIDC_DISCOVERY_URL: https://id.${DOMAIN}/.well-known/openid-configuration
-      OG_OIDC_GROUP_CLAIM_NAME: groups
+  #     OG_EXTERNAL_URL: https://gist.${DOMAIN}
+  #     OG_SSH_GIT_ENABLED: false
+  #     OG_OIDC_PROVIDER_NAME: Optimistic Cloud
+  #     OG_OIDC_DISCOVERY_URL: https://id.${DOMAIN}/.well-known/openid-configuration
+  #     OG_OIDC_GROUP_CLAIM_NAME: groups
 
-    volumes:
-      - opengist-data:/opengist
+  #   volumes:
+  #     - opengist-data:/opengist
 
   # Add init container to set permissions
   gitea-init:
@@ -379,8 +379,8 @@ services:
 volumes:
   # vaultwarden-data:
   #   name: vaultwarden-data
-  opengist-data:
-    name: opengist-data
+  # opengist-data:
+  #   name: opengist-data
   gitea-data:
   gitea-config:
   pocket-id-data:
