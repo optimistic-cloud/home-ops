@@ -87,7 +87,7 @@ backup +backup_targets:
 
   mkdir -p "$export_path"
   bash prepare_backup_data.sh "$export_path"
-  #do_backup
+  do_backup
 
 [group("backup")]
 [private]
