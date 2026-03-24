@@ -65,8 +65,8 @@ services:
       GITEA__server__START_SSH_SERVER: false
       GITEA__server__DISABLE_SSH: true
     volumes:
-      - gitea-data:/var/lib/gitea
-      - gitea-config:/etc/gitea
+      - m700_gitea-data:/var/lib/gitea
+      - m700_gitea-config:/etc/gitea
       - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
@@ -78,9 +78,9 @@ services:
       - m700_default
 
 volumes:
-  gitea-data:
+  m700_gitea-data:
     external: true
-  gitea-config:
+  m700_gitea-config:
     external: true
 
 networks:

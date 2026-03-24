@@ -17,14 +17,10 @@ services:
     volumes:
       - restic-cache:/root/.cache/restic
       - /mnt/data/m700/gitea:/repo
-      - gitea-data:/data/gitea-data:ro
       - ${EXPORT_DATA}:/data/export
       - ${RESTORE_DATA}:/restore-data
 
 volumes:
   restic-cache:
     name: restic-cache
-    external: true
-  gitea-data:
-    name: gitea-data
     external: true
