@@ -1,3 +1,5 @@
+set shell := ["bash", "-eoux", "pipefail", "-c"]
+
 set dotenv-load
 
 help:
@@ -60,38 +62,50 @@ backup +backup_targets:
   
   trap cleanup EXIT
 
+  do_backup() {
+    for backup_target in {{backup_targets}}; do
+      curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-${backup_target}/start?create=1&rid=${run_id}"
+
+      on_error() {
+        curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-${backup_target}/fail?rid=${run_id}"
+      }
+      trap on_error ERR
+
+      log=$(just restic-backup "$backup_target")
+      exit_code=$?
+      curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-${backup_target}/${exit_code}?rid=${run_id}"
+
+      log=$(just restic-check "$backup_target")
+      exit_code=$?
+      curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-${backup_target}/${exit_code}?rid=${run_id}"
+
+      log=$(just restic-forget "$backup_target")
+      exit_code=$?
+      curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-${backup_target}/${exit_code}?rid=${run_id}"
+    done
+  }
+
   mkdir -p "$export_path"
   just export-env vaultwarden "$export_path"
   just down
-  just export-sqlite "$export_path"
-
-  for backup_target in {{backup_targets}}; do
-    curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-${backup_target}/start?create=1&rid=${run_id}"
-
-    on_error() {
-      curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-${backup_target}/fail?rid=${run_id}"
-    }
-    trap on_error ERR
-
-    log=$(just restic-backup "$backup_target")
-    exit_code=$?
-    curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-${backup_target}/${exit_code}?rid=${run_id}"
-
-    log=$(just restic-check "$backup_target")
-    exit_code=$?
-    curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-${backup_target}/${exit_code}?rid=${run_id}"
-
-    log=$(just restic-forget "$backup_target")
-    exit_code=$?
-    curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/vaultwarden-${backup_target}/${exit_code}?rid=${run_id}"
-  done
+  just export-sqlite "vaultwarden-data" "db.sqlite3" "$export_path"
+  do_backup
 
 [group("backup")]
 [private]
-export-sqlite export_path:
+export-sqlite volume_name db_name export_path:
+  #!/usr/bin/env bash
   # -v vaultwarden-data:/data :rw needed for taking backup
-  docker run --rm -v vaultwarden-data:/data -v {{export_path}}:/export alpine/sqlite "/data/db.sqlite3" ".backup '/export/db.sqlite3'"
-  docker run --rm -v {{export_path}}:/data alpine/sqlite /data/db.sqlite3 "PRAGMA integrity_check;"
+  docker run --rm -v {{volume_name}}:/data -v {{export_path}}:/export alpine/sqlite "/data/{{db_name}}" ".backup '/export/{{db_name}}'"
+  result=$(docker run --rm -v {{export_path}}:/data alpine/sqlite /data/{{db_name}} 'PRAGMA integrity_check;')
+  if [ "$result" = "ok" ]; then
+    echo "Database is valid"
+  else
+    echo "Database is NOT valid"
+    exit 1
+  fi
+
+  docker run --rm -v {{export_path}}:/data alpine/sqlite /data/{{db_name}} ".tables"
 
 [group("backup")]
 [private]
