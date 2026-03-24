@@ -38,7 +38,7 @@ services:
 
   healthchecks:
     # https://hub.docker.com/r/healthchecks/healthchecks
-    image: healthchecks/healthchecks:v4.0
+    image: healthchecks/healthchecks:v4.1@sha256:e5420f93e67f4253cdf508fa850bd5f9ab2a354529203ef1a49b47f0d55b4b34
     container_name: healthchecks
     network_mode: service:wg-easy
     environment:
