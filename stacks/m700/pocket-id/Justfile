@@ -52,41 +52,39 @@ cleanup-backup-data:
     bash cleanup_after_backup.sh
 
 [group("backup")]
-backup +backup_targets: prepare-backup-data && cleanup-backup-data up
+backup +backup_targets: && cleanup-backup-data up
   #!/usr/bin/env bash
   set -euo pipefail
 
   run_id=$(cat /proc/sys/kernel/random/uuid)
-
   hc_check_base_name=pocket-id
 
-  do_backup() {
-    for backup_target in {{backup_targets}}; do
-      on_error() {
-        curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/fail?rid=${run_id}"
-      }
-      trap on_error ERR
-
-      log=$(just restic-backup "$backup_target")
-      exit_code=$?
-      curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/${exit_code}?rid=${run_id}"
-
-      log=$(just restic-check "$backup_target")
-      exit_code=$?
-      curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/${exit_code}?rid=${run_id}"
-
-      log=$(just restic-forget "$backup_target")
-      exit_code=$?
-      curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/${exit_code}?rid=${run_id}"
-    done
-  }
-
+  # ping start
   for backup_target in {{backup_targets}}; do
     curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/start?create=1&rid=${run_id}"
   done
 
-  
-  do_backup
+  just prepare-backup-data
+
+  for backup_target in {{backup_targets}}; do
+    # ping fail
+    on_error() {
+      curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/fail?rid=${run_id}"
+    }
+    trap on_error ERR
+
+    log=$(just restic-backup "$backup_target")
+    exit_code=$?
+    curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/${exit_code}?rid=${run_id}"
+
+    log=$(just restic-check "$backup_target")
+    exit_code=$?
+    curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/${exit_code}?rid=${run_id}"
+
+    log=$(just restic-forget "$backup_target")
+    exit_code=$?
+    curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/${exit_code}?rid=${run_id}"
+  done
 
 
 [group("backup")]
