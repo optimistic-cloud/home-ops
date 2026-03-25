@@ -17,7 +17,7 @@ services:
     volumes:
       - restic-cache:/root/.cache/restic
       - /mnt/data/m700/pocket-id:/repo
-      - pocket-id-data:/data:ro
+      - pocket-id-data:/data/pocket-id:ro
       - ${EXPORT_DATA}:/data/export
       - ${RESTORE_DATA}:/restore-data
 
