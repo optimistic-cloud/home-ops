@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eoux pipefail
 
-name="pocket-id"
+name="vaultwarden"
 export_path="${EXPORT_DATA:?EXPORT_DATA is required}"
 
 # export container.env 
@@ -12,7 +12,7 @@ export_container_env() {
 # export sqlite database
 export_sqlite_db() {
   local volume_name="$name-data"
-  local db_name="pocket-id.db"
+  local db_name="db.sqlite3"
 
   docker run --rm -v "$volume_name":/data -v "$export_path":/export alpine/sqlite "/data/$db_name" ".backup '/export/$db_name'"
 
@@ -27,17 +27,8 @@ export_sqlite_db() {
   docker run --rm -v "$export_path":/export alpine/sqlite /export/$db_name ".tables"
 }
 
-export_encfile() {
-  local volume_name="$name-data"
-  local tmp_dir=$(mktemp -d)
-
-  docker cp "$name":/app/secrets/pocket-id.encfile "$tmp_dir"
-  docker run -u 1000:1000 --rm -v "$tmp_dir":/data -v "$export_path":/export alpine sh -c "cp -r /data/* /export"
-}
-
 mkdir -p "$export_path"
 export_container_env
-export_encfile
 
 docker container stop "$name"
 export_sqlite_db
