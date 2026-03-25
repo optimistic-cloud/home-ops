@@ -37,5 +37,8 @@ export_encfile() {
 
 mkdir -p "$export_path"
 export_container_env
-export_sqlite_db
 export_encfile
+
+docker container stop "$name"
+export_sqlite_db
+docker container start "$name"
