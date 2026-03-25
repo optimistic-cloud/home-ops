@@ -35,5 +35,8 @@ export_encfile() {
 }
 
 export_container_env
+docker run --rm -v "$export_path":/export alpine sh -c "ls -al /export"
 export_sqlite_db
+docker run --rm -v "$export_path":/export alpine sh -c "ls -al /export"
 export_encfile
+docker run --rm -v "$export_path":/export alpine sh -c "ls -al /export"
