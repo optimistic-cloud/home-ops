@@ -4,16 +4,6 @@ set -eoux pipefail
 name="pocket-id"
 export_path="${EXPORT_DATA:?EXPORT_DATA is required}"
 
-cleanup() {
-  # remove dump from container
-  docker exec -u git "$name" rm -f "${dump_location}/${archive_name}"
-  # remove dump from export path
-  rm -f "${export_path}/${archive_name}"
-  # remove extracted dump from temp path
-  rm -rf "${tmp_dir}"
-}
-trap cleanup EXIT
-
 # export container.env 
 export_container_env() {
   docker container inspect "$name" | jq -r '.[0].Config.Env[]' > "$export_path/$name.env"
