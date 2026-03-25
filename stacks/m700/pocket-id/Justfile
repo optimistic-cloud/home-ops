@@ -63,7 +63,7 @@ backup +backup_targets: && up
 #     exit "$status"
 #   }
   
-  trap bash cleanup_after_backup.sh EXIT
+  trap 'bash cleanup_after_backup.sh' EXIT
 
   hc_check_base_name=pocket-id
 
