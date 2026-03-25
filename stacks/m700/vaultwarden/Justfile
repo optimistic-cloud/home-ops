@@ -62,7 +62,7 @@ backup +backup_targets: && cleanup-backup-data up
   set -euo pipefail
 
   run_id=$(cat /proc/sys/kernel/random/uuid)
-  hc_check_base_name=pocket-id
+  hc_check_base_name=vaultwarden
   hc_base_url="https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}"
   curl_cmd="curl -fsS -m 10 --retry 5 -o /dev/null"
 
@@ -92,27 +92,6 @@ backup +backup_targets: && cleanup-backup-data up
     exit_code=$?
     ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
   done
-
-[group("backup")]
-[private]
-export-sqlite volume_name db_name export_path:
-  #!/usr/bin/env bash
-  # -v vaultwarden-data:/data :rw needed for taking backup
-  docker run --rm -v {{volume_name}}:/data -v {{export_path}}:/export alpine/sqlite "/data/{{db_name}}" ".backup '/export/{{db_name}}'"
-  result=$(docker run --rm -v {{export_path}}:/data alpine/sqlite /data/{{db_name}} 'PRAGMA integrity_check;')
-  if [ "$result" = "ok" ]; then
-    echo "Database is valid"
-  else
-    echo "Database is NOT valid"
-    exit 1
-  fi
-
-  docker run --rm -v {{export_path}}:/data alpine/sqlite /data/{{db_name}} ".tables"
-
-[group("backup")]
-[private]
-export-env container_name export_path:
-  docker container inspect {{container_name}} | jq -r '.[0].Config.Env[]' > "{{export_path}}/{{container_name}}.env"
 
 [group("backup")]
 restore backup_target snapshot_id="latest":

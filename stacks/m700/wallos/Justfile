@@ -44,76 +44,54 @@ ls-volume-data export_path:
 ####################################
 
 [group("backup")]
-backup +backup_targets:
+prepare-backup-data:
+    bash prepare_backup_data.sh
+
+[group("backup")]
+cleanup-backup-data:
+  #!/usr/bin/env bash
+  set -eoux pipefail
+
+  export_path="${EXPORT_DATA:?EXPORT_DATA is required}"
+
+  rm -rf "${export_path}"
+
+[group("backup")]
+backup +backup_targets: && cleanup-backup-data up
   #!/usr/bin/env bash
   set -euo pipefail
 
   run_id=$(cat /proc/sys/kernel/random/uuid)
-
-  export_path=${EXPORT_DATA}
-
-  cleanup() {
-    echo "Cleaning up..."
-    status=$?
-    just up || true
-    just _cleanup || true
-    exit "$status"
-  }
-  
-  trap cleanup EXIT
   hc_check_base_name=wallos
-  do_backup() {
-    for backup_target in {{backup_targets}}; do
-      on_error() {
-        curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/fail?rid=${run_id}"
-      }
-      trap on_error ERR
+  hc_base_url="https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}"
+  curl_cmd="curl -fsS -m 10 --retry 5 -o /dev/null"
 
-      log=$(just restic-backup "$backup_target")
-      exit_code=$?
-      curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/${exit_code}?rid=${run_id}"
-
-      log=$(just restic-check "$backup_target")
-      exit_code=$?
-      curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/${exit_code}?rid=${run_id}"
-
-      log=$(just restic-forget "$backup_target")
-      exit_code=$?
-      curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/${exit_code}?rid=${run_id}"
-    done
-  }
-
-  mkdir -p "$export_path"
-
+  # ping start
   for backup_target in {{backup_targets}}; do
-    curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/start?create=1&rid=${run_id}"
+    ${curl_cmd} "${hc_base_url}-${backup_target}/start?create=1&rid=${run_id}"
   done
 
-  just export-env wallos "$export_path"
-  just down
-  just export-sqlite "wallos-data" "wallos.db" "$export_path"
-  do_backup
+  just prepare-backup-data
 
-[group("backup")]
-[private]
-export-sqlite volume_name db_name export_path:
-  #!/usr/bin/env bash
-  # -v wallos-data:/data :rw needed for taking backup
-  docker run --rm -v {{volume_name}}:/data -v {{export_path}}:/export alpine/sqlite "/data/db/{{db_name}}" ".backup '/export/{{db_name}}'"
-  result=$(docker run --rm -v {{export_path}}:/data alpine/sqlite /data/{{db_name}} 'PRAGMA integrity_check;')
-  if [ "$result" = "ok" ]; then
-    echo "Database is valid"
-  else
-    echo "Database is NOT valid"
-    exit 1
-  fi
-  docker run --rm -v {{export_path}}:/data alpine/sqlite /data/{{db_name}} ".tables"
+  for backup_target in {{backup_targets}}; do
+    # ping fail
+    on_error() {
+      ${curl_cmd} "${hc_base_url}-${backup_target}/fail?rid=${run_id}"
+    }
+    trap on_error ERR
 
+    log=$(just restic-backup "$backup_target")
+    exit_code=$?
+    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
 
-[group("backup")]
-[private]
-export-env container_name export_path:
-  docker container inspect {{container_name}} | jq -r '.[0].Config.Env[]' > "{{export_path}}/{{container_name}}.env"
+    log=$(just restic-check "$backup_target")
+    exit_code=$?
+    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
+
+    log=$(just restic-forget "$backup_target")
+    exit_code=$?
+    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
+  done
 
 [group("backup")]
 restore backup_target snapshot_id="latest":
