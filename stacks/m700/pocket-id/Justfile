@@ -50,20 +50,22 @@ backup +backup_targets: && up
 
   run_id=$(cat /proc/sys/kernel/random/uuid)
 
-#   export_path=${EXPORT_DATA}
+  export_path=${EXPORT_DATA}
 
-#   cleanup() {
-#     echo "Cleaning up..."
-#     status=$?
-#     just up || true
+  cleanup1() {
+    echo "Cleaning up..."
+    status=$?
+    just up || true
 
-#     rm -rf "${EXPORT_DATA}"
-#     rm -rf "${RESTORE_DATA}"
+    rm -rf "${EXPORT_DATA}"
+    rm -rf "${RESTORE_DATA}"
 
-#     exit "$status"
-#   }
+    exit "$status"
+  }
   
-  cleanup() { bash cleanup_after_backup.sh }
+  cleanup() { 
+    bash cleanup_after_backup.sh 
+}
   trap cleanup EXIT
 
   hc_check_base_name=pocket-id
