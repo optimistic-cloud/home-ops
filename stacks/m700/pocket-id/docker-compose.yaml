@@ -1,0 +1,78 @@
+name: pocket-id
+
+services:
+  # Add init container to set permissions
+  pocket-id-init:
+    image: alpine:3.23.3@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+    volumes:
+      - pocket-id-data:/app/data
+    command: |
+      sh -c "
+        chown -R 65532:65532 /app/data &&
+        chmod -R 700 /app/data
+      "
+    restart: "no"
+
+  pocket-id:
+    image: ghcr.io/pocket-id/pocket-id:v2.4.0-distroless@sha256:e3e0fa59d06f6651448766e279077929694a644865759264f941a700f67d13eb
+    container_name: pocket-id
+    restart: unless-stopped
+    expose:
+      - "1411"
+    user: "65532:65532"
+    #read_only: true
+    #depends_on:
+    #  traefik:
+    #    condition: service_healthy
+    environment:
+      TZ: Europe/Berlin
+
+      PUID: 1000
+      PGID: 1000
+
+      APP_NAME: Optimistic Cloud
+      APP_URL: https://id.${DOMAIN}
+
+      SESSION_DURATION: 480
+      UI_CONFIG_DISABLED: true
+
+      #DB_PROVIDER: sqlite
+      DB_CONNECTION_STRING: file:/app/data/pocket-id.db?_pragma=journal_mode(WAL)&_pragma=busy_timeout(2500)&_txlock=immediate
+      TRUST_PROXY: true
+      MAXMIND_LICENSE_KEY:
+      #KEYS_STORAGE: file
+      ENCRYPTION_KEY_FILE: /app/secrets/pocket-id.encfile
+
+      EMAIL_ONE_TIME_ACCESS_AS_UNAUTHENTICATED_ENABLED: true
+      EMAIL_LOGIN_NOTIFICATION_ENABLED: true
+      EMAILS_VERIFIED: true
+
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_FROM: ${POCKET_ID_SMTP_FROM}
+      SMTP_USER: ${POCKET_ID_SMTP_USER}
+      SMTP_PASSWORD: ${POCKET_ID_SMTP_PASSWORD}
+      SMTP_SKIP_CERT_VERIFY: false
+      SMTP_TLS: ${SMTP_SECURITY}
+
+      ANALYTICS_DISABLED: true
+
+    volumes:
+      - pocket-id-data:/app/data
+      - ./pocket-id.encfile:/app/secrets/pocket-id.encfile:ro
+    healthcheck:
+      test: [ "CMD", "/app/pocket-id", "healthcheck" ]
+      interval: 180s
+      timeout: 30s
+      retries: 5
+      start_period: 60s
+    networks:    
+      - m700_default
+
+volumes:
+  pocket-id-data:
+    name: pocket-id-data
+    external: true
+networks:
+  m700_default:
+    external: true
