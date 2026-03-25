@@ -58,12 +58,12 @@ backup +backup_targets: && cleanup-backup-data up
 
   run_id=$(cat /proc/sys/kernel/random/uuid)
   hc_check_base_name=pocket-id
-  hc_base_url="https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}"
+  hc_base_url="https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}"
   curl_cmd="curl -fsS -m 10 --retry 5 -o /dev/null"
 
   # ping start
   for backup_target in {{backup_targets}}; do
-    ${curl_cmd} "${hc_base_url}/start?create=1&rid=${run_id}"
+    ${curl_cmd} "${hc_base_url}-${backup_target}/start?create=1&rid=${run_id}"
   done
 
   just prepare-backup-data
@@ -71,21 +71,21 @@ backup +backup_targets: && cleanup-backup-data up
   for backup_target in {{backup_targets}}; do
     # ping fail
     on_error() {
-      ${curl_cmd} "${hc_base_url}/fail?rid=${run_id}"
+      ${curl_cmd} "${hc_base_url}-${backup_target}/fail?rid=${run_id}"
     }
     trap on_error ERR
 
     log=$(just restic-backup "$backup_target")
     exit_code=$?
-    ${curl_cmd} --data-raw "${log}" "${hc_base_url}/${exit_code}?rid=${run_id}"
+    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
 
     log=$(just restic-check "$backup_target")
     exit_code=$?
-    ${curl_cmd} --data-raw "${log}" "${hc_base_url}/${exit_code}?rid=${run_id}"
+    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
 
     log=$(just restic-forget "$backup_target")
     exit_code=$?
-    ${curl_cmd} --data-raw "${log}" "${hc_base_url}/${exit_code}?rid=${run_id}"
+    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
   done
 
 [group("backup")]
