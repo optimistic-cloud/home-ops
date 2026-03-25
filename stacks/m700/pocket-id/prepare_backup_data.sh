@@ -35,6 +35,7 @@ export_encfile() {
   docker run -u 1000:1000 --rm -v "$tmp_dir":/data -v "$export_path":/export alpine sh -c "cp -r /data/* /export"
 }
 
+mkdir -p "$export_path"
 export_container_env
 export_sqlite_db
 export_encfile

@@ -44,26 +44,26 @@ ls-volume-data export_path:
 ####################################
 
 [group("backup")]
-backup +backup_targets:
+backup +backup_targets: && up
   #!/usr/bin/env bash
   set -euo pipefail
 
   run_id=$(cat /proc/sys/kernel/random/uuid)
 
-  export_path=${EXPORT_DATA}
+#   export_path=${EXPORT_DATA}
 
-  cleanup() {
-    echo "Cleaning up..."
-    status=$?
-    just up || true
+#   cleanup() {
+#     echo "Cleaning up..."
+#     status=$?
+#     just up || true
 
-    rm -rf "${EXPORT_DATA}"
-    rm -rf "${RESTORE_DATA}"
+#     rm -rf "${EXPORT_DATA}"
+#     rm -rf "${RESTORE_DATA}"
 
-    exit "$status"
-  }
+#     exit "$status"
+#   }
   
-  trap cleanup EXIT
+  trap bash cleanup_after_backup.sh EXIT
 
   hc_check_base_name=pocket-id
 
@@ -88,8 +88,6 @@ backup +backup_targets:
     done
   }
 
-  mkdir -p "$export_path"
-  
   for backup_target in {{backup_targets}}; do
     curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/start?create=1&rid=${run_id}"
   done
