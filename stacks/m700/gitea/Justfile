@@ -44,59 +44,54 @@ ls-volume-data export_path:
 ####################################
 
 [group("backup")]
-backup +backup_targets:
+prepare-backup-data:
+    bash prepare_backup_data.sh
+
+[group("backup")]
+cleanup-backup-data:
+  #!/usr/bin/env bash
+  set -eoux pipefail
+
+  export_path="${EXPORT_DATA:?EXPORT_DATA is required}"
+
+  rm -rf "${export_path}"
+
+[group("backup")]
+backup +backup_targets: && cleanup-backup-data up
   #!/usr/bin/env bash
   set -euo pipefail
 
   run_id=$(cat /proc/sys/kernel/random/uuid)
-
-  export_path=${EXPORT_DATA}
-
-  cleanup() {
-    echo "Cleaning up..."
-    status=$?
-    just up || true
-
-    rm -rf "${EXPORT_DATA}"
-    rm -rf "${RESTORE_DATA}"
-
-    exit "$status"
-  }
-  
-  trap cleanup EXIT
-
   hc_check_base_name=gitea
+  hc_base_url="https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}"
+  curl_cmd="curl -fsS -m 10 --retry 5 -o /dev/null"
 
-  do_backup() {
-    for backup_target in {{backup_targets}}; do
-      on_error() {
-        curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/fail?rid=${run_id}"
-      }
-      trap on_error ERR
-
-      log=$(just restic-backup "$backup_target")
-      exit_code=$?
-      curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/${exit_code}?rid=${run_id}"
-
-      log=$(just restic-check "$backup_target")
-      exit_code=$?
-      curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/${exit_code}?rid=${run_id}"
-
-      log=$(just restic-forget "$backup_target")
-      exit_code=$?
-      curl -fsS -m 10 --retry 5 -o /dev/null --data-raw "${log}" "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/${exit_code}?rid=${run_id}"
-    done
-  }
-
-  mkdir -p "$export_path"
-  
+  # ping start
   for backup_target in {{backup_targets}}; do
-    curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}-${backup_target}/start?create=1&rid=${run_id}"
+    ${curl_cmd} "${hc_base_url}-${backup_target}/start?create=1&rid=${run_id}"
   done
 
-  bash prepare_backup_data.sh "$export_path"
-  do_backup
+  just prepare-backup-data
 
+  for backup_target in {{backup_targets}}; do
+    # ping fail
+    on_error() {
+      ${curl_cmd} "${hc_base_url}-${backup_target}/fail?rid=${run_id}"
+    }
+    trap on_error ERR
+
+    log=$(just restic-backup "$backup_target")
+    exit_code=$?
+    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
+
+    log=$(just restic-check "$backup_target")
+    exit_code=$?
+    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
+
+    log=$(just restic-forget "$backup_target")
+    exit_code=$?
+    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
+  done
 
 [group("backup")]
 restore backup_target snapshot_id="latest":
