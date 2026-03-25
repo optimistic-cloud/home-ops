@@ -49,7 +49,12 @@ prepare-backup-data:
 
 [group("backup")]
 cleanup-backup-data:
-    bash cleanup_after_backup.sh
+  #!/usr/bin/env bash
+  set -eoux pipefail
+
+  export_path="${EXPORT_DATA:?EXPORT_DATA is required}"
+
+  rm -rf "${export_path}"
 
 [group("backup")]
 backup +backup_targets: && cleanup-backup-data up
