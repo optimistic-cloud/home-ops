@@ -14,8 +14,9 @@ export_sqlite_db() {
   local volume_name="$name-data"
   local db_name="pocket-id.db"
 
-  docker run -u 65532:65532 --rm -v "$volume_name":/data -v "$export_path":/export alpine/sqlite "/data/$db_name" ".backup '/export/$db_name'"
-  result=$(docker run -u 65532:65532 --rm -v "$export_path":/export alpine/sqlite /export/$db_name 'PRAGMA integrity_check;')
+  docker run --rm -v "$volume_name":/data -v "$export_path":/export alpine/sqlite "/data/$db_name" ".backup '/export/$db_name'"
+
+  result=$(docker run --rm -v "$export_path":/export alpine/sqlite /export/$db_name 'PRAGMA integrity_check;')
   if [ "$result" = "ok" ]; then
     echo "Database is valid"
   else
@@ -23,7 +24,7 @@ export_sqlite_db() {
     exit 1
   fi
 
-  docker run -u 65532:65532 --rm -v "$export_path":/export alpine/sqlite /export/$db_name ".tables"
+  docker run --rm -v "$export_path":/export alpine/sqlite /export/$db_name ".tables"
 }
 
 export_encfile() {
