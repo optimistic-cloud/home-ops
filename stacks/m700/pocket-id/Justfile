@@ -92,7 +92,7 @@ backup +backup_targets:
     curl -fsS -m 10 --retry 5 -o /dev/null "https://${HC_API}/ping/${HC_PING_KEY}/gitea-${backup_target}/start?create=1&rid=${run_id}"
   done
 
-  bash prepare_backup_data.sh "$export_path"
+  bash prepare_backup_data.sh
   do_backup
 
 
