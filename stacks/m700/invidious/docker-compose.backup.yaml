@@ -1,0 +1,29 @@
+name: invidious-backup
+
+services:
+  restic:
+    image: restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76
+    hostname: ${HOSTNAME:-invidious-backup}
+    # profiles:
+    #   - restic
+    restart: "no"
+    stdin_open: true
+    user: "0:0" # TODO
+    environment:
+      TZ: Europe/Berlin
+      RESTIC_CACHE_DIR: /root/.cache/restic
+    env_file:
+      - ${RESTIC_ENV_FILE:?RESTIC_ENV_FILE is required}
+    volumes:
+      - restic-cache:/root/.cache/restic
+      - /mnt/data/m700/invidious:/repo
+      - invidious-data:/data/invidious-data:ro
+      - ${EXPORT_DATA}:/data/export
+      - ${RESTORE_DATA}:/restore-data
+
+volumes:
+  restic-cache:
+    name: restic-cache
+  invidious-data:
+    name: invidious-data
+    external: true
