@@ -30,7 +30,7 @@ export_encfile() {
   local volume_name="$name-data"
   local tmp_dir=$(mktemp -d)
 
-  docker cp "$name":/app/secrets/pocket-id.encfile" "$tmp_dir"
+  docker cp "$name":/app/secrets/pocket-id.encfile "$tmp_dir"
   docker run --rm -v "$tmp_dir":/data -v "$export_path":/export alpine cp -r /data/* /export
 }
 
