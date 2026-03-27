@@ -35,7 +35,7 @@ services:
       - JELLYFIN_PublishedServerUrl=https://jellyfin.${DOMAIN}
 
   beszel:
-    image: henrygd/beszel:latest@sha256:64bcaa60d1ed4149f0628c70cf68044b5d1ea90b3437de41e009e873f50e3f36
+    image: henrygd/beszel:latest@sha256:0f8f5e7741d3b5fb1c69d431223fad2f265dacfe93549cf35b1ca0ae2e5575fe
     container_name: beszel
     restart: unless-stopped
     expose:
