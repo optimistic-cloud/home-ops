@@ -17,7 +17,7 @@ services:
     volumes:
       - restic-cache:/root/.cache/restic
       - /mnt/data/m700/outline:/repo
-      - outline-data:/data/outline-data:ro
+      - outline_storage-data:/data/outline-data:ro
       - ${EXPORT_DATA}:/data/export
       - ${RESTORE_DATA}:/restore-data
 
@@ -25,5 +25,5 @@ volumes:
   restic-cache:
     name: restic-cache
   outline-data:
-    name: outline-data
+    name: outline_storage-data
     external: true
