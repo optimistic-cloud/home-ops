@@ -1,54 +1,181 @@
-set quiet
-set dotenv-filename := 'backup.offsite.env'
+set shell := ["bash", "-eoux", "pipefail", "-c"]
 
-hostname := "m700"
-restic_image := "restic/restic:0.18.1"
+set dotenv-load
 
-slug := "outline-offsite"
-hc_url := "https://" + env('HC_HOST') + "/ping/" + env('HC_PING_KEY') + "/" + slug
+help:
+  just --list --list-submodules
 
-backup_dir := "./backup"
+####################################
+######## DOCKER             ########
+####################################
 
-run: hc-ping-start && hc-ping cleanup
-    mkdir -p "{{backup_dir}}"
+[group('docker')]
+[doc('Start the stack')]
+up:
+  docker compose up -d --remove-orphans
 
-    just export-container-env "outline" "{{backup_dir}}"
-    just export-container-env "outline-postgres" "{{backup_dir}}"
+[group('docker')]
+[doc('Stop the stack')]
+down:
+  docker compose down --remove-orphans
 
-    docker stop outline
+[group('docker')]
+[doc('Restart application stack')]
+restart: down && up
 
-    just create-postgres-dump "outline-postgres" "{{backup_dir}}"
-    just backup
+[group('docker')]
+[doc('Get logs for the application')]
+logs:
+  docker compose logs -f
 
-    docker start outline
+[group("docker")]
+[doc('List data of the application')]
+ls-outline-data:
+  just ls-volume-data outline-data
 
-export-container-env container output_dir:
-    docker exec {{container}} printenv > "{{output_dir}}/{{container}}.env"
-
-create-postgres-dump container output_dir:
-    docker exec {{container}} pg_dumpall -U "$POSTGRES_USER" | gzip > "{{output_dir}}/{{container}}.sql.gz"
-
-backup:
-    docker run --rm --name {{slug}} \
-    --env-file "backup.offsite.env" \
-    -v "{{backup_dir}}:/backup" \
-    -v outline_storage-data:/data:ro \
-    -v "$HOME/.cache/restic:/root/.cache/restic" \
-    "{{restic_image}}" backup /data /backup --host "{{hostname}}"
-
+[group("docker")]
+[doc('List docker volume data')]
 [private]
-_hc-ping action:
-    curl --fail --silent --show-error --output /dev/null "{{hc_url}}{{action}}?create=1"
+ls-volume-data export_path:
+  docker run --rm -v {{export_path}}:/data:ro alpine ls -la /data
 
-hc-ping:
-    just _hc-ping ""
+####################################
+######## BACKUP             ########
+####################################
 
-hc-ping-fail:
-    just _hc-ping "/fail"
+[group("backup")]
+prepare-backup-data:
+    bash prepare_backup_data.sh
 
-hc-ping-start:
-    just _hc-ping "/start"
+[group("backup")]
+cleanup-backup-data:
+  #!/usr/bin/env bash
+  set -eoux pipefail
 
-cleanup:
-  docker start outline >/dev/null 2>&1 || true
-  rm -rf "{{backup_dir}}"
+  export_path="${EXPORT_DATA:?EXPORT_DATA is required}"
+
+  rm -rf "${export_path}"
+
+[group("backup")]
+backup +backup_targets: && cleanup-backup-data up
+  #!/usr/bin/env bash
+  set -euo pipefail
+
+  run_id=$(cat /proc/sys/kernel/random/uuid)
+  hc_check_base_name=vaultwarden
+  hc_base_url="https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}"
+  curl_cmd="curl -fsS -m 10 --retry 5 -o /dev/null"
+
+  # ping start
+  for backup_target in {{backup_targets}}; do
+    ${curl_cmd} "${hc_base_url}-${backup_target}/start?create=1&rid=${run_id}"
+  done
+
+  just prepare-backup-data
+
+  for backup_target in {{backup_targets}}; do
+    # ping fail
+    on_error() {
+      ${curl_cmd} "${hc_base_url}-${backup_target}/fail?rid=${run_id}"
+    }
+    trap on_error ERR
+
+    log=$(just restic-backup "$backup_target")
+    exit_code=$?
+    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
+
+    log=$(just restic-check "$backup_target")
+    exit_code=$?
+    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
+
+    log=$(just restic-forget "$backup_target")
+    exit_code=$?
+    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
+  done
+
+[group("backup")]
+restore backup_target snapshot_id="latest":
+  #!/usr/bin/env bash
+  mkdir -p "${RESTORE_DATA}"
+  just restic-restore {{backup_target}} {{snapshot_id}}
+
+####################################
+######## RESTIC             ########
+####################################
+
+[group('restic')]
+[doc('Init repository')]
+restic-init backup_target:
+  just _restic-run {{backup_target}} init
+
+[group('restic')]
+[doc('Backup data')]
+[private]
+restic-backup backup_target:
+  #!/usr/bin/env bash
+
+  git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
+  just _restic-run {{backup_target}} --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet backup /data | jq
+
+[group('restic')]
+[doc('Restore data')]
+[private]
+restic-restore backup_target snapshot_id:
+  just _restic-run {{backup_target}} restore {{snapshot_id}} --target /restore-data
+
+[group('restic')]
+[doc('Get snapshots')]
+restic-snapshots backup_target count="5":
+  just _restic-run {{backup_target}} --quiet snapshots --latest {{count}}
+
+[group('restic')]
+[doc('List files in the latest snapshot')]
+restic-ls backup_target snapshot_id="latest":
+  just _restic-run {{backup_target}} --quiet ls {{snapshot_id}}
+
+[group('restic')]
+[doc('Get stats of the repository')]
+restic-stats backup_target:
+  just _restic-run {{backup_target}} stats --mode raw-data
+
+[group('restic')]
+[doc('Unlock repository')]
+restic-unlock backup_target:
+  just _restic-run {{backup_target}} --quiet unlock
+
+[group('restic')]
+[doc('Forget old snapshots')]
+restic-forget backup_target keep-within="365d":
+  just _restic-run {{backup_target}} --quiet forget --keep-within {{keep-within}}
+
+[group('restic')]
+[doc('Prune snapshots')]
+restic-prune backup_target:
+  just _restic-run {{backup_target}} --quiet prune
+
+[group('restic')]
+[doc('Check snapshots')]
+restic-check backup_target read-data-subset="33%":
+  just _restic-run {{backup_target}} --json check --read-data-subset {{read-data-subset}} | jq
+
+[group('restic')]
+[private]
+[doc('For each restic command but not backup, as it needs additional volumes and environment variables')]
+_restic-run backup_target +restic_args:
+  #!/usr/bin/env nu
+
+  let backup_target = "{{backup_target}}"
+
+  with-env { 
+    HOSTNAME: "m700"
+    RESTIC_ENV_FILE: $"($backup_target).restic.env" 
+  } {
+    ^docker compose -f docker-compose.backup.yaml run --rm restic {{restic_args}}
+  }
+
+[group('utils')]
+[private]
+[doc('Removes temporary files created during backup')]
+_cleanup:
+  rm -rf "${EXPORT_DATA}"
+  rm -rf "${RESTORE_DATA}"

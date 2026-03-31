@@ -1,3 +1,5 @@
+name: outline
+
 services:
   # https://www.getoutline.com/
   outline:
