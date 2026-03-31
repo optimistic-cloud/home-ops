@@ -62,7 +62,7 @@ backup +backup_targets: && cleanup-backup-data up
   set -euo pipefail
 
   run_id=$(cat /proc/sys/kernel/random/uuid)
-  hc_check_base_name=vaultwarden
+  hc_check_base_name="outline"
   hc_base_url="https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}"
   curl_cmd="curl -fsS -m 10 --retry 5 -o /dev/null"
 
