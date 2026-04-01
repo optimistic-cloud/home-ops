@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily outline backup -> local
+
+[Timer]
+OnCalendar=Fri 12:20:00
+Persistent=true
+Unit=outline-backup@local.service
+
+[Install]
+WantedBy=timers.target

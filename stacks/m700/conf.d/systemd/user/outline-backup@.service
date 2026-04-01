@@ -1,0 +1,9 @@
+[Unit]
+Description=outline backup (%i)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/home-ops/stacks/m700/outline
+ExecStart=/usr/local/bin/just backup %i
