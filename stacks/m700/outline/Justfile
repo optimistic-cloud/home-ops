@@ -2,6 +2,8 @@ set shell := ["bash", "-eoux", "pipefail", "-c"]
 
 set dotenv-load
 
+restic_docker_image := "restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76"
+
 help:
   just --list --list-submodules
 
@@ -99,14 +101,78 @@ restore backup_target snapshot_id="latest":
   mkdir -p "${RESTORE_DATA}"
   just restic-restore {{backup_target}} {{snapshot_id}}
 
+
+####################################
+######## RESTIC 2           ########
+####################################
+[group('restic')]
+[doc('Init repository')]
+restic-init backup_target:
+  just _restic-run2 {{backup_target}} init
+
+[group('restic')]
+[doc('Get snapshots')]
+restic-snapshots backup_target count="5":
+  just _restic-run2 {{backup_target}} --quiet snapshots --latest {{count}}
+
+[group('restic')]
+[doc('List files in the latest snapshot')]
+restic-ls backup_target snapshot_id="latest":
+  just _restic-run2 {{backup_target}} --quiet ls {{snapshot_id}}
+
+[group('restic')]
+[doc('Get stats of the repository')]
+restic-stats backup_target:
+  just _restic-run2 {{backup_target}} stats --mode raw-data
+
+[group('restic')]
+[doc('Unlock repository')]
+restic-unlock backup_target:
+  just _restic-run2 {{backup_target}} --quiet unlock
+
+[group('restic')]
+[doc('Forget old snapshots')]
+restic-forget backup_target keep-within="365d":
+  just _restic-run2 {{backup_target}} --quiet forget --keep-within {{keep-within}}
+
+[group('restic')]
+[doc('Prune snapshots')]
+restic-prune backup_target:
+  just _restic-run2 {{backup_target}} --quiet prune
+
+[group('restic')]
+[doc('Check snapshots')]
+restic-check backup_target read-data-subset="33%":
+  just _restic-run2 {{backup_target}} --json check --read-data-subset {{read-data-subset}} | jq
+
+[group('restic')]
+[private]
+[doc('For each restic command but not backup, as it needs additional volumes and environment variables')]
+_restic-run2 backup_target +restic_args:
+  #!/usr/bin/env nu
+
+  let backup_target = "{{backup_target}}"
+
+  with-env { 
+    HOSTNAME: "m700"
+    RESTIC_ENV_FILE: $"($backup_target).restic.env" 
+  } {
+    docker run --rm
+      --env-file {{backup_target}}.restic.env
+      -v restic-cache:/root/.cache/restic
+      -v /mnt/data/m700/outline:/repo
+      -v outline_storage-data:/data/outline-data:ro
+      {{restic_docker_image}} {{restic_args}}
+  }
+
 ####################################
 ######## RESTIC             ########
 ####################################
 
-[group('restic')]
-[doc('Init repository')]
-restic-init backup_target:
-  just _restic-run {{backup_target}} init
+# [group('restic')]
+# [doc('Init repository')]
+# restic-init backup_target:
+#   just _restic-run {{backup_target}} init
 
 [group('restic')]
 [doc('Backup data')]
@@ -123,40 +189,40 @@ restic-backup backup_target:
 restic-restore backup_target snapshot_id:
   just _restic-run {{backup_target}} restore {{snapshot_id}} --target /restore-data
 
-[group('restic')]
-[doc('Get snapshots')]
-restic-snapshots backup_target count="5":
-  just _restic-run {{backup_target}} --quiet snapshots --latest {{count}}
+# [group('restic')]
+# [doc('Get snapshots')]
+# restic-snapshots backup_target count="5":
+#   just _restic-run {{backup_target}} --quiet snapshots --latest {{count}}
 
-[group('restic')]
-[doc('List files in the latest snapshot')]
-restic-ls backup_target snapshot_id="latest":
-  just _restic-run {{backup_target}} --quiet ls {{snapshot_id}}
+# [group('restic')]
+# [doc('List files in the latest snapshot')]
+# restic-ls backup_target snapshot_id="latest":
+#   just _restic-run {{backup_target}} --quiet ls {{snapshot_id}}
 
-[group('restic')]
-[doc('Get stats of the repository')]
-restic-stats backup_target:
-  just _restic-run {{backup_target}} stats --mode raw-data
+# [group('restic')]
+# [doc('Get stats of the repository')]
+# restic-stats backup_target:
+#   just _restic-run {{backup_target}} stats --mode raw-data
 
-[group('restic')]
-[doc('Unlock repository')]
-restic-unlock backup_target:
-  just _restic-run {{backup_target}} --quiet unlock
+# [group('restic')]
+# [doc('Unlock repository')]
+# restic-unlock backup_target:
+#   just _restic-run {{backup_target}} --quiet unlock
 
-[group('restic')]
-[doc('Forget old snapshots')]
-restic-forget backup_target keep-within="365d":
-  just _restic-run {{backup_target}} --quiet forget --keep-within {{keep-within}}
+# [group('restic')]
+# [doc('Forget old snapshots')]
+# restic-forget backup_target keep-within="365d":
+#   just _restic-run {{backup_target}} --quiet forget --keep-within {{keep-within}}
 
-[group('restic')]
-[doc('Prune snapshots')]
-restic-prune backup_target:
-  just _restic-run {{backup_target}} --quiet prune
+# [group('restic')]
+# [doc('Prune snapshots')]
+# restic-prune backup_target:
+#   just _restic-run {{backup_target}} --quiet prune
 
-[group('restic')]
-[doc('Check snapshots')]
-restic-check backup_target read-data-subset="33%":
-  just _restic-run {{backup_target}} --json check --read-data-subset {{read-data-subset}} | jq
+# [group('restic')]
+# [doc('Check snapshots')]
+# restic-check backup_target read-data-subset="33%":
+#   just _restic-run {{backup_target}} --json check --read-data-subset {{read-data-subset}} | jq
 
 [group('restic')]
 [private]

@@ -1,0 +1,9 @@
+docker run --rm \
+    -e HOSTNAME=m700 \
+    -e TZ=Europe/Berlin \
+    -e RESTIC_CACHE_DIR=/root/.cache/restic \
+    --env-file local.restic.env \
+    -v restic-cache:/root/.cache/restic \
+    -v /mnt/data/m700/outline:/repo \
+    -v outline_storage-data:/data/outline-data:ro \
+    restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76 version
