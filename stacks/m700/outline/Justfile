@@ -108,6 +108,31 @@ restic-init backup_target:
   just _restic-run2 {{backup_target}} init
 
 [group('restic')]
+[doc('Backup data')]
+[private]
+restic-backup backup_target:
+  #!/usr/bin/env nu
+
+  let backup_target = "{{backup_target}}"
+
+  git_commit= ^git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
+
+  with-env { 
+    HOSTNAME: "m700"
+    RESTIC_ENV_FILE: $"($backup_target).restic.env" 
+  } {
+    (
+      docker run --rm
+        --env-file {{backup_target}}.restic.env
+        -v restic-cache:/root/.cache/restic
+        -v /mnt/data/m700/outline:/repo
+        -v outline_storage-data:/data/outline-data:ro
+        -v $env.EXPORT_DATA:/data/export:ro
+        {{restic_docker_image}} --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet backup /data | jq
+    )
+  }
+
+[group('restic')]
 [doc('Get snapshots')]
 restic-snapshots backup_target count="5":
   just _restic-run2 {{backup_target}} --quiet snapshots --latest {{count}}
@@ -159,7 +184,6 @@ _restic-run2 backup_target +restic_args:
         --env-file {{backup_target}}.restic.env
         -v restic-cache:/root/.cache/restic
         -v /mnt/data/m700/outline:/repo
-        -v outline_storage-data:/data/outline-data:ro
         {{restic_docker_image}} {{restic_args}}
     )
   }
