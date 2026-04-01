@@ -2,6 +2,8 @@ set shell := ["bash", "-eoux", "pipefail", "-c"]
 
 set dotenv-load
 
+export EXPORT_DATA := "/tmp/outline-backup-export"
+
 restic_docker_image := "restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76"
 
 help:
@@ -51,12 +53,7 @@ prepare-backup-data:
 
 [group("backup")]
 cleanup-backup-data:
-  #!/usr/bin/env bash
-  set -eoux pipefail
-
-  export_path="${EXPORT_DATA:?EXPORT_DATA is required}"
-
-  rm -rf "${export_path}"
+  bash cleanup_backup_data.sh
 
 [group("backup")]
 backup +backup_targets: && cleanup-backup-data up
