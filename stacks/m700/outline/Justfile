@@ -119,7 +119,7 @@ restic-backup backup_target:
   docker run --rm \
     -e TZ=Europe/Berlin \
     -e RESTIC_CACHE_DIR=/root/.cache/restic \
-    -e RESTIC_ENV_FILE={{backup_target}}.restic.env" \
+    -e RESTIC_ENV_FILE={{backup_target}}.restic.env \
     --env-file {{backup_target}}.restic.env \
     -v restic-cache:/root/.cache/restic \
     -v /mnt/data/m700/outline:/repo \
