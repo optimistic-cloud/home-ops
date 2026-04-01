@@ -124,7 +124,7 @@ restic-backup backup_target:
     -e RESTIC_ENV_FILE={{backup_target}}.restic.env \
     --env-file {{backup_target}}.restic.env \
     -v restic-cache:/root/.cache/restic \
-    -v /mnt/data/m700/outline:/repo \
+    -v /mnt/data/m700/outline:/localrepo \
     -v outline_storage-data:/data/outline-data:ro \
     -v ${EXPORT_DATA}:/data/export:ro \
     {{restic_docker_image}} --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet backup /data | jq
