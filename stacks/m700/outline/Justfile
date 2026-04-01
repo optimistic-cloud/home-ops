@@ -71,6 +71,7 @@ backup +backup_targets: && cleanup-backup-data up
   done
 
   just prepare-backup-data
+  just down
 
   for backup_target in {{backup_targets}}; do
     # ping fail
