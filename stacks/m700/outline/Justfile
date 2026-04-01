@@ -115,7 +115,7 @@ restic-backup backup_target:
 
   let backup_target = "{{backup_target}}"
 
-  git_commit= ^git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1
+  let git_commit=(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
   with-env { 
     HOSTNAME: "m700"
@@ -127,7 +127,7 @@ restic-backup backup_target:
         -v restic-cache:/root/.cache/restic
         -v /mnt/data/m700/outline:/repo
         -v outline_storage-data:/data/outline-data:ro
-        -v $env.EXPORT_DATA:/data/export:ro
+        -v $"($env.EXPORT_DATA):/data/export:ro"
         {{restic_docker_image}} --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet backup /data | jq
     )
   }
