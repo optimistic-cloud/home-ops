@@ -117,6 +117,7 @@ restic-backup backup_target:
   git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
 
   docker run --rm \
+    --hostname m700 \
     -e TZ=Europe/Berlin \
     -e RESTIC_CACHE_DIR=/root/.cache/restic \
     -e RESTIC_ENV_FILE={{backup_target}}.restic.env \
