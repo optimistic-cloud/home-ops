@@ -88,9 +88,9 @@ backup +backup_targets: && cleanup-backup-data up
     exit_code=$?
     ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
 
-    # log=$(just restic-forget "$backup_target")
-    # exit_code=$?
-    # ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
+    log=$(just restic-forget "$backup_target")
+    exit_code=$?
+    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
   done
 
 [group("backup")]
