@@ -184,6 +184,7 @@ restic-prune backup_target:
 [group('restic')]
 [doc('Check snapshots')]
 restic-check backup_target read-data-subset="33%":
+  #!/usr/bin/env bash
   docker run --rm -it \
     --name vaultwarden-backup-restic \
     --hostname "m700" \
