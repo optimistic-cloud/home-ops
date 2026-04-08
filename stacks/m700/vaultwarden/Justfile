@@ -72,26 +72,26 @@ backup +backup_targets: && cleanup-backup-data up
   done
 
   just prepare-backup-data
+  bash backup.sh {{backup_targets}}
+  # for backup_target in {{backup_targets}}; do
+  #   # ping fail
+  #   on_error() {
+  #     ${curl_cmd} "${hc_base_url}-${backup_target}/fail?rid=${run_id}"
+  #   }
+  #   trap on_error ERR
 
-  for backup_target in {{backup_targets}}; do
-    # ping fail
-    on_error() {
-      ${curl_cmd} "${hc_base_url}-${backup_target}/fail?rid=${run_id}"
-    }
-    trap on_error ERR
+  #   log=$(just restic-backup "$backup_target")
+  #   exit_code=$?
+  #   ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
 
-    log=$(just restic-backup "$backup_target")
-    exit_code=$?
-    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
+  #   log=$(just restic-check "$backup_target")
+  #   exit_code=$?
+  #   ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
 
-    log=$(just restic-check "$backup_target")
-    exit_code=$?
-    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
-
-    log=$(just restic-forget "$backup_target")
-    exit_code=$?
-    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
-  done
+  #   log=$(just restic-forget "$backup_target")
+  #   exit_code=$?
+  #   ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
+  # done
 
 [group("backup")]
 restore backup_target snapshot_id="latest":
