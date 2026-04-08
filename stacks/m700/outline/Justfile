@@ -49,11 +49,11 @@ ls-volume-data export_path:
 
 [group("backup")]
 prepare-backup-data:
-    bash prepare_backup_data.sh
+  bash backup/prepare_backup_data.sh
 
 [group("backup")]
 cleanup-backup-data:
-  bash cleanup_backup_data.sh
+  bash backup/cleanup.sh
 
 [group("backup")]
 backup +backup_targets: && cleanup-backup-data up
@@ -99,7 +99,6 @@ restore backup_target snapshot_id="latest":
   mkdir -p "${RESTORE_DATA}"
   just restic-restore {{backup_target}} {{snapshot_id}}
 
-
 ####################################
 ######## RESTIC 2           ########
 ####################################
@@ -121,7 +120,6 @@ restic-backup backup_target:
     --hostname m700 \
     -e TZ=Europe/Berlin \
     -e RESTIC_CACHE_DIR=/root/.cache/restic \
-    -e RESTIC_ENV_FILE={{backup_target}}.restic.env \
     --env-file {{backup_target}}.restic.env \
     -v restic-cache:/root/.cache/restic \
     -v /mnt/data/m700/outline:/localrepo \
@@ -168,22 +166,17 @@ restic-check backup_target read-data-subset="33%":
 [private]
 [doc('For each restic command but not backup, as it needs additional volumes and environment variables')]
 _restic-run2 backup_target +restic_args:
-  #!/usr/bin/env nu
+  #!/usr/bin/env bash
+  set -euxo pipefail
 
-  let backup_target = "{{backup_target}}"
-
-  with-env { 
-    HOSTNAME: "m700"
-    RESTIC_ENV_FILE: $"($backup_target).restic.env" 
-  } {
-    (
-      docker run --rm
-        --env-file {{backup_target}}.restic.env
-        -v restic-cache:/root/.cache/restic
-        -v /mnt/data/m700/outline:/localrepo
-        {{restic_docker_image}} {{restic_args}}
-    )
-  }
+  docker run --rm \
+    --hostname m700 \
+    -e TZ=Europe/Berlin \
+    -e RESTIC_CACHE_DIR=/root/.cache/restic \
+    --env-file {{backup_target}}.restic.env \
+    -v restic-cache:/root/.cache/restic \
+    -v /mnt/data/m700/outline:/localrepo \
+    {{restic_docker_image}} {{restic_args}}
 
 ####################################
 ######## RESTIC             ########
