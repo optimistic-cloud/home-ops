@@ -22,15 +22,55 @@ for backup_target in "$@"; do
   }
   trap on_error ERR
 
-  log=$(just restic-backup "$backup_target")
+  git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
+  log=$(docker run --rm -it \
+    --name vaultwarden-backup-restic \
+    --hostname "m700" \
+    --user "0:0" \
+    --env TZ="Europe/Berlin" \
+    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
+    --env-file "{{backup_target}}.restic.env"  \
+    -v restic-cache:/root/.cache/restic \
+    -v /mnt/data/m700/vaultwarden:/repo \
+    -v vaultwarden-data:/data/vaultwarden-data:ro \
+    -v "${EXPORT_DATA}":/data/export \
+    -v "${RESTORE_DATA}":/restore-data \
+    restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76 \
+    backup /data \
+    --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet | jq)
+
   exit_code=$?
   ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
 
-  log=$(just restic-check "$backup_target")
+  log=$(docker run --rm -it \
+    --name vaultwarden-backup-restic \
+    --hostname "m700" \
+    --user "0:0" \
+    --env TZ="Europe/Berlin" \
+    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
+    --env-file "{{backup_target}}.restic.env"  \
+    -v restic-cache:/root/.cache/restic \
+    -v /mnt/data/m700/vaultwarden:/repo \
+    -v vaultwarden-data:/data/vaultwarden-data:ro \
+    restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76 \
+    check \
+    --read-data-subset {{read-data-subset}} --json)
   exit_code=$?
   ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
 
-  log=$(just restic-forget "$backup_target")
+  log=$(docker run --rm -it \
+    --name vaultwarden-backup-restic \
+    --hostname "m700" \
+    --user "0:0" \
+    --env TZ="Europe/Berlin" \
+    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
+    --env-file "{{backup_target}}.restic.env"  \
+    -v restic-cache:/root/.cache/restic \
+    -v /mnt/data/m700/vaultwarden:/repo \
+    -v vaultwarden-data:/data/vaultwarden-data:ro \
+    restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76 \
+    forget \
+    --quiet --keep-within {{keep-within}})
   exit_code=$?
   ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
 done
