@@ -10,7 +10,7 @@ hc_base_url="https://${hc_api}/ping/${hc_ping_key}/${hc_check_base_name}"
 curl_cmd="curl -fsS -m 10 --retry 5 -o /dev/null"
 
 # ping start
-for backup_target in {{backup_targets}}; do
+for backup_target in "$@"; do
 ${curl_cmd} "${hc_base_url}-${backup_target}/start?create=1&rid=${run_id}"
 done
 
