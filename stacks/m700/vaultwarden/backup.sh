@@ -54,7 +54,7 @@ for backup_target in "$@"; do
     -v vaultwarden-data:/data/vaultwarden-data:ro \
     restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76 \
     check \
-    --read-data-subset {{read-data-subset}} --json)
+    --read-data-subset "33%" --json)
   exit_code=$?
   ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
 
@@ -70,7 +70,7 @@ for backup_target in "$@"; do
     -v vaultwarden-data:/data/vaultwarden-data:ro \
     restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76 \
     forget \
-    --quiet --keep-within {{keep-within}})
+    --quiet --keep-within 365d)
   exit_code=$?
   ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
 done
