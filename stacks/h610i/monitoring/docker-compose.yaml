@@ -10,7 +10,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   beszel-agent:
-    image: henrygd/beszel-agent:latest@sha256:bd0caeb8fe3c52f5099d931467adc84f7427f333b8122337e4e1a861e7b1490a
+    image: henrygd/beszel-agent:latest@sha256:8874e2c53f9de5e063a6a80d6b617e20fa593ac5dc4eb4c6ce1f912f510f38f8
     container_name: beszel-agent
     restart: unless-stopped
     network_mode: host
