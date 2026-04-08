@@ -113,6 +113,7 @@ restic-init backup_target:
 [private]
 restic-backup backup_target:
   #!/usr/bin/env bash
+  set -euxo pipefail
 
   # git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
   # just _restic-run {{backup_target}} --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet backup /data | jq
@@ -162,6 +163,8 @@ restic-unlock backup_target:
 [group('restic')]
 [doc('Forget old snapshots')]
 restic-forget backup_target keep-within="365d":
+  #!/usr/bin/env bash
+  set -euxo pipefail
   docker run --rm -it \
     --name vaultwarden-backup-restic \
     --hostname "m700" \
@@ -185,6 +188,7 @@ restic-prune backup_target:
 [doc('Check snapshots')]
 restic-check backup_target read-data-subset="33%":
   #!/usr/bin/env bash
+  set -euxo pipefail
   docker run --rm -it \
     --name vaultwarden-backup-restic \
     --hostname "m700" \
