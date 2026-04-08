@@ -29,7 +29,7 @@ for backup_target in "$@"; do
     --user "0:0" \
     --env TZ="Europe/Berlin" \
     --env RESTIC_CACHE_DIR="/root/.cache/restic" \
-    --env-file "{{backup_target}}.restic.env"  \
+    --env-file "${backup_target}.restic.env"  \
     -v restic-cache:/root/.cache/restic \
     -v /mnt/data/m700/vaultwarden:/repo \
     -v vaultwarden-data:/data/vaultwarden-data:ro \
@@ -48,7 +48,7 @@ for backup_target in "$@"; do
     --user "0:0" \
     --env TZ="Europe/Berlin" \
     --env RESTIC_CACHE_DIR="/root/.cache/restic" \
-    --env-file "{{backup_target}}.restic.env"  \
+    --env-file "${backup_target}.restic.env"  \
     -v restic-cache:/root/.cache/restic \
     -v /mnt/data/m700/vaultwarden:/repo \
     -v vaultwarden-data:/data/vaultwarden-data:ro \
@@ -64,7 +64,7 @@ for backup_target in "$@"; do
     --user "0:0" \
     --env TZ="Europe/Berlin" \
     --env RESTIC_CACHE_DIR="/root/.cache/restic" \
-    --env-file "{{backup_target}}.restic.env"  \
+    --env-file "${backup_target}.restic.env"  \
     -v restic-cache:/root/.cache/restic \
     -v /mnt/data/m700/vaultwarden:/repo \
     -v vaultwarden-data:/data/vaultwarden-data:ro \
