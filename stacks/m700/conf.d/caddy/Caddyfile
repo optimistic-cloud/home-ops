@@ -44,6 +44,9 @@ outline.optimistic.cloud {
 journiv.optimistic.cloud {
     reverse_proxy journiv-app:8000
 }
+dav.optimistic.cloud {
+    reverse_proxy davis:9000
+}
 
 # Matrix
 matrix.optimistic.cloud {

@@ -1,0 +1,24 @@
+name: davis
+
+services:
+  davis:
+    image: ghcr.io/tchapi/davis-standalone:v5.4.1
+    container_name: davis
+    env_file: .env
+    environment:
+      - DATABASE_DRIVER=sqlite
+      - DATABASE_URL=sqlite:////data/davis-database.db # ⚠️ 4 slashes for an absolute path ⚠️ + no quotes (so Symfony can resolve it)
+      - MAILER_DSN=smtp://${MAIL_USERNAME}:${MAIL_PASSWORD}@${MAIL_HOST}:${MAIL_PORT}
+    volumes:
+      - davis-data:/data
+    networks:
+      - m700_default
+    expose:
+      - "9000"
+
+volumes:
+  davis-data:
+    name: davis-data
+networks:
+  m700_default:
+    external: true
