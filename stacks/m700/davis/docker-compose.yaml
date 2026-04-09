@@ -18,7 +18,7 @@ services:
     container_name: davis
     restart: unless-stopped
     env_file: .env
-    user: "www-data:www-data"
+    #user: "www-data:www-data"
     environment:
       - APP_ENV=prod
       - DATABASE_DRIVER=sqlite
