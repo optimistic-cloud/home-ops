@@ -1,10 +1,26 @@
 name: davis
 
 services:
+  # Add init container to set permissions
+  davis-init:
+    image: alpine:3.23.3@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659
+    volumes:
+      - davis-data:/data
+    command: |
+      sh -c "
+        chown -R www-data:www-data /data &&
+        chmod -R 700 /data
+      "
+    restart: "no"
+
   davis:
     image: ghcr.io/tchapi/davis-standalone:5.4.1
     container_name: davis
+    depends_on:
+      - davis-init
+    restart: unless-stopped
     env_file: .env
+    user: "www-data:www-data"
     environment:
       - APP_ENV=prod
       - DATABASE_DRIVER=sqlite
