@@ -23,10 +23,20 @@ down:
 [doc('Restart application stack')]
 restart: down && up
 
+[group('application')]
+[doc('Migrate database')]
+migration:
+  docker exec -it davis sh -c "APP_ENV=prod bin/console doctrine:migrations:migrate --no-interaction"
+
 [group('docker')]
 [doc('Get logs for the application')]
 logs:
   docker compose logs -f
+
+[group('docker')]
+[doc('Get logs for the application')]
+davis-log-tail:
+    docker exec -it davis tail /var/www/davis/var/log/prod.log
 
 [group("docker")]
 [doc('List data of the application')]
