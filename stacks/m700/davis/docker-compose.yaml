@@ -16,8 +16,6 @@ services:
   davis:
     image: ghcr.io/tchapi/davis-standalone:5.4.1
     container_name: davis
-    depends_on:
-      - init
     restart: unless-stopped
     env_file: .env
     user: "www-data:www-data"
