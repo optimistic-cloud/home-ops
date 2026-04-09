@@ -6,9 +6,14 @@ services:
     container_name: davis
     env_file: .env
     environment:
+      - APP_ENV=prod
       - DATABASE_DRIVER=sqlite
       - DATABASE_URL=sqlite:////data/davis-database.db # ⚠️ 4 slashes for an absolute path ⚠️ + no quotes (so Symfony can resolve it)
       - MAILER_DSN=smtp://${MAIL_USERNAME}:${MAIL_PASSWORD}@${MAIL_HOST}:${MAIL_PORT}
+      - APP_TIMEZONE=Europe/Berlin
+      - CALDAV_ENABLED=true
+      - CARDDAV_ENABLED=true
+      - WEBDAV_ENABLED=false
     volumes:
       - davis-data:/data
     networks:
