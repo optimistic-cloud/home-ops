@@ -8,7 +8,7 @@ services:
       - davis-data:/data
     command: |
       sh -c "
-        chown -R www-data:www-data /data &&
+        chown -R 82:82 /data && # www-data user and group have the ID 82 in davis image
         chmod -R 700 /data
       "
     restart: "no"
