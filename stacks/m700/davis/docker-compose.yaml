@@ -18,6 +18,9 @@ services:
     container_name: davis
     restart: unless-stopped
     env_file: .env
+    depends_on:
+      init:
+        - condition: service_completed_successfully
     #user: "www-data:www-data"
     environment:
       - APP_ENV=prod
