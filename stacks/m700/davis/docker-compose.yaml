@@ -2,7 +2,7 @@ name: davis
 
 services:
   davis:
-    image: ghcr.io/tchapi/davis-standalone:v5.4.1
+    image: ghcr.io/tchapi/davis-standalone:5.4.1
     container_name: davis
     env_file: .env
     environment:
