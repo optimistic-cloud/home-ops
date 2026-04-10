@@ -1,0 +1,3 @@
+- Visit https://dav.optimistic.cloud/dav/ 
+- Authenticat with ldap creds
+- Browse dav objects

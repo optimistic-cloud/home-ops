@@ -7,6 +7,8 @@ volumes:
 networks:
   m700_default:
     external: true
+  lldap_default:
+    name: lldap_default
 
 services:
   lldap:
@@ -15,8 +17,26 @@ services:
     restart: unless-stopped
     networks:
       - m700_default
+      - lldap_default
     expose:
       - "17170"
     env_file: .env
     volumes:
       - "lldap-data:/data"
+    environment:
+      UID: 1000
+      GID: 1000
+      TZ: Europe/Berlin
+      LLDAP_VERBOSE: false
+
+      LLDAP_JWT_SECRET_FILE: /run/secrets/jwt
+      LLDAP_KEY_SEED_FILE: /run/secrets/key_seed
+    secrets:
+      - jwt
+      - key_seed
+
+secrets:
+   jwt:
+     file: jwt.txt
+   key_seed:
+     file: key_seed.txt
