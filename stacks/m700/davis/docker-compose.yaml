@@ -21,11 +21,10 @@ services:
     depends_on:
       init:
         condition: service_completed_successfully
-    #user: "www-data:www-data"
     environment:
       - APP_ENV=prod
       - DATABASE_DRIVER=sqlite
-      - DATABASE_URL=sqlite:////data/davis-database.db # ⚠️ 4 slashes for an absolute path ⚠️ + no quotes (so Symfony can resolve it)
+      - DATABASE_URL=sqlite:////data/davis-database.db
       - MAILER_DSN=smtp://${MAIL_USERNAME}:${MAIL_PASSWORD}@${MAIL_HOST}:${MAIL_PORT}
       - APP_TIMEZONE=Europe/Berlin
       - CALDAV_ENABLED=true

@@ -1,0 +1,22 @@
+name: lldap
+
+volumes:
+  lldap-data:
+    name: lldap-data
+
+networks:
+  m700_default:
+    external: true
+
+services:
+  lldap:
+    image: lldap/lldap:stable
+    container_name: lldap
+    restart: unless-stopped
+    networks:
+      - m700_default
+    expose:
+      - "17170"
+    env_file: .env
+    volumes:
+      - "lldap-data:/data"
