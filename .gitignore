@@ -13,3 +13,7 @@ stacks/vps/caddy/data/
 
 # m700
 conf.d/invidious/config.yml
+
+# lldap
+jwt.txt
+key_seed.txt
