@@ -47,7 +47,9 @@ journiv.optimistic.cloud {
 dav.optimistic.cloud {
     reverse_proxy davis:9000
 }
-
+ldap.optimistic.cloud {
+    reverse_proxy lldap:17170
+}
 # Matrix
 matrix.optimistic.cloud {
     request_body {
