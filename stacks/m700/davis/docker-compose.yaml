@@ -14,7 +14,7 @@ services:
     restart: "no"
 
   davis:
-    image: ghcr.io/tchapi/davis-standalone:5.4.1
+    image: ghcr.io/tchapi/davis-standalone:5.4.1@sha256:9db11b957fdce6d56c04185793c149b62db1596035feb876878acef6b3421be4
     container_name: davis
     restart: unless-stopped
     env_file: .env
