@@ -45,3 +45,12 @@ docker run -it --rm --network lldap_default jefftadashi/ldapsearch \
   -b "cn=max,ou=people,dc=optimistic,dc=cloud" \
   "(objectClass=*)" \
   cn mail
+
+
+ldapadd -H ldap://localhost:3890 -D "uid=admin,ou=people,dc=tryrocket,dc=cloud" -W -f family.ldif
+
+docker run -it --rm --network lldap_default jefftadashi/ldapadd \
+  -H ldap://lldap:3890 \
+  -D "uid=admin,ou=people,dc=optimistic,dc=cloud" \
+  -W \
+  -f family.ldif
