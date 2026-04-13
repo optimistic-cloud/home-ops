@@ -17,7 +17,7 @@
 					}
 				}
 				proxy {
-					upstream lldap:3890
+					upstream lldap:3860
 				}
 			}
 		}
