@@ -11,7 +11,11 @@
 	layer4 {
 		:636 {
 			route {
-				tls
+				tls {
+					connection_policies {
+						default_sni lilith.optimistic.cloud
+					}
+				}
 				proxy {
 					upstream lldap:3890
 				}
