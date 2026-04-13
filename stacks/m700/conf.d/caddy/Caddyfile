@@ -3,23 +3,10 @@
 
     #debug
     
-    servers {
-      # DANGEROUS: logs Authorization/Cookie headers unredacted
-      log_credentials
-    }
-
-	default_sni lilith.optimistic.cloud
-
-	layer4 {
-		:636 {
-			route {
-				tls
-				proxy {
-					upstream lldap:3860
-				}
-			}
-		}
-	}
+    #servers {
+    #  # DANGEROUS: logs Authorization/Cookie headers unredacted
+    #  log_credentials
+    #}
 }
 vaultwarden.optimistic.cloud {
     reverse_proxy vaultwarden:80
