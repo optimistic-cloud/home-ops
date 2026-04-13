@@ -8,14 +8,12 @@
       log_credentials
     }
 
+	default_sni lilith.optimistic.cloud
+
 	layer4 {
 		:636 {
 			route {
-				tls {
-					connection_policies {
-						default_sni lilith.optimistic.cloud
-					}
-				}
+				tls
 				proxy {
 					upstream lldap:3860
 				}
