@@ -7,6 +7,17 @@
     #  # DANGEROUS: logs Authorization/Cookie headers unredacted
     #  log_credentials
     #}
+
+	layer4 {
+		:636 {
+			route {
+				tls
+				proxy {
+					upstream lldap:3890
+				}
+			}
+		}
+	}
 }
 vaultwarden.optimistic.cloud {
     reverse_proxy vaultwarden:80
@@ -50,19 +61,6 @@ dav.optimistic.cloud {
 ldap.optimistic.cloud {
     reverse_proxy lldap:17170
 }
-{
-	layer4 {
-		:636 {
-			route {
-				tls
-				proxy {
-					upstream lldap:3890
-				}
-			}
-		}
-	}
-}
-
 
 # Matrix
 matrix.optimistic.cloud {
