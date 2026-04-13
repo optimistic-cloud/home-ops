@@ -3,10 +3,10 @@
 
     #debug
     
-    #servers {
-    #  # DANGEROUS: logs Authorization/Cookie headers unredacted
-    #  log_credentials
-    #}
+    servers {
+      # DANGEROUS: logs Authorization/Cookie headers unredacted
+      log_credentials
+    }
 
 	layer4 {
 		:636 {
