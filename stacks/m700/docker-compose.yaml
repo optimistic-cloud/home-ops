@@ -16,6 +16,7 @@ services:
     ports:
       - 80:80
       - 443:443
+      - 636:636
     volumes:
       - ./data:/data
       - ./config:/config
