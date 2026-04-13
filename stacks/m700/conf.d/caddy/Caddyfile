@@ -50,6 +50,20 @@ dav.optimistic.cloud {
 ldap.optimistic.cloud {
     reverse_proxy lldap:17170
 }
+{
+	layer4 {
+		:636 {
+			route {
+				tls
+				proxy {
+					upstream lldap:3890
+				}
+			}
+		}
+	}
+}
+
+
 # Matrix
 matrix.optimistic.cloud {
     request_body {

@@ -20,6 +20,7 @@ services:
       - lldap_default
     expose:
       - "17170"
+      - "3890"
     env_file: .env
     volumes:
       - "lldap-data:/data"
