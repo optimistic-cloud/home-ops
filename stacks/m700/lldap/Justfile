@@ -38,3 +38,8 @@ ls-lldap-data:
 [private]
 ls-volume-data export_path:
   docker run --rm -v {{export_path}}:/data:ro alpine ls -la /data
+
+[group('certbot')]
+[doc('Run certbot to obtain/renew certificates')]
+certbot:
+  docker compose -f docker-compose.certbot.yaml up -d --remove-orphans

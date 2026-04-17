@@ -67,3 +67,4 @@ element-admin.optimistic.cloud {
 element.optimistic.cloud {
     reverse_proxy element:80
 }
+            

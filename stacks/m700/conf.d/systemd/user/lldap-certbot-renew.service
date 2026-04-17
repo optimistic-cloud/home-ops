@@ -1,0 +1,10 @@
+[Unit]
+Description=Certbot certificate renewal for lldap
+Requires=docker.service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/home-ops/stacks/m700/lldap
+ExecStart=/usr/local/bin/just certbot
