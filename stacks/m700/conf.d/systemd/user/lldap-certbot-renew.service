@@ -1,6 +1,5 @@
 [Unit]
 Description=Certbot certificate renewal for lldap
-Requires=docker.service
 Wants=network-online.target
 After=network-online.target
 
