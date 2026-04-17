@@ -54,3 +54,11 @@ docker run -it --rm --network lldap_default jefftadashi/ldapadd \
   -D "uid=admin,ou=people,dc=optimistic,dc=cloud" \
   -W \
   -f family.ldif
+
+## Systemd
+
+
+### renew certificate
+
+- systemctl --user start lldap-certbot-renew.service
+- journalctl --user -xeu lldap-certbot-renew.service
