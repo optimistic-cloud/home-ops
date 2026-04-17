@@ -18,9 +18,12 @@ services:
     networks:
       - m700_default
       - lldap_default
-    expose:
-      - "17170"
-      - "3890"
+    # expose:
+    #   - "17170"
+    #   - 6360:6360
+    ports:
+      - "17170:17170"
+      - "636:6360"
     env_file: .env
     volumes:
       - "lldap-data:/data"
@@ -33,6 +36,9 @@ services:
 
       LLDAP_JWT_SECRET_FILE: /run/secrets/jwt
       LLDAP_KEY_SEED_FILE: /run/secrets/key_seed
+
+      LLDAP_LDAPS_OPTIONS__CERT_FILE: /etc/letsencrypt/live/ldap.optimistic.cloud/fullchain.pem
+      LLDAP_LDAPS_OPTIONS__KEY_FILE: /etc/letsencrypt/live/ldap.optimistic.cloud/privkey.pem
     secrets:
       - jwt
       - key_seed
