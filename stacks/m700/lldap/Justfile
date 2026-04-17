@@ -42,4 +42,4 @@ ls-volume-data export_path:
 [group('certbot')]
 [doc('Run certbot to obtain/renew certificates')]
 certbot:
-  docker compose -f docker-compose.certbot.yaml up -d --remove-orphans
+  docker compose -f docker-compose.certbot.yaml up --remove-orphans
