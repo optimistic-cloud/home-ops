@@ -30,8 +30,8 @@ services:
     secrets:
       - cloudflare_token
     restart: "no"
-
-
+    networks:
+      - lldap_default
 
   lldap:
     image: lldap/lldap:stable@sha256:9e605a66c02514bfcffd1b67cafb1e98d50992216bb2871d7ae44622047dd09d
