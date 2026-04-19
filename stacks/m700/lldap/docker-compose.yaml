@@ -8,7 +8,6 @@ networks:
   m700_default:
     external: true
   lldap_default:
-    name: lldap_default
 
 services:
 
