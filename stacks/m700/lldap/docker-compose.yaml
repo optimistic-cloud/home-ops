@@ -12,7 +12,7 @@ networks:
 services:
 
   certbot:
-    container_name: certbot
+    container_name: lldap-certbot
     image: certbot/dns-cloudflare:latest
     command: >-
       certonly
@@ -34,6 +34,9 @@ services:
     image: lldap/lldap:stable@sha256:9e605a66c02514bfcffd1b67cafb1e98d50992216bb2871d7ae44622047dd09d
     container_name: lldap
     restart: unless-stopped
+    depends_on:
+      certbot:
+        condition: service_completed_successfully
     networks:
       - m700_default
       - default
