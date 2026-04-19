@@ -22,7 +22,7 @@ services:
     #   - "17170"
     #   - 6360:6360
     ports:
-      - "17170:17170"
+      - "127.0.0.1:17170:17170"
       - "636:6360"
     env_file: .env
     volumes:
@@ -37,6 +37,7 @@ services:
       LLDAP_JWT_SECRET_FILE: /run/secrets/jwt
       LLDAP_KEY_SEED_FILE: /run/secrets/key_seed
 
+      LLDAP_LDAPS_OPTIONS__ENABLED: true
       LLDAP_LDAPS_OPTIONS__CERT_FILE: /etc/letsencrypt/live/ldap.optimistic.cloud/fullchain.pem
       LLDAP_LDAPS_OPTIONS__KEY_FILE: /etc/letsencrypt/live/ldap.optimistic.cloud/privkey.pem
     secrets:
