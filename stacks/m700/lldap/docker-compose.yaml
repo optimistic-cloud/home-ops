@@ -11,6 +11,28 @@ networks:
     name: lldap_default
 
 services:
+
+  certbot:
+    container_name: certbot
+    image: certbot/dns-cloudflare:latest
+    command: >-
+      certonly
+        --non-interactive
+        --agree-tos
+        --email ${EMAIL}
+        --dns-cloudflare 
+        --dns-cloudflare-credentials "/run/secrets/cloudflare_token"
+        --dns-cloudflare-propagation-seconds 60 
+        -d "ldap.optimistic.cloud"
+    volumes:
+      - ./etc/letsencrypt:/etc/letsencrypt
+      - ./certbot/data:/var/www/certbot
+    secrets:
+      - cloudflare_token
+    restart: "no"
+
+
+
   lldap:
     image: lldap/lldap:stable@sha256:9e605a66c02514bfcffd1b67cafb1e98d50992216bb2871d7ae44622047dd09d
     container_name: lldap
@@ -45,7 +67,9 @@ services:
       - key_seed
 
 secrets:
-   jwt:
-     file: jwt.txt
-   key_seed:
-     file: key_seed.txt
+  jwt:
+    file: jwt.txt
+  key_seed:
+    file: key_seed.txt
+  cloudflare_token:
+    file: cloudflare.ini
