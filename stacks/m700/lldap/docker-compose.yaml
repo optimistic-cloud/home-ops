@@ -13,7 +13,7 @@ services:
 
   certbot:
     container_name: lldap-certbot
-    image: certbot/dns-cloudflare:latest
+    image: certbot/dns-cloudflare:latest@sha256:f90db06a98b61bd221fe5a9688d0bb975b444760ef677cb4369ffc2a8a16e579
     command: >-
       certonly
         --non-interactive
