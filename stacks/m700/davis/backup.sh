@@ -52,9 +52,9 @@ check_target() {
   local target="$1"
   if [[ ! " ${VALID_BACKUP_TARGETS[*]} " =~ " ${target} " ]]; then
     echo "Invalid backup target '${target}'. Valid targets are: ${VALID_BACKUP_TARGETS[*]}" >&2
-    return 1
+    echo 1
   fi
-  return 0
+  echo 0
 }
 
 check_restic_repository_env_file() {
