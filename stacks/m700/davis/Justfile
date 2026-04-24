@@ -71,6 +71,10 @@ backup +backup_targets: && cleanup-backup-data up
   bash backup.sh {{backup_targets}}
 
 [group("backup")]
+backup-py +backup_targets: && cleanup-backup-data up
+  python3 backup.py {{backup_targets}}
+
+[group("backup")]
 restore backup_target snapshot_id="latest":
   #!/usr/bin/env bash
   restore_data_dir="${BACKUP_RESTORE_DATA_DIR:?BACKUP_RESTORE_DATA_DIR is required}"
