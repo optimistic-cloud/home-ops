@@ -52,18 +52,18 @@ check_target() {
   local target="$1"
   if [[ ! " ${VALID_BACKUP_TARGETS[*]} " =~ " ${target} " ]]; then
     echo "Invalid backup target '${target}'. Valid targets are: ${VALID_BACKUP_TARGETS[*]}" >&2
-    echo 1
+    return 1
   fi
-  echo 0
+  return 0
 }
 
 check_restic_repository_env_file() {
   local target="$1"
   if [[ ! -f "${target}.restic.env" ]]; then
     echo "Restic environment file '${target}.restic.env' not found for target '${target}'" >&2
-    echo 1
+    return 1
   fi
-  echo 0
+  return 0
 }
 
 check_restic_repository() {
