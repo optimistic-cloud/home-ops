@@ -75,7 +75,7 @@ check_restic_repository_env_file() {
 check_restic_repository() {
   local target="$1"
 
-  RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml --profile config | jq
+  RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml --profile config up | jq
   exit_code=$?
 
   return "${exit_code}"
@@ -123,15 +123,15 @@ git_commit="$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEA
 
 for backup_target in "${EXEC_BACKUP_TARGETS[@]}"; do
   echo "Processing backup target: ${backup_target}"
-  output="$(RESTIC_ENV_FILE=${backup_target}.restic.env GIT_SHA=${git_commit} docker compose -f docker-compose.backup.yaml --profile backup | jq)"
+  output="$(RESTIC_ENV_FILE=${backup_target}.restic.env GIT_SHA=${git_commit} docker compose -f docker-compose.backup.yaml --profile backup up | jq)"
   exit_code=$?
   ping_result "${backup_target}" "${exit_code}" "${output}"
 
-  output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" docker compose -f docker-compose.backup.yaml --profile forget)"
+  output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" docker compose -f docker-compose.backup.yaml --profile forget up | jq)"
   exit_code=$?
   ping_result "${backup_target}" "${exit_code}" "${output}"
 
-  output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" docker compose -f docker-compose.backup.yaml --profile check | jq)"
+  output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" docker compose -f docker-compose.backup.yaml --profile check up | jq)"
   exit_code=$?
   ping_result "${backup_target}" "${exit_code}" "${output}"
 done
