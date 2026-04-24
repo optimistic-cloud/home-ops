@@ -31,7 +31,7 @@ services:
       - CARDDAV_ENABLED=true
       - WEBDAV_ENABLED=false
     volumes:
-      - ${DOCKER_VOLUME_NAME}:/data
+      - davis-data:/data
     networks:
       - m700_default
       - lldap_default
@@ -39,8 +39,7 @@ services:
       - "9000"
 
 volumes:
-  ${DOCKER_VOLUME_NAME}:
-    name: ${DOCKER_VOLUME_NAME}
+  davis-data:
 
 networks:
   m700_default:
