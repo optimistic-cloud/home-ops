@@ -18,23 +18,15 @@ x-restic-common: &restic-common
 services:
   config:
     <<: *restic-common
-    container_name: config
     command: cat config --json
-    profiles: [config]
   check:
     <<: *restic-common
-    container_name: check
     command: check --read-data-subset "33%" --json
-    profiles: [check]
   forget:
     <<: *restic-common
-    container_name: forget
     command: forget --keep-within 365d --quiet
-    profiles: [forget]
   backup:
     <<: *restic-common
-    container_name: backup
-    profiles: [backup]
     command: backup /data --tag "git_sha=${GIT_SHA}" --exclude-caches --skip-if-unchanged --json --quiet
     volumes:
       - restic-cache:/root/.cache/restic
