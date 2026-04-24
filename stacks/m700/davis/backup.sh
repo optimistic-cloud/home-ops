@@ -103,7 +103,7 @@ for backup_target in "$@"; do
     --env-file "${backup_target}.restic.env" \
     -v restic-cache:/root/.cache/restic \
     -v /mnt/data/m700/davis:/repo \
-    -v appdata:/data/davis-data:ro \
+    -v ${DOCKER_VOLUME_NAME}:/data/davis-data:ro \
     -v "${BACKUP_EXPORT_DATA_DIR}":/data/export \
     "${restic_image}" \
     backup /data \
@@ -122,7 +122,7 @@ for backup_target in "$@"; do
     --env-file "${backup_target}.restic.env" \
     -v restic-cache:/root/.cache/restic \
     -v /mnt/data/m700/davis:/repo \
-    -v appdata:/data/davis-data:ro \
+    -v ${DOCKER_VOLUME_NAME}:/data/davis-data:ro \
     "${restic_image}" \
     check --read-data-subset "33%" --json)"
 
