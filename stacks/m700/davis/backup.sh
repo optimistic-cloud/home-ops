@@ -48,7 +48,7 @@ trap on_error ERR
 ##############
 
 VALID_BACKUP_TARGETS=("local" "onsite", "offsite")
-check_restic_target() {
+check_target() {
   local target="$1"
   if [[ ! " ${VALID_BACKUP_TARGETS[*]} " =~ " ${target} " ]]; then
     echo "Invalid backup target '${target}'. Valid targets are: ${VALID_BACKUP_TARGETS[*]}" >&2
@@ -86,7 +86,7 @@ check_restic_repository() {
 }
 
 for backup_target in "$@"; do
-  exit_code=$(check_restic_target "${backup_target}")
+  exit_code=$(check_target "${backup_target}")
   if [[ $exit_code -ne 0 ]]; then
     # skip this loop
     continue
