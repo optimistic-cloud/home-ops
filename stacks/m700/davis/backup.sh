@@ -86,7 +86,6 @@ check_restic_repository() {
 }
 
 for backup_target in "$@"; do
-  local exit_code
   exit_code=$(check_restic_target "${backup_target}")
   if [[ $exit_code -ne 0 ]]; then
     # skip this loop
