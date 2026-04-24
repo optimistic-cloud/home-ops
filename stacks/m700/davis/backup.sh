@@ -80,6 +80,10 @@ run_step() {
   fi
 }
 
+##############
+### Main logic
+##############
+
 for backup_target in "$@"; do
   ping_start "${backup_target}"
 done
@@ -89,32 +93,57 @@ bash prepare_backup_data.sh
 git_commit="$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)"
 
 for backup_target in "$@"; do
-  current_backup_target="${backup_target}"
 
-  run_step "${backup_target}" bash -c '
-    docker run --rm -i \
-      --name davis-backup-restic \
-      --hostname "m700" \
-      --user "0:0" \
-      --env TZ="Europe/Berlin" \
-      --env RESTIC_CACHE_DIR="/root/.cache/restic" \
-      --env-file "${1}.restic.env" \
-      -v restic-cache:/root/.cache/restic \
-      -v /mnt/data/m700/davis:/repo \
-      -v appdata:/data/davis-data:ro \
-      -v "${BACKUP_EXPORT_DATA_DIR}":/data/export \
-      "${2}" \
-      backup /data \
-      --tag "git_commit=${3}" --exclude-caches --skip-if-unchanged --json --quiet | jq
-  ' _ "${backup_target}" "${restic_image}" "${git_commit}"
-
-  run_step "${backup_target}" \
-    docker_restic "${backup_target}" \
+  output="$(docker run --rm -i \
+    --name davis-backup-restic \
+    --hostname "m700" \
+    --user "0:0" \
+    --env TZ="Europe/Berlin" \
+    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
+    --env-file "${backup_target}.restic.env" \
+    -v restic-cache:/root/.cache/restic \
+    -v /mnt/data/m700/davis:/repo \
+    -v appdata:/data/davis-data:ro \
+    -v "${BACKUP_EXPORT_DATA_DIR}":/data/export \
     "${restic_image}" \
-    check --read-data-subset "33%" --json
+    backup /data \
+    --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet | jq)"
 
-  run_step "${backup_target}" \
-    docker_restic "${backup_target}" \
+  exit_code=$?
+  ping_result "${backup_target}" "${exit_code}" "${output}" || true
+
+  
+  output="$(docker run --rm -i \
+    --name davis-backup-restic \
+    --hostname "m700" \
+    --user "0:0" \
+    --env TZ="Europe/Berlin" \
+    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
+    --env-file "${backup_target}.restic.env" \
+    -v restic-cache:/root/.cache/restic \
+    -v /mnt/data/m700/davis:/repo \
+    -v appdata:/data/davis-data:ro \
     "${restic_image}" \
-    forget --keep-within 365d --quiet
+    check --read-data-subset "33%" --json)"
+
+  exit_code=$?
+  ping_result "${backup_target}" "${exit_code}" "${output}" || true
+
+
+  output="$(docker run --rm -i \
+    --name davis-backup-restic \
+    --hostname "m700" \
+    --user "0:0" \
+    --env TZ="Europe/Berlin" \
+    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
+    --env-file "${backup_target}.restic.env" \
+    -v restic-cache:/root/.cache/restic \
+    -v /mnt/data/m700/davis:/repo \
+    -v appdata:/data/davis-data:ro \
+    "${restic_image}" \
+    forget --keep-within 365d --quiet)"
+
+  exit_code=$?
+  ping_result "${backup_target}" "${exit_code}" "${output}" || true
+
 done
