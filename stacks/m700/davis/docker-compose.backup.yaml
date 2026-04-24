@@ -39,7 +39,11 @@ services:
     volumes:
       - ${DOCKER_VOLUME_NAME}:/data/davis-data:ro
       - ${BACKUP_EXPORT_DATA_DIR}:/data/export
+
 volumes:
   restic-cache:
     name: restic-cache
+    external: true
+  ${DOCKER_VOLUME_NAME}:
+    name: ${DOCKER_VOLUME_NAME}
     external: true

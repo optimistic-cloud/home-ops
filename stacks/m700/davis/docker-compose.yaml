@@ -31,7 +31,7 @@ services:
       - CARDDAV_ENABLED=true
       - WEBDAV_ENABLED=false
     volumes:
-      - appdata:/data
+      - ${DOCKER_VOLUME_NAME}:/data
     networks:
       - m700_default
       - lldap_default
@@ -39,8 +39,9 @@ services:
       - "9000"
 
 volumes:
-  appdata:
+  ${DOCKER_VOLUME_NAME}:
     name: ${DOCKER_VOLUME_NAME}
+
 networks:
   m700_default:
     external: true
