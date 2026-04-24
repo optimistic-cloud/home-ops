@@ -21,3 +21,4 @@ services:
 volumes:
   restic-cache:
     name: restic-cache
+    external: true
