@@ -61,8 +61,9 @@ check_restic_repository_env_file() {
   local target="$1"
   if [[ ! -f "${target}.restic.env" ]]; then
     echo "Restic environment file '${target}.restic.env' not found for target '${target}'" >&2
-    ping_fail "${target}" || true
+    echo 1
   fi
+  echo 0
 }
 
 check_restic_repository() {
