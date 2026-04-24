@@ -62,29 +62,18 @@ check_restic_repository_env_file() {
   if [[ ! -f "${target}.restic.env" ]]; then
     echo "Restic environment file '${target}.restic.env' not found for target '${target}'" >&2
     ping_fail "${target}" || true
-    exit 1
   fi
 }
 
 check_restic_repository() {
   local target="$1"
 
-  local output
   local exit_code
 
-  output="$(RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic cat config --json 2>&1)"
+  RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic cat config --json
   exit_code=$?
 
-  echo $output $exit_code
-
-  # 0	Success — repository exists and password is correct
-  # 10	Repository does not exist
-  # 12	Wrong password
-  # 1	Other error
-  if [[ $exit_code -ne 0 ]]; then
-    ping_fail "${target}" || true
-    exit 1
-  fi
+  echo "${exit_code}"
 }
 
 for backup_target in "$@"; do
@@ -104,6 +93,10 @@ for backup_target in "$@"; do
     continue
   fi
 
+  # 0	Success — repository exists and password is correct
+  # 10	Repository does not exist
+  # 12	Wrong password
+  # 1	Other error
   exit_code=$(check_restic_repository "${backup_target}")
   if [[ $exit_code -ne 0 ]]; then
     ping_fail "${backup_target}"
