@@ -75,7 +75,7 @@ check_restic_repository_env_file() {
 check_restic_repository() {
   local target="$1"
 
-  RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml --profile config up | jq
+  RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml --profile config up
   exit_code=$?
 
   return "${exit_code}"
@@ -119,7 +119,7 @@ echo "Backup targets to be processed: ${EXEC_BACKUP_TARGETS[*]}"
 
 if [[ ${#EXEC_BACKUP_TARGETS[@]} -eq 0 ]]; then
   echo "No valid backup targets to process. Exiting." >&2
-  exit 0
+  exit 1
 fi
 
 bash prepare_backup_data.sh
