@@ -43,43 +43,6 @@ on_error() {
 }
 trap on_error ERR
 
-docker_restic() {
-  local target="$1"
-  shift
-
-  docker run --rm -i \
-    --name davis-backup-restic \
-    --hostname "m700" \
-    --user "0:0" \
-    --env TZ="Europe/Berlin" \
-    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
-    --env-file "${target}.restic.env" \
-    -v restic-cache:/root/.cache/restic \
-    -v /mnt/data/m700/davis:/repo \
-    -v appdata:/data/davis-data:ro \
-    "$@"
-}
-
-run_step() {
-  local target="$1"
-  shift
-
-  local output
-  local exit_code
-
-  set +e
-  output="$($@ 2>&1)"
-  exit_code=$?
-  set -e
-
-  ping_result "${target}" "${exit_code}" "${output}" || true
-
-  if [[ "${exit_code}" -ne 0 ]]; then
-    ping_fail "${target}" || true
-    return "${exit_code}"
-  fi
-}
-
 ##############
 ### Main logic
 ##############
