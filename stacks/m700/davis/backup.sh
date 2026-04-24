@@ -72,7 +72,7 @@ check_restic_repository() {
   local output
   local exit_code
 
-  output="$(RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic cat config --json)"
+  output="$(RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic cat config --json 2>&1)"
   exit_code=$?
 
   echo $output $exit_code
@@ -83,7 +83,7 @@ check_restic_repository() {
   # 1	Other error
   if [[ $exit_code -ne 0 ]]; then
     ping_fail "${target}" || true
-    echo 1
+    exit 1
   fi
 }
 
