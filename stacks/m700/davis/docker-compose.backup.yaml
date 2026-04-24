@@ -1,21 +1,38 @@
-name: davis-backup
+name: davis-backup-restic
+
+x-restic-common: &restic-common
+  image: restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76
+  hostname: ${HOSTNAME}
+  restart: "no"
+  stdin_open: true
+  user: "0:0"
+  environment:
+    TZ: Europe/Berlin
+    RESTIC_CACHE_DIR: /root/.cache/restic
+  env_file:
+    - ${RESTIC_ENV_FILE:?RESTIC_ENV_FILE is required}
+  volumes:
+    - restic-cache:/root/.cache/restic
+    - /mnt/data/m700/davis:/repo
 
 services:
-  restic:
-    image: restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76
-    hostname: ${HOSTNAME}
-    restart: "no"
-    stdin_open: true
-    user: "0:0" # TODO
-    environment:
-      TZ: Europe/Berlin
-      RESTIC_CACHE_DIR: /root/.cache/restic
-    env_file:
-      - ${RESTIC_ENV_FILE:?RESTIC_ENV_FILE is required}
+  check:
+    <<: *restic-common
+    container_name: check
+    command: check --read-data-subset "33%" --json
+    profiles: [check]
+  forget:
+    <<: *restic-common
+    container_name: forget
+    command: forget --keep-within 365d --quiet
+    profiles: [check]
+  backup:
+    <<: *restic-common
+    container_name: backup
+    command: backup /data --tag "git_sha=${GIT_SHA}" --exclude-caches --skip-if-unchanged --json --quiet
     volumes:
-      - restic-cache:/root/.cache/restic
-      - /mnt/data/m700/davis:/repo
-
+      - ${DOCKER_VOLUME_NAME}:/data/davis-data:ro
+      - ${BACKUP_EXPORT_DATA_DIR}:/data/export
 volumes:
   restic-cache:
     name: restic-cache

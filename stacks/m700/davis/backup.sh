@@ -122,45 +122,15 @@ bash prepare_backup_data.sh
 git_commit="$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)"
 
 for backup_target in "${EXEC_BACKUP_TARGETS[@]}"; do
-
-  output="$(docker run --rm -i \
-    --name davis-backup-restic \
-    --hostname "m700" \
-    --user "0:0" \
-    --env TZ="Europe/Berlin" \
-    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
-    --env-file "${backup_target}.restic.env" \
-    -v restic-cache:/root/.cache/restic \
-    -v /mnt/data/m700/davis:/repo \
-    -v ${DOCKER_VOLUME_NAME}:/data/davis-data:ro \
-    -v "${BACKUP_EXPORT_DATA_DIR}":/data/export \
-    "${restic_image}" \
-    backup /data \
-    --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet | jq)"
-
+  output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" docker compose -f docker-compose.backup.yaml --profile backup | jq)"
   exit_code=$?
   ping_result "${backup_target}" "${exit_code}" "${output}"
 
-  
-  output="$(docker run --rm -i \
-    --name davis-backup-restic \
-    --hostname "m700" \
-    --user "0:0" \
-    --env TZ="Europe/Berlin" \
-    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
-    --env-file "${backup_target}.restic.env" \
-    -v restic-cache:/root/.cache/restic \
-    -v /mnt/data/m700/davis:/repo \
-    "${restic_image}" \
-    check --read-data-subset "33%" --json)"
-
-  output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic check --read-data-subset "33%" --json | jq)"
+  output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" docker compose -f docker-compose.backup.yaml --profile forget)"
   exit_code=$?
   ping_result "${backup_target}" "${exit_code}" "${output}"
 
-  output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic forget --keep-within 365d --quiet)"
-
+  output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" docker compose -f docker-compose.backup.yaml --profile check | jq)"
   exit_code=$?
   ping_result "${backup_target}" "${exit_code}" "${output}"
-
 done
