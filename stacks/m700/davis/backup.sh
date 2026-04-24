@@ -47,6 +47,15 @@ trap on_error ERR
 ### Main logic
 ##############
 
+VALID_BACKUP_TARGETS=("local" "onsite", "offsite")
+check_restic_target() {
+  local target="$1"
+  if [[ ! " ${VALID_BACKUP_TARGETS[*]} " =~ " ${target} " ]]; then
+    echo "Invalid backup target '${target}'. Valid targets are: ${VALID_BACKUP_TARGETS[*]}" >&2
+    exit 1
+  fi
+}
+
 check_restic_repository_env_file() {
   local target="$1"
   if [[ ! -f "${target}.restic.env" ]]; then
@@ -78,6 +87,7 @@ check_restic_repository() {
 for backup_target in "$@"; do
   ping_start "${backup_target}"
 
+  check_restic_target "${backup_target}"
   check_restic_repository_env_file "${backup_target}"
   check_restic_repository "${backup_target}"
 done
