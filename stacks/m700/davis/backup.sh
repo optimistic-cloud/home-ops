@@ -53,7 +53,7 @@ check_restic_repository() {
   local output
   local exit_code
 
-  output="$(docker compose -f docker-compose.backup.yaml -e RESTIC_ENV_FILE="${target}.restic.env" run --rm restic cat config --json)
+  output="$(docker compose -f docker-compose.backup.yaml -e RESTIC_ENV_FILE="${target}.restic.env" run --rm restic cat config --json)"
   exit_code=$?
 
   # 0	Success — repository exists and password is correct
