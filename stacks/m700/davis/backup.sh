@@ -53,11 +53,11 @@ current_backup_target=""
 ### Main logic
 ##############
 
-VALID_BACKUP_TARGETS=("local" "onsite", "offsite")
-check_target() {
+WELL_KNOWN_BACKUP_TARGETS=("local" "onsite", "offsite")
+check_target_is_well_known() {
   local target="$1"
-  if [[ ! " ${VALID_BACKUP_TARGETS[*]} " =~ " ${target} " ]]; then
-    echo "Invalid backup target '${target}'. Valid targets are: ${VALID_BACKUP_TARGETS[*]}" >&2
+  if [[ ! " ${WELL_KNOWN_BACKUP_TARGETS[*]} " =~ " ${target} " ]]; then
+    echo "Invalid backup target '${target}'. Valid targets are: ${WELL_KNOWN_BACKUP_TARGETS[*]}" >&2
     return 1
   fi
   return 0
@@ -81,10 +81,10 @@ check_restic_repository() {
   return "${exit_code}"
 }
 
-BACKUP_TARGETS=()
+EXEC_BACKUP_TARGETS=()
 for backup_target in "$@"; do
   # validate backup target
-  check_target "${backup_target}"
+  check_target_is_well_known "${backup_target}"
   exit_code=$?
   if [[ $exit_code -ne 0 ]]; then
     # skip this loop
@@ -112,10 +112,10 @@ for backup_target in "$@"; do
     continue
   fi
 
-  BACKUP_TARGETS+=("${backup_target}")
+  EXEC_BACKUP_TARGETS+=("${backup_target}")
 done
 
-echo "Backup targets to be processed: ${BACKUP_TARGETS[*]}"
+echo "Backup targets to be processed: ${EXEC_BACKUP_TARGETS[*]}"
 
 bash prepare_backup_data.sh
 
@@ -139,7 +139,7 @@ for backup_target in "${BACKUP_TARGETS[@]}"; do
     --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet | jq)"
 
   exit_code=$?
-  ping_result "${backup_target}" "${exit_code}" "${output}" || true
+  ping_result "${backup_target}" "${exit_code}" "${output}"
 
   
   output="$(docker run --rm -i \
@@ -156,7 +156,7 @@ for backup_target in "${BACKUP_TARGETS[@]}"; do
     check --read-data-subset "33%" --json)"
 
   exit_code=$?
-  ping_result "${backup_target}" "${exit_code}" "${output}" || true
+  ping_result "${backup_target}" "${exit_code}" "${output}"
 
 
   output="$(docker run --rm -i \
@@ -173,6 +173,6 @@ for backup_target in "${BACKUP_TARGETS[@]}"; do
     forget --keep-within 365d --quiet)"
 
   exit_code=$?
-  ping_result "${backup_target}" "${exit_code}" "${output}" || true
+  ping_result "${backup_target}" "${exit_code}" "${output}"
 
 done
