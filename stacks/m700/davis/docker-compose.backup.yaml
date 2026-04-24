@@ -16,6 +16,8 @@ x-restic-common: &restic-common
     - /mnt/data/m700/davis:/repo
 
 services:
+  restic:
+    <<: *restic-common
   config:
     <<: *restic-common
     command: cat config --json
