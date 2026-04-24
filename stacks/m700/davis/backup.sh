@@ -121,7 +121,7 @@ bash prepare_backup_data.sh
 
 git_commit="$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)"
 
-for backup_target in "${BACKUP_TARGETS[@]}"; do
+for backup_target in "${EXEC_BACKUP_TARGETS[@]}"; do
 
   output="$(docker run --rm -i \
     --name davis-backup-restic \
