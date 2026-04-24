@@ -74,7 +74,7 @@ check_restic_repository() {
   RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic cat config --json
   exit_code=$?
 
-  echo "${exit_code}"
+  return "${exit_code}"
 }
 
 BACKUP_TARGETS=()
