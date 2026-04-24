@@ -10,6 +10,8 @@ services:
     environment:
       TZ: Europe/Berlin
       RESTIC_CACHE_DIR: /root/.cache/restic
+    env_file:
+      - ${RESTIC_ENV_FILE:?RESTIC_ENV_FILE is required}
     volumes:
       - restic-cache:/root/.cache/restic
       - /mnt/data/m700/davis:/repo
