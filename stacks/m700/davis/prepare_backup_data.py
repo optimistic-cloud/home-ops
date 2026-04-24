@@ -1,6 +1,22 @@
 import sqlite3
+import docker
 import sys
 from pathlib import Path
+
+
+def export_container_env(container_name: str, export_dir: str | Path) -> Path:
+    export_dir = Path(export_dir)
+    export_dir.mkdir(parents=True, exist_ok=True)
+
+    client = docker.from_env()
+    container = client.containers.get(container_name)
+    env_vars: list[str] = container.attrs["Config"]["Env"]
+
+    env_file = export_dir / f"{container_name}.env"
+    env_file.write_text("\n".join(env_vars) + "\n")
+
+    print(f"Exported {len(env_vars)} env vars → {env_file}")
+    return env_file
 
 
 def backup_sqlite(src_path: str | Path, dst_path: str | Path) -> None:
@@ -39,3 +55,25 @@ def backup_sqlite(src_path: str | Path, dst_path: str | Path) -> None:
             "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"
         ).fetchall()]
         print(f"Tables: {tables}")
+
+
+def main() -> None:
+    load_env_file()
+
+    container_name = require_env("DOCKER_CONTAINER_NAME")
+    volume_name    = require_env("DOCKER_VOLUME_NAME")
+    export_dir     = require_env("BACKUP_EXPORT_DATA_DIR")
+    db_name        = require_env("DATABASE_NAME")
+
+    Path(export_dir).mkdir(parents=True, exist_ok=True)
+
+    export_container_env(container_name=container_name, export_dir=export_dir)
+
+    backup_sqlite(
+        src_path=Path(f"/mnt/volumes/{volume_name}") / db_name,
+        dst_path=Path(export_dir) / db_name,
+    )
+
+
+if __name__ == "__main__":
+    main()

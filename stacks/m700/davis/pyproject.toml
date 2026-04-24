@@ -1,0 +1,23 @@
+[project]
+name = "davis-backup"
+version = "0.1.0"
+description = "Container environment export and SQLite backup utility"
+requires-python = ">=3.11"
+dependencies = [
+    "docker>=7.1.0",
+    "typer>=0.24.2",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.4",
+]
+
+[project.scripts]
+backup = "prepare_backup_data:main"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.uv]
+package = false
