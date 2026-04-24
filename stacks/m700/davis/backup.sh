@@ -119,7 +119,7 @@ echo "Backup targets to be processed: ${EXEC_BACKUP_TARGETS[*]}"
 
 if [[ ${#EXEC_BACKUP_TARGETS[@]} -eq 0 ]]; then
   echo "No valid backup targets to process. Exiting." >&2
-  exit 1
+  exit 0
 fi
 
 bash prepare_backup_data.sh
