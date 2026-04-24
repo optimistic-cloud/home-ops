@@ -5,7 +5,7 @@
 # -u: Exit if any undefined variable is used
 # -o pipefail: Return exit status of the last failed command in a pipeline
 # -x: Print each command before executing it (debug mode)
-set -Euox pipefail
+# set -Euox pipefail
 
 hc_api="${HC_API:?HC_API is required}"
 hc_ping_key="${HC_PING_KEY:?HC_PING_KEY is required}"
