@@ -47,6 +47,15 @@ trap on_error ERR
 ### Main logic
 ##############
 
+check_restic_repository_env_file() {
+  local target="$1"
+  if [[ ! -f "${target}.restic.env" ]]; then
+    echo "Restic environment file '${target}.restic.env' not found for target '${target}'" >&2
+    ping_fail "${target}" || true
+    exit 1
+  fi
+}
+
 check_restic_repository() {
   local target="$1"
 
@@ -69,6 +78,7 @@ check_restic_repository() {
 for backup_target in "$@"; do
   ping_start "${backup_target}"
 
+  check_restic_repository_env_file "${backup_target}"
   check_restic_repository "${backup_target}"
 done
 
