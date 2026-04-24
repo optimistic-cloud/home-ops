@@ -151,7 +151,6 @@ for backup_target in "${EXEC_BACKUP_TARGETS[@]}"; do
     --env-file "${backup_target}.restic.env" \
     -v restic-cache:/root/.cache/restic \
     -v /mnt/data/m700/davis:/repo \
-    -v ${DOCKER_VOLUME_NAME}:/data/davis-data:ro \
     "${restic_image}" \
     check --read-data-subset "33%" --json)"
 
@@ -168,7 +167,6 @@ for backup_target in "${EXEC_BACKUP_TARGETS[@]}"; do
     --env-file "${backup_target}.restic.env" \
     -v restic-cache:/root/.cache/restic \
     -v /mnt/data/m700/davis:/repo \
-    -v appdata:/data/davis-data:ro \
     "${restic_image}" \
     forget --keep-within 365d --quiet)"
 
