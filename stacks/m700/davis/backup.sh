@@ -154,22 +154,11 @@ for backup_target in "${EXEC_BACKUP_TARGETS[@]}"; do
     "${restic_image}" \
     check --read-data-subset "33%" --json)"
 
+  output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic check --read-data-subset "33%" --json | jq)"
   exit_code=$?
   ping_result "${backup_target}" "${exit_code}" "${output}"
 
-
-  # output="$(docker run --rm -i \
-  #   --name davis-backup-restic \
-  #   --hostname "m700" \
-  #   --user "0:0" \
-  #   --env TZ="Europe/Berlin" \
-  #   --env RESTIC_CACHE_DIR="/root/.cache/restic" \
-  #   --env-file "${backup_target}.restic.env" \
-  #   -v restic-cache:/root/.cache/restic \
-  #   -v /mnt/data/m700/davis:/repo \
-  #   "${restic_image}" \
-  #   forget --keep-within 365d --quiet)"
-  output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic forget --keep-within 365d --quiet --json | jq)"
+  output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic forget --keep-within 365d --quiet)"
 
   exit_code=$?
   ping_result "${backup_target}" "${exit_code}" "${output}"
