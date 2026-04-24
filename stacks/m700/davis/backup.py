@@ -14,7 +14,16 @@ RUN_ID             = str(uuid.uuid4())
 BASE_URL           = f"https://{HC_API}/ping/{HC_PING_KEY}/{HC_CHECK_NAME}"
 
 def curl_ping(url: str, payload: str | None = None) -> None:
-    httpx.post(url, content=payload, timeout=10) if payload else httpx.get(url, timeout=10)
+    try:
+        req = Request(
+            url,
+            data=payload.encode() if payload else None,
+            method="POST" if payload else "GET"
+        )
+        with request.urlopen(req, timeout=10) as resp:
+            resp.read()
+    except error.URLError as e:
+        print(f"ping failed ({url}): {e.reason}", file=sys.stderr)
 
 def ping_start(target: str)  -> None: curl_ping(f"{BASE_URL}-{target}/start?create=1&rid={RUN_ID}")
 def ping_fail(target: str)   -> None: curl_ping(f"{BASE_URL}-{target}/fail?rid={RUN_ID}")
