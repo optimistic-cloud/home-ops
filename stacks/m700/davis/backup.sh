@@ -36,12 +36,12 @@ ping_fail() {
 }
 
 current_backup_target=""
-on_error() {
-  if [[ -n "${current_backup_target}" ]]; then
-    ping_fail "${current_backup_target}" || true
-  fi
-}
-trap on_error ERR
+# on_error() {
+#   if [[ -n "${current_backup_target}" ]]; then
+#     ping_fail "${current_backup_target}" || true
+#   fi
+# }
+# trap on_error ERR
 
 ##############
 ### Main logic
