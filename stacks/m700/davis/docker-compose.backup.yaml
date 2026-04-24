@@ -16,6 +16,11 @@ x-restic-common: &restic-common
     - /mnt/data/m700/davis:/repo
 
 services:
+  config:
+    <<: *restic-common
+    container_name: config
+    command: cat config --json
+    profiles: [config]
   check:
     <<: *restic-common
     container_name: check
