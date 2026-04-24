@@ -47,8 +47,29 @@ trap on_error ERR
 ### Main logic
 ##############
 
+check_restic_repository() {
+  local target="$1"
+
+  local output
+  local exit_code
+
+  output="$(docker compose -f docker-compose.backup.yaml -e RESTIC_ENV_FILE="${target}.restic.env" run --rm restic cat config --json)
+  exit_code=$?
+
+  # 0	Success — repository exists and password is correct
+  # 10	Repository does not exist
+  # 12	Wrong password
+  # 1	Other error
+  if [[ $exit_code -ne 0 ]]; then
+    ping_fail "${target}" || true
+    return 1
+  fi
+}
+
 for backup_target in "$@"; do
   ping_start "${backup_target}"
+
+  check_restic_repository "${backup_target}"
 done
 
 bash prepare_backup_data.sh
@@ -57,24 +78,11 @@ git_commit="$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEA
 
 for backup_target in "$@"; do
 
-  docker run --rm -i \
-    --name davis-backup-restic \
-    --hostname "m700" \
-    --user "0:0" \
-    --env TZ="Europe/Berlin" \
-    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
-    --env-file "${backup_target}.restic.env" \
-    -v restic-cache:/root/.cache/restic \
-    -v /mnt/data/m700/davis:/repo \
-    "${restic_image}" \
-    check \
-    --json | jq
-
   output="$(docker run --rm -i \
     --name davis-backup-restic \
     --hostname "m700" \
     --user "0:0" \
-    --env TZ="Europe/Berlin" \
+    --env TZ="Europe/Berlin" \^
     --env RESTIC_CACHE_DIR="/root/.cache/restic" \
     --env-file "${backup_target}.restic.env" \
     -v restic-cache:/root/.cache/restic \
