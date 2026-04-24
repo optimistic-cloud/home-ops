@@ -5,7 +5,7 @@ services:
   init:
     image: alpine:3.23.4@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11
     volumes:
-      - appdata:/data
+      - davis-data:/data
     command: |
       sh -c "
         chown -R 82:82 /data && # www-data user and group have the ID 82 in davis image
