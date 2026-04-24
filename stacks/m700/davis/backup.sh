@@ -127,7 +127,7 @@ for backup_target in "${EXEC_BACKUP_TARGETS[@]}"; do
     --name davis-backup-restic \
     --hostname "m700" \
     --user "0:0" \
-    --env TZ="Europe/Berlin" \^
+    --env TZ="Europe/Berlin" \
     --env RESTIC_CACHE_DIR="/root/.cache/restic" \
     --env-file "${backup_target}.restic.env" \
     -v restic-cache:/root/.cache/restic \
