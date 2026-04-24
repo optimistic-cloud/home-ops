@@ -83,7 +83,7 @@ check_restic_repository() {
   # 1	Other error
   if [[ $exit_code -ne 0 ]]; then
     ping_fail "${target}" || true
-    return 1
+    echo 1
   fi
 }
 
