@@ -117,62 +117,62 @@ done
 
 echo "Backup targets to be processed: ${BACKUP_TARGETS[*]}"
 
-# bash prepare_backup_data.sh
+bash prepare_backup_data.sh
 
-# git_commit="$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)"
+git_commit="$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)"
 
-# for backup_target in "${BACKUP_TARGETS[@]}"; do
+for backup_target in "${BACKUP_TARGETS[@]}"; do
 
-#   output="$(docker run --rm -i \
-#     --name davis-backup-restic \
-#     --hostname "m700" \
-#     --user "0:0" \
-#     --env TZ="Europe/Berlin" \^
-#     --env RESTIC_CACHE_DIR="/root/.cache/restic" \
-#     --env-file "${backup_target}.restic.env" \
-#     -v restic-cache:/root/.cache/restic \
-#     -v /mnt/data/m700/davis:/repo \
-#     -v ${DOCKER_VOLUME_NAME}:/data/davis-data:ro \
-#     -v "${BACKUP_EXPORT_DATA_DIR}":/data/export \
-#     "${restic_image}" \
-#     backup /data \
-#     --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet | jq)"
+  output="$(docker run --rm -i \
+    --name davis-backup-restic \
+    --hostname "m700" \
+    --user "0:0" \
+    --env TZ="Europe/Berlin" \^
+    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
+    --env-file "${backup_target}.restic.env" \
+    -v restic-cache:/root/.cache/restic \
+    -v /mnt/data/m700/davis:/repo \
+    -v ${DOCKER_VOLUME_NAME}:/data/davis-data:ro \
+    -v "${BACKUP_EXPORT_DATA_DIR}":/data/export \
+    "${restic_image}" \
+    backup /data \
+    --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet | jq)"
 
-#   exit_code=$?
-#   ping_result "${backup_target}" "${exit_code}" "${output}" || true
+  exit_code=$?
+  ping_result "${backup_target}" "${exit_code}" "${output}" || true
 
   
-#   output="$(docker run --rm -i \
-#     --name davis-backup-restic \
-#     --hostname "m700" \
-#     --user "0:0" \
-#     --env TZ="Europe/Berlin" \
-#     --env RESTIC_CACHE_DIR="/root/.cache/restic" \
-#     --env-file "${backup_target}.restic.env" \
-#     -v restic-cache:/root/.cache/restic \
-#     -v /mnt/data/m700/davis:/repo \
-#     -v ${DOCKER_VOLUME_NAME}:/data/davis-data:ro \
-#     "${restic_image}" \
-#     check --read-data-subset "33%" --json)"
+  output="$(docker run --rm -i \
+    --name davis-backup-restic \
+    --hostname "m700" \
+    --user "0:0" \
+    --env TZ="Europe/Berlin" \
+    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
+    --env-file "${backup_target}.restic.env" \
+    -v restic-cache:/root/.cache/restic \
+    -v /mnt/data/m700/davis:/repo \
+    -v ${DOCKER_VOLUME_NAME}:/data/davis-data:ro \
+    "${restic_image}" \
+    check --read-data-subset "33%" --json)"
 
-#   exit_code=$?
-#   ping_result "${backup_target}" "${exit_code}" "${output}" || true
+  exit_code=$?
+  ping_result "${backup_target}" "${exit_code}" "${output}" || true
 
 
-#   output="$(docker run --rm -i \
-#     --name davis-backup-restic \
-#     --hostname "m700" \
-#     --user "0:0" \
-#     --env TZ="Europe/Berlin" \
-#     --env RESTIC_CACHE_DIR="/root/.cache/restic" \
-#     --env-file "${backup_target}.restic.env" \
-#     -v restic-cache:/root/.cache/restic \
-#     -v /mnt/data/m700/davis:/repo \
-#     -v appdata:/data/davis-data:ro \
-#     "${restic_image}" \
-#     forget --keep-within 365d --quiet)"
+  output="$(docker run --rm -i \
+    --name davis-backup-restic \
+    --hostname "m700" \
+    --user "0:0" \
+    --env TZ="Europe/Berlin" \
+    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
+    --env-file "${backup_target}.restic.env" \
+    -v restic-cache:/root/.cache/restic \
+    -v /mnt/data/m700/davis:/repo \
+    -v appdata:/data/davis-data:ro \
+    "${restic_image}" \
+    forget --keep-within 365d --quiet)"
 
-#   exit_code=$?
-#   ping_result "${backup_target}" "${exit_code}" "${output}" || true
+  exit_code=$?
+  ping_result "${backup_target}" "${exit_code}" "${output}" || true
 
-# done
+done
