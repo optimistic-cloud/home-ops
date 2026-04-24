@@ -126,19 +126,19 @@ bash prepare_backup_data.sh
 
 git_commit="$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)"
 
+
+do_restic() {
+  local command="$1"
+  output="$(docker compose -f docker-compose.backup.yaml run --rm "${command}" | jq)"
+  exit_code=$?
+  ping_result "${current_backup_target}" "${exit_code}" "${output}"
+}
+
 for backup_target in "${EXEC_BACKUP_TARGETS[@]}"; do
   export RESTIC_ENV_FILE="${backup_target}.restic.env"
   export GIT_SHA="${git_commit}"
 
-  output="$(GIT_SHA=${git_commit} docker compose -f docker-compose.backup.yaml run --rm backup | jq)"
-  exit_code=$?
-  ping_result "${backup_target}" "${exit_code}" "${output}"
-
-  output="$(docker compose -f docker-compose.backup.yaml run --rm forget)"
-  exit_code=$?
-  ping_result "${backup_target}" "${exit_code}" "${output}"
-
-  output="$(docker compose -f docker-compose.backup.yaml run --rm check | jq)"
-  exit_code=$?
-  ping_result "${backup_target}" "${exit_code}" "${output}"
+  do_restic "backup"
+  do_restic "forget"
+  do_restic "check"
 done
