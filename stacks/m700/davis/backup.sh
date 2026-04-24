@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -Eeuo pipefail
+set -Eeuox pipefail
 
 hc_api="${HC_API:?HC_API is required}"
 hc_ping_key="${HC_PING_KEY:?HC_PING_KEY is required}"
