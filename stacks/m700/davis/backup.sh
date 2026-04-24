@@ -75,7 +75,7 @@ check_restic_repository_env_file() {
 check_restic_repository() {
   local target="$1"
 
-  RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml --profile config up
+  RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml --profile config up -d | jq
   exit_code=$?
 
   return "${exit_code}"
