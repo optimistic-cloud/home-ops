@@ -129,16 +129,17 @@ git_commit="$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEA
 
 do_restic() {
   local command="$1"
+  local backup_target="$2"
   output="$(docker compose -f docker-compose.backup.yaml run --rm "${command}" | jq)"
   exit_code=$?
-  ping_result "${current_backup_target}" "${exit_code}" "${output}"
+  ping_result "${backup_target}" "${exit_code}" "${output}"
 }
 
 for backup_target in "${EXEC_BACKUP_TARGETS[@]}"; do
   export RESTIC_ENV_FILE="${backup_target}.restic.env"
   export GIT_SHA="${git_commit}"
 
-  do_restic "backup"
-  do_restic "forget"
-  do_restic "check"
+  do_restic "backup" "${backup_target}"
+  do_restic "forget" "${backup_target}"
+  do_restic "check" "${backup_target}"
 done
