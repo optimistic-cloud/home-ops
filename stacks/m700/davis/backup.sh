@@ -169,7 +169,7 @@ for backup_target in "${EXEC_BACKUP_TARGETS[@]}"; do
   #   -v /mnt/data/m700/davis:/repo \
   #   "${restic_image}" \
   #   forget --keep-within 365d --quiet)"
-  output="$(RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic forget --keep-within 365d --quiet --json | jq)"
+  output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic forget --keep-within 365d --quiet --json | jq)"
 
   exit_code=$?
   ping_result "${backup_target}" "${exit_code}" "${output}"
