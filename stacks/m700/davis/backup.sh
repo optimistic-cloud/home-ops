@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
-set -Eeuox pipefail
+# Enable strict error handling and debugging:
+# -E: Inherit ERR trap in functions and subshells
+# -e: Exit immediately if any command exits with non-zero status
+# -u: Exit if any undefined variable is used
+# -o pipefail: Return exit status of the last failed command in a pipeline
+# -x: Print each command before executing it (debug mode)
+set -Euox pipefail
 
 hc_api="${HC_API:?HC_API is required}"
 hc_ping_key="${HC_PING_KEY:?HC_PING_KEY is required}"
@@ -71,7 +77,7 @@ check_restic_repository() {
 
   local exit_code
 
-  RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic cat config --json >/dev/null 2>&1
+  RESTIC_ENV_FILE="${target}.restic.env" docker compose -f docker-compose.backup.yaml run --rm restic cat config --json
   exit_code=$?
 
   return "${exit_code}"
