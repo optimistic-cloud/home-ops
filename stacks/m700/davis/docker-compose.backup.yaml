@@ -37,6 +37,8 @@ services:
     profiles: [backup]
     command: backup /data --tag "git_sha=${GIT_SHA}" --exclude-caches --skip-if-unchanged --json --quiet
     volumes:
+      - restic-cache:/root/.cache/restic
+      - /mnt/data/m700/davis:/repo
       - davis-data:/data/davis-data:ro
       - ${BACKUP_EXPORT_DATA_DIR}:/data/export
 
