@@ -30,7 +30,7 @@ services:
     <<: *restic-common
     container_name: forget
     command: forget --keep-within 365d --quiet
-    profiles: [check]
+    profiles: [forget]
   backup:
     <<: *restic-common
     container_name: backup
