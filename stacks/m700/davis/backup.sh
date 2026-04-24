@@ -80,7 +80,8 @@ check_restic_repository() {
 BACKUP_TARGETS=()
 for backup_target in "$@"; do
   # validate backup target
-  exit_code=$(check_target "${backup_target}")
+  check_target "${backup_target}"
+  exit_code=$?
   if [[ $exit_code -ne 0 ]]; then
     # skip this loop
     continue
@@ -89,7 +90,8 @@ for backup_target in "$@"; do
   ping_start "${backup_target}"
 
   # validate restic repository env file and repository access
-  exit_code=$(check_restic_repository_env_file "${backup_target}")
+  check_restic_repository_env_file "${backup_target}"
+  exit_code=$?
   if [[ $exit_code -ne 0 ]]; then
     ping_fail "${backup_target}"
     continue
@@ -99,7 +101,8 @@ for backup_target in "$@"; do
   # 10	Repository does not exist
   # 12	Wrong password
   # 1	Other error
-  exit_code=$(check_restic_repository "${backup_target}")
+  check_restic_repository "${backup_target}"
+  exit_code=$?
   if [[ $exit_code -ne 0 ]]; then
     ping_fail "${backup_target}"
     continue
