@@ -49,3 +49,30 @@ migrate:
 davis-log-tail:
     docker exec -it davis tail /var/www/davis/var/log/prod.log
 
+####################################
+######## BACKUP             ########
+####################################
+
+[group("backup")]
+prepare-backup-data:
+  bash prepare_backup_data.sh
+
+[group("backup")]
+cleanup-backup-data:
+  #!/usr/bin/env bash
+  set -eoux pipefail
+
+  backup_export_data_dir="${BACKUP_EXPORT_DATA_DIR:?BACKUP_EXPORT_DATA_DIR is required}"
+
+  rm -rf "${backup_export_data_dir}"
+
+[group("backup")]
+backup +backup_targets: && cleanup-backup-data up
+  bash backup.sh {{backup_targets}}
+
+[group("backup")]
+restore backup_target snapshot_id="latest":
+  #!/usr/bin/env bash
+  restore_data_dir="${BACKUP_RESTORE_DATA_DIR:?BACKUP_RESTORE_DATA_DIR is required}"
+  mkdir -p "${restore_data_dir}"
+  just restic-restore {{backup_target}} {{snapshot_id}}
