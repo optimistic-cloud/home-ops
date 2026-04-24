@@ -122,6 +122,7 @@ bash prepare_backup_data.sh
 git_commit="$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)"
 
 for backup_target in "${EXEC_BACKUP_TARGETS[@]}"; do
+  echo "Processing backup target: ${backup_target}"
   output="$(RESTIC_ENV_FILE="${backup_target}.restic.env" GIT_SHA="${git_commit}" docker compose -f docker-compose.backup.yaml --profile backup | jq)"
   exit_code=$?
   ping_result "${backup_target}" "${exit_code}" "${output}"
