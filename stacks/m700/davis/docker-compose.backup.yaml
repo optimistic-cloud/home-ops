@@ -29,6 +29,7 @@ services:
   backup:
     <<: *restic-common
     container_name: backup
+    profiles: [backup]
     command: backup /data --tag "git_sha=${GIT_SHA}" --exclude-caches --skip-if-unchanged --json --quiet
     volumes:
       - ${DOCKER_VOLUME_NAME}:/data/davis-data:ro
