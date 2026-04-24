@@ -88,6 +88,7 @@ check_restic_repository() {
 }
 
 for backup_target in "$@"; do
+  # validate backup target
   exit_code=$(check_target "${backup_target}")
   if [[ $exit_code -ne 0 ]]; then
     # skip this loop
@@ -96,8 +97,19 @@ for backup_target in "$@"; do
 
   ping_start "${backup_target}"
 
-  check_restic_repository_env_file "${backup_target}"
-  check_restic_repository "${backup_target}"
+  # validate restic repository env file and repository access
+  exit_code=$(check_restic_repository_env_file "${backup_target}")
+  if [[ $exit_code -ne 0 ]]; then
+    ping_fail "${backup_target}"
+    continue
+  fi
+
+  exit_code=$(check_restic_repository "${backup_target}")
+  if [[ $exit_code -ne 0 ]]; then
+    ping_fail "${backup_target}"
+    continue
+  fi
+
 done
 
 bash prepare_backup_data.sh
