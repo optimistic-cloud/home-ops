@@ -57,6 +57,19 @@ git_commit="$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEA
 
 for backup_target in "$@"; do
 
+  docker run --rm -i \
+    --name davis-backup-restic \
+    --hostname "m700" \
+    --user "0:0" \
+    --env TZ="Europe/Berlin" \
+    --env RESTIC_CACHE_DIR="/root/.cache/restic" \
+    --env-file "${backup_target}.restic.env" \
+    -v restic-cache:/root/.cache/restic \
+    -v /mnt/data/m700/davis:/repo \
+    "${restic_image}" \
+    check \
+    --json | jq
+
   output="$(docker run --rm -i \
     --name davis-backup-restic \
     --hostname "m700" \
