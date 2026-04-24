@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-import os, subprocess, sys, uuid, httpx  # or requests
+import os, subprocess, sys, uuid
+from urllib import request, error
+from urllib.request import Request
+
 
 HC_API        = os.environ["HC_API"]
 HC_PING_KEY   = os.environ["HC_PING_KEY"]
