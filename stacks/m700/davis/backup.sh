@@ -77,6 +77,7 @@ check_restic_repository() {
   echo "${exit_code}"
 }
 
+BACKUP_TARGETS=()
 for backup_target in "$@"; do
   # validate backup target
   exit_code=$(check_target "${backup_target}")
@@ -104,13 +105,14 @@ for backup_target in "$@"; do
     continue
   fi
 
+  BACKUP_TARGETS+=("${backup_target}")
 done
 
 bash prepare_backup_data.sh
 
 git_commit="$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)"
 
-for backup_target in "$@"; do
+for backup_target in "${BACKUP_TARGETS[@]}"; do
 
   output="$(docker run --rm -i \
     --name davis-backup-restic \
