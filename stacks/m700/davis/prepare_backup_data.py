@@ -68,6 +68,9 @@ def main(
     export_dir: Path = typer.Option(..., help="Directory to write exports to"),
     db_name:   str  = typer.Option(..., help="SQLite database filename inside the volume"),
 ) -> None:
+
+    export_container_env(container, export_dir)
+
     print("Hello from prepare_backup_data.py!")
     print(f"Container: {container}, Volume: {volume}, Export Dir: {export_dir}, DB Name: {db_name}")
 
