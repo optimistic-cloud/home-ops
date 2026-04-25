@@ -57,23 +57,17 @@ def backup_sqlite(src_path: str | Path, dst_path: str | Path) -> None:
         print(f"Tables: {tables}")
 
 
-def main() -> None:
-    load_env_file()
+app = typer.Typer()
 
-    container_name = require_env("DOCKER_CONTAINER_NAME")
-    volume_name    = require_env("DOCKER_VOLUME_NAME")
-    export_dir     = require_env("BACKUP_EXPORT_DATA_DIR")
-    db_name        = require_env("DATABASE_NAME")
-
-    Path(export_dir).mkdir(parents=True, exist_ok=True)
-
-    export_container_env(container_name=container_name, export_dir=export_dir)
-
-    backup_sqlite(
-        src_path=Path(f"/mnt/volumes/{volume_name}") / db_name,
-        dst_path=Path(export_dir) / db_name,
-    )
-
+@app.command()
+def main(
+    container: str  = typer.Option(..., help="Docker container name"),
+    volume:    str  = typer.Option(..., help="Docker volume name"),
+    export_dir: Path = typer.Option(..., help="Directory to write exports to"),
+    db_name:   str  = typer.Option(..., help="SQLite database filename inside the volume"),
+) -> None:
+    print("Hello from prepare_backup_data.py!")
+    print(f"Container: {container}, Volume: {volume}, Export Dir: {export_dir}, DB Name: {db_name}")
 
 if __name__ == "__main__":
-    main()
+    app()
