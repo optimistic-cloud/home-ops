@@ -2,7 +2,9 @@ import sqlite3
 import docker
 import sys
 from pathlib import Path
+import typer
 
+app = typer.Typer()
 
 def export_container_env(container_name: str, export_dir: str | Path) -> Path:
     export_dir = Path(export_dir)
@@ -57,7 +59,7 @@ def backup_sqlite(src_path: str | Path, dst_path: str | Path) -> None:
         print(f"Tables: {tables}")
 
 
-app = typer.Typer()
+
 
 @app.command()
 def main(
