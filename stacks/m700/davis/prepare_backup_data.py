@@ -26,18 +26,6 @@ def backup_sqlite_from_volume(
     db_name: str,
     dst_path: str | Path,
 ) -> None:
-    """
-    Extract a SQLite database from a Docker volume, backup it,
-    verify integrity, and print its tables.
-
-    Args:
-        volume_name: Docker volume containing the database.
-        db_name:     Filename of the SQLite db inside the volume (e.g. 'app.db').
-        dst_path:    Destination path for the backup file on the host.
-
-    Raises:
-        SystemExit: If the integrity check fails.
-    """
     dst_path = Path(dst_path)
     dst_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -97,8 +85,8 @@ def main(
 
     export_container_env(container_name, export_dir)
     backup_sqlite_from_volume(
-        volume_name=volume_name,   # e.g. "davis_data"
-        db_name=db_name,           # e.g. "app.db"
+        volume_name=volume_name,
+        db_name=db_name,
         dst_path=Path(export_dir) / db_name,
     )
 

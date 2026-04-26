@@ -38,7 +38,7 @@ ping_fail() {
 
 # ─── Validation ───────────────────────────────────────────────────────────────
 
-is_known_target() {
+is_well_known_target() {
   local target="$1"
   local t
   for t in "${WELL_KNOWN_BACKUP_TARGETS[@]}"; do
@@ -48,7 +48,7 @@ is_known_target() {
   return 1
 }
 
-has_env_file() {
+has_restic_env_file() {
   local target="$1"
   [[ -f "${target}.restic.env" ]] && return 0
   echo "Restic env file '${target}.restic.env' not found" >&2
@@ -82,9 +82,9 @@ do_restic() {
 valid_targets=()
 
 for target in "$@"; do
-  is_known_target  "$target" || continue
+  is_well_known_target  "$target" || continue
   ping_start       "$target"
-  has_env_file     "$target" || { ping_fail "$target"; continue; }
+  has_restic_env_file     "$target" || { ping_fail "$target"; continue; }
   repo_exists      "$target" || { ping_fail "$target"; continue; }
   valid_targets+=("$target")
 done
