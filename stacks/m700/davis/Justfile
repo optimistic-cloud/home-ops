@@ -55,7 +55,11 @@ davis-log-tail:
 
 [group("backup")]
 prepare-backup-data:
-  nu prepare_backup_data.nu
+  nu prepare_backup_data.nu \
+    --docker-container-name davis \
+    --docker-volume-name davis-data \
+    --database-name davis-database.db \
+    --backup-export-data-dir ${BACKUP_EXPORT_DATA_DIR}
 
 [group("backup")]
 cleanup-backup-data:
