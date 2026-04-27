@@ -49,13 +49,13 @@ migrate:
 davis-log-tail:
     docker exec -it davis tail /var/www/davis/var/log/prod.log
 
-####################################
+    ####################################
 ######## BACKUP             ########
 ####################################
 
 [group("backup")]
 prepare-backup-data:
-  bash prepare_backup_data.sh
+  nu prepare_backup_data.nu
 
 [group("backup")]
 cleanup-backup-data:
