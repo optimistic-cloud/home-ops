@@ -14,16 +14,29 @@ def export-container-envs [docker_container_name: string, backup_export_data_dir
   }
 }
 
+def with-stopped-docker-container [--name: string, operation: closure] {
+  docker container stop $name
+  try {
+      do $operation
+       docker container start $name
+  } catch {|err|
+      # https://github.com/nushell/nushell/issues/15279
+      docker container start $name
+      error make $err
+  }
+}
+
 def export-sqlite-database [docker_container_name: string, docker_volume_name: string, database_name: string, backup_export_data_dir: path] {
-  docker container stop $docker_container_name
-  (
-    docker run --rm
-      -u 1000:1000
-      -v $"($docker_volume_name):/data"
-      -v $"($backup_export_data_dir):/export"
-      alpine/sqlite $"/data/($database_name)" $".backup '/export/($database_name)'"
-  )
-  docker container start $docker_container_name
+  with-stopped-docker-container --name $docker_container_name { 
+    (
+      docker run --rm
+        -v $"($docker_volume_name):/data"
+        -v $"($backup_export_data_dir):/export"
+        alpine/sqlite $"/data/($database_name)" $".backup '/export/($database_name)'"
+    )
+  }
+
+  docker run --rm -v $"($backup_export_data_dir):/data" alpine:3.23.4 chown -R 1000:1000 /data
 }
 
 def main [
@@ -33,7 +46,7 @@ def main [
   --backup-export-data-dir: path
 ] {
   if not ($backup_export_data_dir | path exists) {
-    mkdir $backup_export_data_dir
+    error make { msg: "Export dir does not exist" }
   }
 
   export-container-envs $docker_container_name $backup_export_data_dir
