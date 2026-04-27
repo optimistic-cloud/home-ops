@@ -18,6 +18,7 @@ def export-sqlite-database [docker_container_name: string, docker_volume_name: s
   docker container stop $docker_container_name
   (
     docker run --rm
+      -u 1000:1000
       -v $"($docker_volume_name):/data"
       -v $"($backup_export_data_dir):/export"
       alpine/sqlite $"/data/($database_name)" $".backup '/export/($database_name)'"
