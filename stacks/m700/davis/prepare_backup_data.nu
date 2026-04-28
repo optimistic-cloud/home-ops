@@ -45,9 +45,7 @@ def main [
   --database-name: string,
   --backup-export-data-dir: path
 ] {
-  if not ($backup_export_data_dir | path exists) {
-    error make { msg: "Export dir does not exist" }
-  }
+  mkdir $backup_export_data_dir
 
   export-container-envs $docker_container_name $backup_export_data_dir
   export-sqlite-database $docker_container_name $docker_volume_name $database_name $backup_export_data_dir
