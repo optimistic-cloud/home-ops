@@ -54,7 +54,7 @@ davis-log-tail:
 ####################################
 
 [group("backup")]
-cleanup:
+cleanup-backup-data:
   rm -rf ${BACKUP_EXPORT_DATA_DIR}
 
 [group("backup")]
@@ -91,15 +91,6 @@ bbb target:
   } catch { |err|
     ^curl -X POST $"($hc_url)/($err.exit_code)?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)" 
   }
-
-[group("backup")]
-cleanup-backup-data:
-  #!/usr/bin/env bash
-  set -eoux pipefail
-
-  backup_export_data_dir="${BACKUP_EXPORT_DATA_DIR:?BACKUP_EXPORT_DATA_DIR is required}"
-
-  rm -rf "${backup_export_data_dir}"
 
 [group("backup")]
 backup +backup_targets: && cleanup-backup-data up
