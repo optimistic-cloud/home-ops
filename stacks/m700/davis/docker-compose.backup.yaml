@@ -29,7 +29,7 @@ services:
     command: forget --keep-within 365d --quiet
   backup:
     <<: *restic-common
-    command: backup /data --tag "git_sha=${GIT_SHA}" --exclude-caches --skip-if-unchanged --json --quiet
+    command: backup /data --tag "git_sha=${GIT_SHA}" --exclude-caches --skip-if-unchanged
     volumes:
       - restic-cache:/root/.cache/restic
       - /mnt/data/m700/davis:/repo

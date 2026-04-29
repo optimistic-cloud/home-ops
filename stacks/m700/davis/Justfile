@@ -61,6 +61,23 @@ prepare-backup-data:
     --database-name davis-database.db \
     --backup-export-data-dir ${BACKUP_EXPORT_DATA_DIR}
 
+bbb target:
+  #!/usr/bin/env nu
+  let target = "{{target}}"
+
+  let hc_url = $"https://($env.HC_API)/ping/($env.HC_PING_KEY)/($env.HC_CHECK_NAME)-($target)"
+  let run_id = (random uuid)
+  http get $"($hc_url)/start?rid=($run_id)"
+
+  let logfile = $"($target).backup.log"
+  
+  try {
+    ^nu backup-restic.nu --target $target out+err> $logfile
+    ^curl -X POST $"($hc_url)/0?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
+  } catch { |err|
+    ^curl -X POST $"($hc_url)/($err.exit_code)?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)" 
+  }
+
 [group("backup")]
 cleanup-backup-data:
   #!/usr/bin/env bash
