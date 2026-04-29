@@ -55,6 +55,7 @@ davis-log-tail:
 
 [group("backup")]
 prepare-backup-data:
+  mkdir -p ${BACKUP_EXPORT_DATA_DIR}
   nu prepare_backup_data.nu \
     --docker-container-name davis \
     --docker-volume-name davis-data \
@@ -72,7 +73,6 @@ bbb target:
   let logfile = $"($target).backup.log"
   
   try {
-    #^nu backup-restic.nu --target $target out+err> $logfile
     with-env {
       GIT_SHA: (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1),
       RESTIC_ENV_FILE: $"($target).restic.env"
