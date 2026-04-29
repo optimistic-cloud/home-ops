@@ -54,6 +54,10 @@ davis-log-tail:
 ####################################
 
 [group("backup")]
+cleanup:
+  rm -rf ${BACKUP_EXPORT_DATA_DIR}
+
+[group("backup")]
 prepare-backup-data:
   mkdir -p ${BACKUP_EXPORT_DATA_DIR}
   nu prepare_backup_data.nu \
@@ -62,6 +66,7 @@ prepare-backup-data:
     --database-name davis-database.db \
     --backup-export-data-dir ${BACKUP_EXPORT_DATA_DIR}
 
+[group("backup")]
 bbb target:
   #!/usr/bin/env nu
   let target = "{{target}}"
