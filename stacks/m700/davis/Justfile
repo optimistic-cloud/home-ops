@@ -75,15 +75,15 @@ bbb target: && cleanup-backup-data
   let run_id = (random uuid)
 
   let logfile = $"($target).backup.log"
-
-  ^curl -X POST $"($hc_url)/start?rid=($run_id)"
   
   try {
+    ^curl -X POST $"($hc_url)/start?rid=($run_id)"
+
     with-env {
       GIT_SHA: (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1),
       RESTIC_ENV_FILE: $"($target).restic.env"
     } { 
-      if (${BACKUP_EXPORT_DATA_DIR} | empty?) {
+      if (not ($env.BACKUP_EXPORT_DATA_DIR | path exists)) {
         error "BACKUP_EXPORT_DATA_DIR is not set or empty"
       }
 
@@ -95,8 +95,8 @@ bbb target: && cleanup-backup-data
     ^curl -X POST $"($hc_url)/0?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
   } catch { |err|
     ^curl -X POST $"($hc_url)/($err.exit_code)?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
-    error make {msg: $"Restic backup failed with exit code ($err.exit_code) for target ($target)", exit_code: $err.exit_code}
   }
+  # finally
   rm -f $logfile
 
 [group("backup")]
