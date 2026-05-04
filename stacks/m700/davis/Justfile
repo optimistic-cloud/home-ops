@@ -116,7 +116,7 @@ restic-backup target="local":
 
   with-env {
       GIT_SHA: (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1),
-      RESTIC_ENV_FILE: $"($target).restic.env"
+      RESTIC_ENV_FILE: local.restic.env
   } { 
     docker run --rm \
       --hostname "${HOSTNAME}" \
