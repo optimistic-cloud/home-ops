@@ -73,9 +73,10 @@ bbb target: && cleanup-backup-data
 
   let hc_url = $"https://($env.HC_API)/ping/($env.HC_PING_KEY)/($env.HC_CHECK_NAME)-($target)"
   let run_id = (random uuid)
-  ^curl -X POST $"($hc_url)/start?rid=($run_id)"
 
   let logfile = $"($target).backup.log"
+
+  ^curl -X POST $"($hc_url)/start?rid=($run_id)"
   
   try {
     with-env {
@@ -89,7 +90,8 @@ bbb target: && cleanup-backup-data
 
     ^curl -X POST $"($hc_url)/0?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
   } catch { |err|
-    ^curl -X POST $"($hc_url)/($err.exit_code)?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)" 
+    ^curl -X POST $"($hc_url)/($err.exit_code)?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
+    error make {msg: $"Restic backup failed with exit code ($err.exit_code) for target ($target)", exit_code: $err.exit_code}
   }
   rm -f $logfile
 
