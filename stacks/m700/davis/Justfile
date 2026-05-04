@@ -84,7 +84,7 @@ bbb target: && cleanup-backup-data
       RESTIC_ENV_FILE: $"($target).restic.env"
     } { 
       if (not ($env.BACKUP_EXPORT_DATA_DIR | path exists)) {
-        error "BACKUP_EXPORT_DATA_DIR is not set or empty"
+        error make {msg: "Backup export data directory ($env.BACKUP_EXPORT_DATA_DIR) does not exist"}
       }
 
       ^docker compose -f docker-compose.backup.yaml run --rm backup out+err> $logfile
