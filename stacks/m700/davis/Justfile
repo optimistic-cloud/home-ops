@@ -110,6 +110,36 @@ bbb target: && cleanup-backup-data up
   # finally
   rm -f $logfile
 
+restic-backup:
+  #!/usr/bin/env nu
+  use std/log
+
+  with-env {
+      GIT_SHA: (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1),
+      RESTIC_ENV_FILE: $"($target).restic.env"
+  } { 
+    docker run --rm \
+      --hostname "${HOSTNAME}" \
+      --user 0:0 \
+      -i \
+      -e TZ=Europe/Berlin \
+      -e RESTIC_CACHE_DIR=/root/.cache/restic \
+      --env-file "${RESTIC_ENV_FILE}" \
+      -v restic-cache:/root/.cache/restic \
+      -v /mnt/data/m700/davis:/repo \
+      -v davis-data:/data/davis-data:ro \
+      -v "${BACKUP_EXPORT_DATA_DIR}:/data/export" \
+      restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76 \
+      backup /data \
+        --tag "git_sha=${GIT_SHA}" \
+        --exclude-caches \
+        --skip-if-unchanged \
+        --json \
+        --quiet
+    }
+
+
+
 [group("backup")]
 backup +backup_targets: && cleanup-backup-data up
   bash backup.sh {{backup_targets}}
