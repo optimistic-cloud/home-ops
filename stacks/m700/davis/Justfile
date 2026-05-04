@@ -70,7 +70,7 @@ prepare-backup-data:
 bbb target: 
   #!/usr/bin/env nu
   use std/log
-  
+
   let target = "{{target}}"
 
   let hc_url = $"https://($env.HC_API)/ping/($env.HC_PING_KEY)/($env.HC_CHECK_NAME)-($target)"
@@ -96,7 +96,7 @@ bbb target:
       ^docker compose -f docker-compose.backup.yaml run --rm check out+err>> $logfile
     }
 
-    if (($logfile | path exists) and ((ls $logfile | get size.0) > 0)) {
+    if (($logfile | path exists) and ((ls $logfile | get size.0) > 0B)) {
       error make {msg: "Backup failed, log file ($logfile) is not empty"}
     }
 
