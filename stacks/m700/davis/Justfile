@@ -69,6 +69,8 @@ prepare-backup-data:
 [group("backup")]
 bbb target: 
   #!/usr/bin/env nu
+  use std/log
+  
   let target = "{{target}}"
 
   let hc_url = $"https://($env.HC_API)/ping/($env.HC_PING_KEY)/($env.HC_CHECK_NAME)-($target)"
