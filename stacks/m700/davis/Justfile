@@ -97,13 +97,14 @@ bbb target:
       ^docker compose -f docker-compose.backup.yaml run --rm check out+err>> $logfile
     }
 
-    if (($logfile | path exists) and ((ls $logfile | get size.0) == 0B)) {
+    if (($logfile | path exists) and ((ls $logfile | get size.0) > 0B)) {
       error make {msg: "Backup failed, log file ($logfile) is not empty"}
     }
 
     ^curl -X POST $"($hc_url)/0?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
   } catch { |err|
     log error $"Backup failed with error: ($err)"
+    print $err >> $logfile
     ^curl -X POST $"($hc_url)/1?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
     ^curl -X POST $"($hc_url)/fail?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
   }
