@@ -59,6 +59,7 @@ cleanup-backup-data:
 
 [group("backup")]
 prepare-backup-data:
+  rm -rf ${BACKUP_EXPORT_DATA_DIR}
   mkdir -p ${BACKUP_EXPORT_DATA_DIR}
   nu prepare_backup_data.nu \
     --docker-container-name davis \
