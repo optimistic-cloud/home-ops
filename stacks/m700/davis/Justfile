@@ -67,7 +67,7 @@ prepare-backup-data:
     --backup-export-data-dir ${BACKUP_EXPORT_DATA_DIR}
 
 [group("backup")]
-bbb target: && cleanup-backup-data
+bbb target: 
   #!/usr/bin/env nu
   let target = "{{target}}"
 
@@ -90,6 +90,10 @@ bbb target: && cleanup-backup-data
       ^docker compose -f docker-compose.backup.yaml run --rm backup out+err> $logfile
       ^docker compose -f docker-compose.backup.yaml run --rm forget out+err>> $logfile
       ^docker compose -f docker-compose.backup.yaml run --rm check out+err>> $logfile
+    }
+
+    if (($file | path exists) and ((ls $file | get size.0) > 0)) {
+      error make {msg: "Backup failed, log file ($logfile) is not empty"}
     }
 
     ^curl -X POST $"($hc_url)/0?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
