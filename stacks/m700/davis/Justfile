@@ -83,6 +83,10 @@ bbb target: && cleanup-backup-data
       GIT_SHA: (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1),
       RESTIC_ENV_FILE: $"($target).restic.env"
     } { 
+      if (${BACKUP_EXPORT_DATA_DIR} | empty?) {
+        error "BACKUP_EXPORT_DATA_DIR is not set or empty"
+      }
+
       ^docker compose -f docker-compose.backup.yaml run --rm backup out+err> $logfile
       ^docker compose -f docker-compose.backup.yaml run --rm forget out+err>> $logfile
       ^docker compose -f docker-compose.backup.yaml run --rm check out+err>> $logfile
