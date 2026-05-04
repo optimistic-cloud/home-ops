@@ -106,7 +106,7 @@ bbb target:
     $err.msg | save --append $logfile
     ^curl -X POST $"($hc_url)/1?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
     ^curl -X POST $"($hc_url)/fail?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
-    error $err
+    error make $err
   }
   # finally
   rm -f $logfile
