@@ -79,6 +79,8 @@ bbb target:
   try {
     ^curl -X POST $"($hc_url)/start?rid=($run_id)"
 
+    just prepare-backup-data
+
     with-env {
       GIT_SHA: (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1),
       RESTIC_ENV_FILE: $"($target).restic.env"
