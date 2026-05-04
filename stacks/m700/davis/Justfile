@@ -96,7 +96,7 @@ bbb target:
       ^docker compose -f docker-compose.backup.yaml run --rm check out+err>> $logfile
     }
 
-    if (($logfile | path exists) and ((ls $logfile | get size.0) > 0B)) {
+    if (($logfile | path exists) and ((ls $logfile | get size.0) == 0B)) {
       error make {msg: "Backup failed, log file ($logfile) is not empty"}
     }
 
