@@ -91,6 +91,7 @@ bbb target:
   } catch { |err|
     ^curl -X POST $"($hc_url)/($err.exit_code)?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)" 
   }
+  rm -f $logfile
 
 [group("backup")]
 backup +backup_targets: && cleanup-backup-data up
