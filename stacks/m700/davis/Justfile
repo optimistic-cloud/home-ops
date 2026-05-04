@@ -110,7 +110,7 @@ bbb target: && cleanup-backup-data up
   # finally
   rm -f $logfile
 
-restic-backup:
+restic-backup target="local": 
   #!/usr/bin/env nu
   use std/log
 
