@@ -78,14 +78,14 @@ bbb target:
   #!/usr/bin/env nu
   use std/log
   
+  let target = "{{target}}"
+
+  let hc_url = $"($env.HC_URL)-($target)"
+  let run_id = (random uuid)
+
+  let logfile = $"($env.BACKUP_WORK_DIR)/($target).backup.log"
+
   try {
-    let target = "{{target}}"
-
-    let hc_url = $"($env.HC_URL)-($target)"
-    let run_id = (random uuid)
-
-    let logfile = $"($env.BACKUP_WORK_DIR)/($target).backup.log"
-      
     ^curl -X POST $"($hc_url)/start?rid=($run_id)"
 
     with-env {
