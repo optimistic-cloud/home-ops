@@ -49,7 +49,7 @@ migrate:
 davis-log-tail:
     docker exec -it davis tail /var/www/davis/var/log/prod.log
 
-    ####################################
+####################################
 ######## BACKUP             ########
 ####################################
 
@@ -85,21 +85,18 @@ bbb target:
   let hc_url = $"https://($env.HC_API)/ping/($env.HC_PING_KEY)/($env.HC_CHECK_NAME)-($target)"
   let run_id = (random uuid)
 
-  let logfile = $"($target).backup.log"
+  let logfile = $"{{backup_work_dir}}/($target).backup.log"
   
   try {
     ^curl -X POST $"($hc_url)/start?rid=($run_id)"
 
-    
-    just prepare-backup-data
-
-    if (not ($env.BACKUP_WORK_DIR)/{{export_dir}} | path exists) {
-      error make {msg: "Backup export data directory ($env.BACKUP_WORK_DIR/{{export_dir}}) does not exist"}
+    if (not {{export_dir}} | path exists) {
+      error make {msg: "Backup export data directory ({{export_dir}}) does not exist"}
     }
 
     with-env {
-      BACKUP_EXPORT_DATA_DIR: $"($env.BACKUP_WORK_DIR)/{{export_dir}}"
-      BACKUP_RESTORE_DATA_DIR: $"($env.BACKUP_WORK_DIR)/{{restore_dir}}"
+      BACKUP_EXPORT_DATA_DIR: {{export_dir}}
+      BACKUP_RESTORE_DATA_DIR: {{restore_dir}}
     } {
       ^docker compose -f docker-compose.backup.yaml run --rm backup out+err> $logfile
       ^docker compose -f docker-compose.backup.yaml run --rm forget out+err>> $logfile
