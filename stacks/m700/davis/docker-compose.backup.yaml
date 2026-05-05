@@ -11,7 +11,7 @@ x-restic-common: &restic-common
     TZ: Europe/Berlin
     RESTIC_CACHE_DIR: /root/.cache/restic
   env_file:
-    - ${RESTIC_ENV_FILE:?RESTIC_ENV_FILE is required}
+    - .env-backup
   volumes:
     - restic-cache:/root/.cache/restic
     - /mnt/data/m700/davis:/repo

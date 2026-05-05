@@ -54,21 +54,23 @@ davis-log-tail:
 ####################################
 
 [group("backup")]
+setup:
+  mkdir -p ./${BACKUP_WORK_DIR}
+
+[group("backup")]
 cleanup-backup-data:
-  rm -rf ${BACKUP_EXPORT_DATA_DIR}
+  rm -rf ./${BACKUP_WORK_DIR}
 
 [group("backup")]
 prepare-backup-data:
-  rm -rf ${BACKUP_EXPORT_DATA_DIR}
-  mkdir -p ${BACKUP_EXPORT_DATA_DIR}
   nu prepare_backup_data.nu \
     --docker-container-name davis \
     --docker-volume-name davis-data \
     --database-name davis-database.db \
-    --backup-export-data-dir ${BACKUP_EXPORT_DATA_DIR}
+    --backup-export-data-dir ./${BACKUP_WORK_DIR}/${BACKUP_EXPORT_DATA_DIR}
 
 [group("backup")]
-bbb target: && cleanup-backup-data up
+bbb target: setup && cleanup-backup-data up
   #!/usr/bin/env nu
   use std/log
 
@@ -82,11 +84,12 @@ bbb target: && cleanup-backup-data up
   try {
     ^curl -X POST $"($hc_url)/start?rid=($run_id)"
 
+    ln -s $"($target).restic.env" ./${BACKUP_WORK_DIR}/.env
+
     just prepare-backup-data
 
     with-env {
       GIT_SHA: (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1),
-      RESTIC_ENV_FILE: $"($target).restic.env"
     } { 
       if (not ($env.BACKUP_EXPORT_DATA_DIR | path exists)) {
         error make {msg: "Backup export data directory ($env.BACKUP_EXPORT_DATA_DIR) does not exist"}
@@ -111,32 +114,7 @@ bbb target: && cleanup-backup-data up
   rm -f $logfile
 
 restic-backup target="local": 
-  #!/usr/bin/env nu
-  use std/log
 
-  with-env {
-      GIT_SHA: (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1),
-      RESTIC_ENV_FILE: local.restic.env
-  } { 
-    docker run --rm \
-      --hostname "${HOSTNAME}" \
-      --user 0:0 \
-      -i \
-      -e TZ=Europe/Berlin \
-      -e RESTIC_CACHE_DIR=/root/.cache/restic \
-      --env-file "${RESTIC_ENV_FILE}" \
-      -v restic-cache:/root/.cache/restic \
-      -v /mnt/data/m700/davis:/repo \
-      -v davis-data:/data/davis-data:ro \
-      -v "${BACKUP_EXPORT_DATA_DIR}:/data/export" \
-      restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76 \
-      backup /data \
-        --tag "git_sha=${GIT_SHA}" \
-        --exclude-caches \
-        --skip-if-unchanged \
-        --json \
-        --quiet
-    }
 
 
 
