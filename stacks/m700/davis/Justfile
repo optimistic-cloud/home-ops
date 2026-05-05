@@ -61,7 +61,7 @@ restore_dir := "${backup_work_dir}/restore"
 setup-backup target:
   mkdir -p {{export_dir}}
   mkdir -p {{restore_dir}}
-  ln -s ${PROJECT_WORK_DIR}/{{target}}.restic.env ${backup_work_dir}/.env
+  ln -s ${PROJECT_WORK_DIR}/{{target}}.restic.env {{backup_work_dir}}/.env
 
 [group("backup")]
 cleanup-backup:
