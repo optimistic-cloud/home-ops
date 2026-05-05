@@ -104,7 +104,7 @@ bbb target:
       error make {msg: "Backup failed, log file ($logfile) is not empty"}
     }
     print $hc_url
-    ^curl -X POST $"($hc_url)/?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
+    ^curl -X POST $"($hc_url)/0?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
   } catch { |err|
     log error "Backup failed: ($err.msg)"
     $err.msg | save --append $logfile
