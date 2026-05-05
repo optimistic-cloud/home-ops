@@ -55,8 +55,8 @@ davis-log-tail:
 
 [group("backup")]
 setup:
-  mkdir -p ./${BACKUP_WORK_DIR}/${BACKUP_EXPORT_DATA_DIR}
-  mkdir -p ./${BACKUP_WORK_DIR}/${BACKUP_RESTORE_DATA_DIR}
+  mkdir -p ${BACKUP_WORK_DIR}/${BACKUP_EXPORT_DATA_DIR}
+  mkdir -p ${BACKUP_WORK_DIR}/${BACKUP_RESTORE_DATA_DIR}
 
 [group("backup")]
 cleanup-backup-data:
@@ -68,7 +68,7 @@ prepare-backup-data:
     --docker-container-name davis \
     --docker-volume-name davis-data \
     --database-name davis-database.db \
-    --backup-export-data-dir ./${BACKUP_WORK_DIR}/${BACKUP_EXPORT_DATA_DIR}
+    --backup-export-data-dir ${BACKUP_WORK_DIR}/${BACKUP_EXPORT_DATA_DIR}
 
 [group("backup")]
 bbb target: setup && cleanup-backup-data up
@@ -88,17 +88,13 @@ bbb target: setup && cleanup-backup-data up
     ln -s ($"($target).restic.env" | path expand) $"./($env.BACKUP_WORK_DIR)/.env"
     just prepare-backup-data
 
-    with-env {
-      GIT_SHA: (git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1),
-    } { 
-      if (not ($env.BACKUP_EXPORT_DATA_DIR | path exists)) {
-        error make {msg: "Backup export data directory ($env.BACKUP_EXPORT_DATA_DIR) does not exist"}
-      }
-
-      ^docker compose -f docker-compose.backup.yaml run --rm backup out+err> $logfile
-      ^docker compose -f docker-compose.backup.yaml run --rm forget out+err>> $logfile
-      ^docker compose -f docker-compose.backup.yaml run --rm check out+err>> $logfile
+    if (not ($env.BACKUP_WORK_DIR)/($env.BACKUP_EXPORT_DATA_DIR | path exists)) {
+      error make {msg: "Backup export data directory ($env.BACKUP_EXPORT_DATA_DIR) does not exist"}
     }
+
+    ^docker compose -f docker-compose.backup.yaml run --rm backup out+err> $logfile
+    ^docker compose -f docker-compose.backup.yaml run --rm forget out+err>> $logfile
+    ^docker compose -f docker-compose.backup.yaml run --rm check out+err>> $logfile
 
     if (($logfile | path exists) and ((ls $logfile | get size.0) == 0B)) {
       error make {msg: "Backup failed, log file ($logfile) is not empty"}
