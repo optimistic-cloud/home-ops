@@ -95,10 +95,14 @@ bbb target:
       error make {msg: "Backup export data directory ($env.BACKUP_WORK_DIR/{{export_dir}}) does not exist"}
     }
 
-    ^docker compose -f docker-compose.backup.yaml run --rm backup out+err> $logfile
-    ^docker compose -f docker-compose.backup.yaml run --rm forget out+err>> $logfile
-    ^docker compose -f docker-compose.backup.yaml run --rm check out+err>> $logfile
-
+    with-env {
+      BACKUP_EXPORT_DATA_DIR: $"($env.BACKUP_WORK_DIR)/{{export_dir}}"
+      BACKUP_RESTORE_DATA_DIR: $"($env.BACKUP_WORK_DIR)/{{restore_dir}}"
+    } {
+      ^docker compose -f docker-compose.backup.yaml run --rm backup out+err> $logfile
+      ^docker compose -f docker-compose.backup.yaml run --rm forget out+err>> $logfile
+      ^docker compose -f docker-compose.backup.yaml run --rm check out+err>> $logfile
+    }
     if (($logfile | path exists) and ((ls $logfile | get size.0) == 0B)) {
       error make {msg: "Backup failed, log file ($logfile) is not empty"}
     }
