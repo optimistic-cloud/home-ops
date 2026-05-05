@@ -84,7 +84,7 @@ bbb target: setup && cleanup-backup-data up
   try {
     ^curl -X POST $"($hc_url)/start?rid=($run_id)"
 
-    ln -s $"($target).restic.env" $"./($env.BACKUP_WORK_DIR)/.env"
+    ln -s ($"($target).restic.env" | path expand) $"./($env.BACKUP_WORK_DIR)/.env"
 
     just prepare-backup-data
 
