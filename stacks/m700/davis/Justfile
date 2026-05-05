@@ -62,7 +62,7 @@ setup-backup:
   mkdir -p ${BACKUP_WORK_DIR}/{{restore_dir}}
 
 [group("backup")]
-cleanup-backup-data:
+cleanup-backup:
   rm -rf ./${BACKUP_WORK_DIR}
 
 [group("backup")]
