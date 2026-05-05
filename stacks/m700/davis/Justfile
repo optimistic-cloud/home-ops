@@ -87,7 +87,7 @@ backup target:
     ^curl -X POST $"($hc_url)/start?rid=($run_id)"
 
     just cleanup-backup 
-    just setup-backup target 
+    just setup-backup {{target}} 
     just prepare-backup-data 
 
     with-env {
