@@ -82,7 +82,7 @@ bbb target:
 
   let target = "{{target}}"
 
-  let hc_url = $"https://($env.HC_API)/ping/($env.HC_PING_KEY)/($env.HC_CHECK_NAME)-($target)"
+  let hc_url = $"($env.HC_URL)-($target)"
   let run_id = (random uuid)
 
   let logfile = $"{{backup_work_dir}}/($target).backup.log"
@@ -108,8 +108,6 @@ bbb target:
     ^curl -X POST $"($hc_url)/fail?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
     error make $err
   }
-  # finally
-  rm -f $logfile
 
 [group("backup")]
 restore backup_target snapshot_id="latest":
