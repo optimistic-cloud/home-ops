@@ -83,6 +83,7 @@ bbb target:
   let target = "{{target}}"
 
   let hc_url = $"($env.HC_URL)-($target)"
+  print $hc_url
   let run_id = (random uuid)
 
   let logfile = $"{{backup_work_dir}}/($target).backup.log"
