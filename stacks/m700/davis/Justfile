@@ -93,6 +93,7 @@ bbb target:
     with-env {
       BACKUP_EXPORT_DATA_DIR: $env.BACKUP_EXPORT_DATA_DIR
       BACKUP_RESTORE_DATA_DIR: $env.BACKUP_RESTORE_DATA_DIR
+      RESTIC_ENV_FILE: $"($env.BACKUP_WORK_DIR)/.env"
     } {
       ^docker compose -f docker-compose.backup.yaml run --rm backup out+err> $logfile
       ^docker compose -f docker-compose.backup.yaml run --rm forget out+err>> $logfile
