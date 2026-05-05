@@ -71,7 +71,7 @@ prepare-backup-data:
     --backup-export-data-dir ${BACKUP_WORK_DIR}/${BACKUP_EXPORT_DATA_DIR}
 
 [group("backup")]
-bbb target: setup-backup && cleanup-backup-data up
+bbb target: 
   #!/usr/bin/env nu
   use std/log
 
