@@ -90,10 +90,6 @@ bbb target:
   try {
     ^curl -X POST $"($hc_url)/start?rid=($run_id)"
 
-    if (not {{export_dir}} | path exists) {
-      error make {msg: "Backup export data directory ({{export_dir}}) does not exist"}
-    }
-
     with-env {
       BACKUP_EXPORT_DATA_DIR: {{export_dir}}
       BACKUP_RESTORE_DATA_DIR: {{restore_dir}}
