@@ -53,18 +53,19 @@ davis-log-tail:
 ######## BACKUP             ########
 ####################################
 
-export_dir := "export"
-restore_dir := "restore"
+backup_work_dir := "${PROJECT_WORK_DIR}/${BACKUP_WORK_DIR}"
+export_dir := "${backup_work_dir}/export"
+restore_dir := "${backup_work_dir}/restore"
 
 [group("backup")]
 setup-backup target:
-  mkdir -p ${PROJECT_WORK_DIR}/${BACKUP_WORK_DIR}/{{export_dir}}
-  mkdir -p ${PROJECT_WORK_DIR}/${BACKUP_WORK_DIR}/{{restore_dir}}
-  ln -s ${PROJECT_WORK_DIR}/{{target}}.restic.env ${PROJECT_WORK_DIR}/${BACKUP_WORK_DIR}/.env
+  mkdir -p {{export_dir}}
+  mkdir -p {{restore_dir}}
+  ln -s ${PROJECT_WORK_DIR}/{{target}}.restic.env ${backup_work_dir}/.env
 
 [group("backup")]
 cleanup-backup:
-  rm -rf ${PROJECT_WORK_DIR}/${BACKUP_WORK_DIR}
+  rm -rf {{backup_work_dir}}
 
 [group("backup")]
 prepare-backup-data:
@@ -72,7 +73,7 @@ prepare-backup-data:
     --docker-container-name davis \
     --docker-volume-name davis-data \
     --database-name davis-database.db \
-    --backup-export-data-dir ${PROJECT_WORK_DIR}/${BACKUP_WORK_DIR}/{{export_dir}}
+    --backup-export-data-dir {{export_dir}}
 
 [group("backup")]
 bbb target: 
