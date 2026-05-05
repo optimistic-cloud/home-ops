@@ -81,12 +81,12 @@ bbb target:
   let target = "{{target}}"
 
   let hc_url = $"($env.HC_URL)-($target)"
-  print $hc_url
   let run_id = (random uuid)
 
   let logfile = $"($env.BACKUP_WORK_DIR)/($target).backup.log"
   
   try {
+      print $hc_url
     ^curl -X POST $"($hc_url)/start?rid=($run_id)"
 
     with-env {
