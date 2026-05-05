@@ -53,8 +53,6 @@ davis-log-tail:
 ######## BACKUP             ########
 ####################################
 
-
-
 [group("backup")]
 setup-backup target:
   mkdir -p ${BACKUP_EXPORT_DATA_DIR}
@@ -74,7 +72,7 @@ prepare-backup-data:
     --backup-export-data-dir ${BACKUP_EXPORT_DATA_DIR}
 
 [group("backup")]
-bbb target: 
+backup target: 
   #!/usr/bin/env nu
   use std/log
   
@@ -87,6 +85,10 @@ bbb target:
 
   try {
     ^curl -X POST $"($hc_url)/start?rid=($run_id)"
+
+    just cleanup-backup 
+    just setup-backup target 
+    just prepare-backup-data 
 
     with-env {
       BACKUP_EXPORT_DATA_DIR: $env.BACKUP_EXPORT_DATA_DIR
