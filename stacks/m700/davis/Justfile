@@ -64,7 +64,7 @@ setup-backup target:
 
 [group("backup")]
 cleanup-backup:
-  rm -rf ./${BACKUP_WORK_DIR}
+  rm -rf ${BACKUP_WORK_DIR}
 
 [group("backup")]
 prepare-backup-data:
