@@ -53,19 +53,17 @@ davis-log-tail:
 ######## BACKUP             ########
 ####################################
 
-backup_work_dir := "${PROJECT_WORK_DIR}/${BACKUP_WORK_DIR}"
-export_dir := backup_work_dir / "export"
-restore_dir := backup_work_dir / "restore"
+
 
 [group("backup")]
 setup-backup target:
-  mkdir -p {{export_dir}}
-  mkdir -p {{restore_dir}}
-  ln -s ${PROJECT_WORK_DIR}/{{target}}.restic.env {{backup_work_dir}}/.env
+  mkdir -p ${BACKUP_EXPORT_DATA_DIR}
+  mkdir -p ${BACKUP_RESTORE_DATA_DIR}
+  ln -s ${PROJECT_WORK_DIR}/{{target}}.restic.env ${BACKUP_WORK_DIR}/.env
 
 [group("backup")]
 cleanup-backup:
-  rm -rf {{backup_work_dir}}
+  rm -rf ${BACKUP_WORK_DIR}
 
 [group("backup")]
 prepare-backup-data:
@@ -73,7 +71,7 @@ prepare-backup-data:
     --docker-container-name davis \
     --docker-volume-name davis-data \
     --database-name davis-database.db \
-    --backup-export-data-dir {{export_dir}}
+    --backup-export-data-dir ${BACKUP_EXPORT_DATA_DIR}
 
 [group("backup")]
 bbb target: 
@@ -86,14 +84,14 @@ bbb target:
   print $hc_url
   let run_id = (random uuid)
 
-  let logfile = $"{{backup_work_dir}}/($target).backup.log"
+  let logfile = $"($env.BACKUP_WORK_DIR)/($target).backup.log"
   
   try {
     ^curl -X POST $"($hc_url)/start?rid=($run_id)"
 
     with-env {
-      BACKUP_EXPORT_DATA_DIR: {{export_dir}}
-      BACKUP_RESTORE_DATA_DIR: {{restore_dir}}
+      BACKUP_EXPORT_DATA_DIR: $env.BACKUP_EXPORT_DATA_DIR
+      BACKUP_RESTORE_DATA_DIR: $env.BACKUP_RESTORE_DATA_DIR
     } {
       ^docker compose -f docker-compose.backup.yaml run --rm backup out+err> $logfile
       ^docker compose -f docker-compose.backup.yaml run --rm forget out+err>> $logfile
