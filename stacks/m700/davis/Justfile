@@ -54,8 +54,8 @@ davis-log-tail:
 ####################################
 
 backup_work_dir := "${PROJECT_WORK_DIR}/${BACKUP_WORK_DIR}"
-export_dir := "${backup_work_dir}/export"
-restore_dir := "${backup_work_dir}/restore"
+export_dir := backup_work_dir / "export"
+restore_dir := backup_work_dir / "restore"
 
 [group("backup")]
 setup-backup target:
