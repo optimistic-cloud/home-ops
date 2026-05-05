@@ -53,10 +53,13 @@ davis-log-tail:
 ######## BACKUP             ########
 ####################################
 
+export_dir := "export"
+restore_dir := "restore"
+
 [group("backup")]
 setup-backup:
-  mkdir -p ${BACKUP_WORK_DIR}/${BACKUP_EXPORT_DATA_DIR}
-  mkdir -p ${BACKUP_WORK_DIR}/${BACKUP_RESTORE_DATA_DIR}
+  mkdir -p ${BACKUP_WORK_DIR}/{{export_dir}}
+  mkdir -p ${BACKUP_WORK_DIR}/{{restore_dir}}
 
 [group("backup")]
 cleanup-backup-data:
@@ -68,7 +71,7 @@ prepare-backup-data:
     --docker-container-name davis \
     --docker-volume-name davis-data \
     --database-name davis-database.db \
-    --backup-export-data-dir ${BACKUP_WORK_DIR}/${BACKUP_EXPORT_DATA_DIR}
+    --backup-export-data-dir ${BACKUP_WORK_DIR}/{{export_dir}}
 
 [group("backup")]
 bbb target: 
@@ -88,8 +91,8 @@ bbb target:
     ln -s ($"($target).restic.env" | path expand) $"./($env.BACKUP_WORK_DIR)/.env"
     just prepare-backup-data
 
-    if (not ($env.BACKUP_WORK_DIR)/($env.BACKUP_EXPORT_DATA_DIR | path exists)) {
-      error make {msg: "Backup export data directory ($env.BACKUP_EXPORT_DATA_DIR) does not exist"}
+    if (not ($env.BACKUP_WORK_DIR)/{{export_dir}} | path exists) {
+      error make {msg: "Backup export data directory ($env.BACKUP_WORK_DIR/{{export_dir}}) does not exist"}
     }
 
     ^docker compose -f docker-compose.backup.yaml run --rm backup out+err> $logfile
@@ -108,11 +111,6 @@ bbb target:
   }
   # finally
   rm -f $logfile
-
-restic-backup target="local": 
-
-
-
 
 [group("backup")]
 backup +backup_targets: && cleanup-backup-data up
