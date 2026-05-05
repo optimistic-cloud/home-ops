@@ -105,7 +105,7 @@ bbb target:
     print $hc_url
     ^curl -X POST $"($hc_url)/?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
   } catch { |err|
-    log error "Backup failed: ($err)"
+    log error "Backup failed: ($err.msg)"
     $err.msg | save --append $logfile
     ^curl -X POST $"($hc_url)/fail?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
     error make $err
