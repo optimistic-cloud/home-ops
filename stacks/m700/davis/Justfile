@@ -55,7 +55,8 @@ davis-log-tail:
 
 [group("backup")]
 setup:
-  mkdir -p ./${BACKUP_WORK_DIR}
+  mkdir -p ./${BACKUP_WORK_DIR}/${BACKUP_EXPORT_DATA_DIR}
+  mkdir -p ./${BACKUP_WORK_DIR}/${BACKUP_RESTORE_DATA_DIR}
 
 [group("backup")]
 cleanup-backup-data:
@@ -85,7 +86,6 @@ bbb target: setup && cleanup-backup-data up
     ^curl -X POST $"($hc_url)/start?rid=($run_id)"
 
     ln -s ($"($target).restic.env" | path expand) $"./($env.BACKUP_WORK_DIR)/.env"
-
     just prepare-backup-data
 
     with-env {
