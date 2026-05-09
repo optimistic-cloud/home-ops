@@ -2,7 +2,7 @@ name: davis-backup-restic
 
 x-restic-common: &restic-common
   image: restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76
-  hostname: ${HOSTNAME}
+  hostname: ${HOSTNAME:?HOSTNAME is required}
   restart: "no"
   stdin_open: true
   user: "0:0"
@@ -10,7 +10,7 @@ x-restic-common: &restic-common
     TZ: Europe/Berlin
     RESTIC_CACHE_DIR: /root/.cache/restic
   env_file:
-    - ${RESTIC_ENV_FILE}
+    - ${RESTIC_ENV_FILE:?RESTIC_ENV_FILE is required}
   volumes:
     - restic-cache:/root/.cache/restic
     - /mnt/data/m700/davis:/repo
