@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Davis backup -> local
+
+[Timer]
+OnCalendar=*-*-* 12:22:00
+Persistent=true
+Unit=davis-backup@local.service
+
+[Install]
+WantedBy=timers.target

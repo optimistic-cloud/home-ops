@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly Davis backup -> onsite (Fri 20:10)
+
+[Timer]
+OnCalendar=Fri 20:22:00
+Persistent=true
+Unit=davis-backup@onsite.service
+
+[Install]
+WantedBy=timers.target
