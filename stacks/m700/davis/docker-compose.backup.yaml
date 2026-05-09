@@ -24,7 +24,7 @@ services:
     command: cat config --json
   check:
     <<: *restic-common
-    command: check --read-data-subset "33%" --json
+    command: check --read-data-subset "33%"
   forget:
     <<: *restic-common
     command: forget --keep-within 365d --quiet

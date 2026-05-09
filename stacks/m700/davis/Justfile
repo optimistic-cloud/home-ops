@@ -54,25 +54,15 @@ davis-log-tail:
 ####################################
 
 [group("backup")]
-setup-backup target:
-  mkdir -p ${BACKUP_EXPORT_DATA_DIR}
-  mkdir -p ${BACKUP_RESTORE_DATA_DIR}
-  ln -s ${PROJECT_WORK_DIR}/{{target}}.restic.env ${BACKUP_WORK_DIR}/.env
+setup-backup: cleanup-backup
+  mkdir -p ${BACKUP_WORK_DIR}
 
 [group("backup")]
 cleanup-backup:
   rm -rf ${BACKUP_WORK_DIR}
 
 [group("backup")]
-prepare-backup-data:
-  nu prepare_backup_data.nu \
-    --docker-container-name davis \
-    --docker-volume-name davis-data \
-    --database-name davis-database.db \
-    --backup-export-data-dir ${BACKUP_EXPORT_DATA_DIR}
-
-[group("backup")]
-backup target: 
+backup target: setup-backup && cleanup-backup
   #!/usr/bin/env nu
   use std/log
   
@@ -86,21 +76,15 @@ backup target:
   try {
     ^curl -X POST $"($hc_url)/start?rid=($run_id)"
 
-    just cleanup-backup 
-    just setup-backup {{target}} 
-    just prepare-backup-data 
+    (
+        nu backup.nu
+        --restic-env-file $"($target).restic.env"
+        --working-dir $env.BACKUP_WORK_DIR
+        --logfile $logfile
+    )
 
-    with-env {
-      BACKUP_EXPORT_DATA_DIR: $env.BACKUP_EXPORT_DATA_DIR
-      BACKUP_RESTORE_DATA_DIR: $env.BACKUP_RESTORE_DATA_DIR
-      RESTIC_ENV_FILE: $"($env.BACKUP_WORK_DIR)/.env"
-    } {
-      ^docker compose -f docker-compose.backup.yaml run --rm backup out+err> $logfile
-      ^docker compose -f docker-compose.backup.yaml run --rm forget out+err>> $logfile
-      ^docker compose -f docker-compose.backup.yaml run --rm check out+err>> $logfile
-    }
     if (($logfile | path exists) and ((ls $logfile | get size.0) == 0B)) {
-      error make {msg: "Backup failed, log file ($logfile) is not empty"}
+      error make {msg: "Backup failed, log file ($logfile) is empty"}
     }
     ^curl -X POST $"($hc_url)/0?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
   } catch { |err|
