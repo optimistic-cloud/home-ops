@@ -33,6 +33,6 @@ def main [--restic-env-file: path, --working-dir: path, --logfile: path] {
     run-in-docker backup
     run-in-docker forget
     run-in-docker check
-    run-in-docker (restic stats)
+    run-in-docker restic stats
   }
 }
