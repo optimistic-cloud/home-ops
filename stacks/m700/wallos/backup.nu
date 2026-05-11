@@ -33,6 +33,5 @@ def main [--restic-env-file: path, --working-dir: path, --logfile: path] {
     ^docker compose -f docker-compose.backup.yaml run --rm --quiet backup out+err> $logfile
     ^docker compose -f docker-compose.backup.yaml run --rm --quiet forget out+err>> $logfile
     ^docker compose -f docker-compose.backup.yaml run --rm --quiet check out+err>> $logfile
-    ^docker compose -f docker-compose.backup.yaml run --rm --quiet stats --mode raw-data out+err>> $logfile
   }
 }
