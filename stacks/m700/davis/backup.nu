@@ -1,11 +1,7 @@
 use std/log
 
-def append-to-file [filename: path] {
-  $"($in)(char eol)" | save --append $filename
-}
-
-def run-in-docker [command: string] {
-  ^docker compose -f docker-compose.backup.yaml run --rm --quiet $command
+def run-in-docker [...args: string] {
+  ^docker compose -f docker-compose.backup.yaml run --rm --quiet ...$args
 }
 
 def main [--restic-env-file: path, --working-dir: path, --logfile: path] {
