@@ -30,9 +30,9 @@ def main [--restic-env-file: path, --restic-password-file: path, --working-dir: 
     BACKUP_EXPORT_DATA_DIR: $export_data_dir
   } {
 
-    $restic-env-file | run-in-docker backup
-    $restic-env-file | run-in-docker forget
-    $restic-env-file | run-in-docker check
-    $restic-env-file | run-in-docker restic stats
+    $restic_env_file | run-in-docker backup
+    $restic_env_file | run-in-docker forget
+    $restic_env_file | run-in-docker check
+    $restic_env_file | run-in-docker restic stats
   }
 }
