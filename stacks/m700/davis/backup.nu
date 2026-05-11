@@ -5,8 +5,10 @@ def run-in-docker [...args: string] {
 }
 
 def main [--restic-env-file: path, --restic-password-file: path] {
-  let export_dir = (^mktemp -d /tmp/davis-backup-XXXXXX | str trim)
   if not ($restic_env_file | path exists ) { error make {msg: $"Restic environment file ($restic_env_file) is not found" } }
+  if not ($restic_password_file | path exists ) { error make {msg: $"Restic password file ($restic_password_file) is not found" } }
+
+  let export_dir = (^mktemp -d /tmp/davis-backup-XXXXXX | str trim)
 
   (
     nu export_container_envs.nu
