@@ -34,13 +34,9 @@ def main [--restic-env-file: path, --working-dir: path, --logfile: path] {
     BACKUP_EXPORT_DATA_DIR: $export_data_dir
     HOSTNAME: "m700"
   } {
-    let logfile = $working_dir 
-      | path join $logfile 
-      | path expand
-    
     run-in-docker backup
     run-in-docker forget
     run-in-docker check
-    run-in-docker restic stats
+    run-in-docker (restic stats)
   }
 }
