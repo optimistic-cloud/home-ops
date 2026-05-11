@@ -1,4 +1,4 @@
-set shell := ["bash", "-eoux", "pipefail", "-c"]
+set shell := ["bash", "-eou", "pipefail", "-c"]
 
 set dotenv-load
 
@@ -66,9 +66,9 @@ backup target: setup-backup && cleanup-backup
   #!/usr/bin/env nu
   use std/log
   
-  let tmpdir = (^mktemp -d /tmp/davis-backup-XXXXXX | str trim)
-
   let target = "{{target}}"
+
+  let tmpdir = (^mktemp -d /tmp/davis-backup-XXXXXX | str trim)
 
   let hc_url = $"($env.HC_URL)-($target)"
   let run_id = (random uuid)
