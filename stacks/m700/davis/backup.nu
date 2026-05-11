@@ -1,5 +1,8 @@
 use std/log
 
+const docker_container_name = "davis"
+const docker_volume_name = "davis-data" 
+
 def run-in-docker [...args: string] {
   ^docker compose -f docker-compose.backup.yaml run --rm --quiet ...$args
 }
@@ -12,13 +15,13 @@ def main [--restic-env-file: path, --restic-password-file: path] {
 
   (
     nu export_container_envs.nu
-      --docker-container-name "davis" 
+      --docker-container-name $docker_container_name
       --target-dir $export_dir
   )
   (
     nu export_sqlite.nu 
-      --docker-container-name "davis" 
-      --docker-volume-name "davis-data" 
+      --docker-container-name $docker_container_name
+      --docker-volume-name $docker_volume_name
       --database-name "davis-database.db" 
       --target-dir $export_dir
   )
