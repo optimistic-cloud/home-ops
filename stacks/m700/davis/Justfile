@@ -83,7 +83,7 @@ backup target: setup-backup && cleanup-backup
     }
     ^curl -X POST $"($hc_url)/0?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
   } catch { |err|
-    log error "Backup failed: ($err.msg)"
+    log error $"Backup failed: ($err.msg)"
     $err.msg | save --append $logfile
     ^curl -X POST $"($hc_url)/fail?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
     error make $err
