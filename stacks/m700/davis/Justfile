@@ -150,11 +150,12 @@ restic-prune backup_target:
 _restic-run backup_target +restic_args:
   #!/usr/bin/env nu
 
-  let backup_target = "{{backup_target}}"
+  let target = "{{backup_target}}"
 
   with-env { 
-    HOSTNAME: "m700"
-    RESTIC_ENV_FILE: $"($backup_target).restic.env" 
+    RESTIC_ENV_FILE: $"($target).restic.env" 
+    RESTIC_PASSWORD_FILE: $"($target).restic.password"
+    BACKUP_EXPORT_DATA_DIR: $export_data_dir
   } {
     ^docker compose -f docker-compose.backup.yaml run --rm restic {{restic_args}}
   }
