@@ -5,7 +5,7 @@ def append-to-file [filename: path] {
 }
 
 def run-in-docker [command: string] {
-  ^docker compose -f docker-compose.backup.yaml run --rm --quiet $command out+err> $logfile
+  ^docker compose -f docker-compose.backup.yaml run --rm --quiet $command
 }
 
 def main [--restic-env-file: path, --working-dir: path, --logfile: path] {
@@ -39,11 +39,8 @@ def main [--restic-env-file: path, --working-dir: path, --logfile: path] {
       | path expand
     
     run-in-docker backup
-    '---' | append-to-file $logfile
     run-in-docker forget
-    '---' | append-to-file $logfile
     run-in-docker check
-    '---' | append-to-file $logfile
     run-in-docker restic stats
   }
 }
