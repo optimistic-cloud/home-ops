@@ -155,7 +155,7 @@ _restic-run backup_target +restic_args:
   with-env { 
     RESTIC_ENV_FILE: $"($target).restic.env" 
     RESTIC_PASSWORD_FILE: $"($target).restic.password"
-    BACKUP_EXPORT_DATA_DIR: $export_data_dir
+    BACKUP_EXPORT_DATA_DIR: "."
   } {
     ^docker compose -f docker-compose.backup.yaml run --rm restic {{restic_args}}
   }
