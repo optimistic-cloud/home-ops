@@ -1,5 +1,13 @@
 use std/log
 
+def append-to-file [filename: path] {
+  $"($in)(char eol)" | save --append $filename
+}
+
+def run-in-docker [command: string] {
+  ^docker compose -f docker-compose.backup.yaml run --rm --quiet $command out+err> $logfile
+}
+
 def main [--restic-env-file: path, --working-dir: path, --logfile: path] {
   if not ($working_dir | path exists) { error make { msg: $"Directory ($working_dir) is not found" } }
   if (ls -a $working_dir | is-not-empty) { error make { msg: $"Directory ($working_dir) is not empty" } }
@@ -30,12 +38,12 @@ def main [--restic-env-file: path, --working-dir: path, --logfile: path] {
       | path join $logfile 
       | path expand
     
-    ^docker compose -f docker-compose.backup.yaml run --rm --quiet backup out+err> $logfile
-    '---' | save --append $logfile
-    ^docker compose -f docker-compose.backup.yaml run --rm --quiet forget out+err>> $logfile
-    '---' | save --append $logfile
-    ^docker compose -f docker-compose.backup.yaml run --rm --quiet check out+err>> $logfile
-    '---' | save --append $logfile
-    ^docker compose -f docker-compose.backup.yaml run --rm --quiet stats out+err>> $logfile
+    run-in-docker backup
+    '---' | append-to-file $logfile
+    run-in-docker forget
+    '---' | append-to-file $logfile
+    run-in-docker check
+    '---' | append-to-file $logfile
+    run-in-docker restic stats
   }
 }
