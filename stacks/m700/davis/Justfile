@@ -54,26 +54,16 @@ davis-log-tail:
 ####################################
 
 [group("backup")]
-setup-backup: cleanup-backup
-  mkdir -p ${BACKUP_WORK_DIR}
-
-[group("backup")]
-cleanup-backup:
-  rm -rf ${BACKUP_WORK_DIR}
-
-[group("backup")]
-backup target: setup-backup && cleanup-backup
+backup target:
   #!/usr/bin/env nu
   use std/log
   
   let target = "{{target}}"
 
-  let tmpdir = (^mktemp -d /tmp/davis-backup-XXXXXX | str trim)
-
   let hc_url = $"($env.HC_URL)-($target)"
   let run_id = (random uuid)
 
-  let logfile = $"($tmpdir)/($target).backup.log"
+  let logfile = (^mktemp /tmp/davis-backup-XXXXXX | str trim)
 
   try {
     ^curl -fsS -m 10 --retry 5 -o /dev/null -X POST $"($hc_url)/start?rid=($run_id)&create=1"
