@@ -70,7 +70,7 @@ backup target: setup-backup && cleanup-backup
         nu backup.nu
         --restic-env-file $"($target).restic.env"
         --working-dir $env.BACKUP_WORK_DIR
-        --logfile $logfile
+        out+err> $logfile
     )
 
     if (($logfile | path exists) and ((ls $logfile | get size.0) == 0B)) {
