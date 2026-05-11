@@ -14,6 +14,8 @@ x-restic-common: &restic-common
   volumes:
     - restic-cache:/root/.cache/restic
     - /mnt/data/m700/davis:/repo
+  secrets:
+    - repo-password
 
 services:
   restic:
@@ -42,3 +44,8 @@ volumes:
     external: true
   davis-data:
     external: true
+
+
+secrets:
+  repo-password:
+    file: ${RESTIC_PASSWORD_FILE:?RESTIC_PASSWORD_FILE is required}
