@@ -1,7 +1,7 @@
 use std/log
 
 def run-in-docker [...args: string] {
-  ^docker compose -f docker-compose.backup.yaml --env-file $in run --rm --quiet ...$args
+  ^docker compose -f docker-compose.backup.yaml run --rm --quiet ...$args
 }
 
 def main [--restic-env-file: path, --restic-password-file: path, --working-dir: path] {
@@ -30,9 +30,9 @@ def main [--restic-env-file: path, --restic-password-file: path, --working-dir: 
     BACKUP_EXPORT_DATA_DIR: $export_data_dir
   } {
 
-    $restic_env_file | run-in-docker backup
-    $restic_env_file | run-in-docker forget
-    $restic_env_file | run-in-docker check
-    $restic_env_file | run-in-docker restic stats
+    run-in-docker backup
+    run-in-docker forget
+    run-in-docker check
+    un-in-docker restic stats
   }
 }
