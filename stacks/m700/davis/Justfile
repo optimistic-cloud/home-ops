@@ -74,7 +74,7 @@ backup target: setup-backup && cleanup-backup
   let logfile = $"($env.BACKUP_WORK_DIR)/($target).backup.log"
 
   try {
-    ^curl --silent --show-error --output /dev/null -X POST $"($hc_url)/start?rid=($run_id)&create=1"
+    ^curl -fsS -m 10 --retry 5 -o /dev/null -X POST $"($hc_url)/start?rid=($run_id)&create=1"
 
     let result = (
       nu backup.nu 
@@ -91,11 +91,11 @@ backup target: setup-backup && cleanup-backup
     if (($logfile | path exists) and ((ls $logfile | get size.0) == 0B)) {
       error make {msg: "Backup failed, log file ($logfile) is empty"}
     }
-    ^curl --silent --show-error --output /dev/null -X POST $"($hc_url)/0?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
+    ^curl -fsS -m 10 --retry 5 -o /dev/null -X POST $"($hc_url)/0?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
   } catch { |err|
     log error $"Backup failed: ($err.msg)"
     $err.msg | save --append $logfile
-    ^curl --silent --show-error --output /dev/null -X POST $"($hc_url)/fail?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
+    ^curl -fsS -m 10 --retry 5 -o /dev/null -X POST $"($hc_url)/fail?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
     error make $err
   }
 
