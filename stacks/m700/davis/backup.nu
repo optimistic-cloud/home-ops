@@ -33,6 +33,6 @@ def main [--restic-env-file: path, --restic-password-file: path, --working-dir: 
     run-in-docker backup
     run-in-docker forget
     run-in-docker check
-    un-in-docker restic stats
+    run-in-docker restic stats
   }
 }

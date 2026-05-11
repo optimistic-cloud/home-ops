@@ -11,6 +11,7 @@ x-restic-common: &restic-common
   environment:
     TZ: Europe/Berlin
     RESTIC_CACHE_DIR: /root/.cache/restic
+    RESTIC_PASSWORD_FILE: /run/secrets/password-file
   volumes:
     - restic-cache:/root/.cache/restic
     - /mnt/data/m700/davis:/repo
