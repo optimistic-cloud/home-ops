@@ -123,18 +123,18 @@ backup2 target:
   with-env {
     BACKUP_EXPORT_DATA_DIR: $export_dir
   } { 
-    docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm backup
+    docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm --quiet backup
   }
 
 [group("backup")]
 [working-directory: 'backup2']
 config2 target:
-  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm restic config
+  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm --quiet restic config
 
 [group("backup")]
 [working-directory: 'backup2']
 snapshots2 target:
-  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm restic snapshots
+  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm --quiet restic snapshots
 
 [group('restic')]
 [doc('Init repository')]
