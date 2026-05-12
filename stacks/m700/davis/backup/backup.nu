@@ -9,7 +9,7 @@ def run-in-docker [...args: string] {
       --name "davis-backup-restic"
       --volume /mnt/data/m700/davis:/repo
       --volume davis-data:/data/davis-data:ro
-      --volume $env.BACKUP_EXPORT_DATA_DIR:/data/export
+      --volume $"($env.BACKUP_EXPORT_DATA_DIR):/data/export"
       ...$args
   )
 }
