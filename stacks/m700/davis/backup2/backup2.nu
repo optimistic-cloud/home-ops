@@ -5,8 +5,11 @@ const docker_volume_name = "davis-data"
 const database_name = "davis-database.db"
 
 def main [--target: string] {
-  if not ( $"compose.($target).yaml" | path exists ) { error make {msg: $"Compose file $"compose.($target).yaml" is not found" } }
-  if not ( $"($target).restic.env" | path exists ) { error make {msg: $"Restic environment file $"($target).restic.env" is not found" } }
+  let compose_file = $"compose.($target).yaml"
+  let restic_env_file = $"($target).restic.env"
+
+  if not ( $compose_file | path exists ) { error make {msg: $"Compose file ($compose_file) is not found" } }
+  if not ( $restic_env_file | path exists ) { error make {msg: $"Restic environment file ($restic_env_file) is not found" } }
 
   let export_dir = (^mktemp -d /tmp/davis-backup-XXXXXX | str trim)
 
@@ -23,7 +26,7 @@ def main [--target: string] {
       --target-dir $export_dir
   )
   (
-    docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env
+    docker compose -f $compose_file --env-file $restic_env_file
       run --rm --quiet
       --volume "davis-data:/data/davis-data:ro"
       --volume $"($export_dir):/data/export"
