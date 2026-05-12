@@ -6,6 +6,7 @@ const docker_volume_name = "davis-data"
 def run-in-docker [...args: string] {
   (
     ^docker compose -f docker-compose.backup.yaml run --rm --quiet
+      --name "davis-backup-restic"
       --volume /mnt/data/m700/davis:/repo
       --volume davis-data:/data/davis-data:ro
       ...$args
