@@ -17,3 +17,6 @@ conf.d/invidious/config.yml
 # lldap
 jwt.txt
 key_seed.txt
+
+# restic
+*.restic.password
