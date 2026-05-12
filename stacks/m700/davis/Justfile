@@ -58,7 +58,7 @@ davis-log-tail:
 backup target:
   #!/usr/bin/env nu
   use std/log
-  
+
   let target = "{{target}}"
 
   let hc_url = $"($env.HC_URL)-($target)"
@@ -70,9 +70,9 @@ backup target:
     ^curl -fsS -m 10 --retry 5 -o /dev/null -X POST $"($hc_url)/start?rid=($run_id)&create=1"
 
     (
-      nu backup.nu 
-        --restic-env-file $"($target).restic.env" 
-        --restic-password-file $"($target).restic.password" 
+      nu backup.nu
+        --restic-env-file $"($target).restic.env"
+        --restic-password-file $"($target).restic.password"
         o+e> $logfile
     )
 
@@ -102,33 +102,30 @@ restore backup_target snapshot_id="latest":
 [working-directory: 'backup2']
 backup2 target:
   #!/usr/bin/env nu
-  
-  const docker_container_name = "davis"
-  const docker_volume_name = "davis-data"
 
-  let export_dir = (^mktemp -d /tmp/davis-backup-XXXXXX | str trim)
+  use std/log
 
-  (
-    nu export_container_envs.nu 
-      --docker-container-name $docker_container_name 
-      --target-dir $export_dir
-  )
-  (
-    nu export_sqlite.nu 
-      --docker-container-name $docker_container_name
-      --docker-volume-name $docker_volume_name
-      --database-name "davis-database.db" 
-      --target-dir $export_dir
-  )
+  let target = "{{target}}"
 
-  (
-    docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env 
-      run --rm --quiet
-      --volume davis-data:/data/davis-data:ro
-      --volume $"($export_dir):/data/export"
-      restic backup /data --exclude-caches --skip-if-unchanged
-  )
-    
+  let hc_url = $"($env.HC_URL)-($target)"
+  let run_id = (random uuid)
+
+  let logfile = (^mktemp /tmp/davis-backup-XXXXXX | str trim)
+
+  try {
+    ^curl -fsS -m 10 --retry 5 -o /dev/null -X POST $"($hc_url)/start?rid=($run_id)&create=1"
+
+    nu backup2.nu --target {{target}} o+e> $logfile
+
+    if (($logfile | path exists) and ((ls $logfile | get size.0) == 0B)) { error make {msg: "Backup failed, log file ($logfile) is empty"}}
+    ^curl -fsS -m 10 --retry 5 -o /dev/null -X POST $"($hc_url)/0?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
+  } catch { |err|
+    log error $"Backup failed: ($err.msg)"
+    $err.msg | save --append $logfile
+    ^curl -fsS -m 10 --retry 5 -o /dev/null -X POST $"($hc_url)/fail?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
+    error make $err
+  }
+
 
 [group("backup")]
 [working-directory: 'backup2']
@@ -185,12 +182,12 @@ _restic-run backup_target +restic_args:
 
   let target = "{{backup_target}}"
 
-  with-env { 
+  with-env {
     RESTIC_ENV_FILE: ($"($target).restic.env" | path expand),
     RESTIC_PASSWORD_FILE: ($"($target).restic.password" | path expand)
   } {
     print $env.RESTIC_ENV_FILE
-    (    
+    (
       ^docker compose -f $env.BACKUP_COMPOSE_FILE run --rm
         --name "davis-restic"
         --volume /mnt/data/m700/davis:/repo
