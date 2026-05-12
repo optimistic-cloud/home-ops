@@ -147,6 +147,7 @@ _restic-run backup_target +restic_args:
     RESTIC_ENV_FILE: $"($target).restic.env" 
     RESTIC_PASSWORD_FILE: $"($target).restic.password"
   } {
+    print $env.RESTIC_ENV_FILE
     (    
       ^docker compose -f $env.BACKUP_COMPOSE_FILE run --rm
         --name "davis-restic"
