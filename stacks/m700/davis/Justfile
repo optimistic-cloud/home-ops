@@ -144,8 +144,8 @@ _restic-run backup_target +restic_args:
   let target = "{{backup_target}}"
 
   with-env { 
-    RESTIC_ENV_FILE: $"($target).restic.env" 
-    RESTIC_PASSWORD_FILE: $"($target).restic.password"
+    RESTIC_ENV_FILE: ($"($target).restic.env" | path expand),
+    RESTIC_PASSWORD_FILE: ($"($target).restic.password" | path expand)
   } {
     print $env.RESTIC_ENV_FILE
     (    
