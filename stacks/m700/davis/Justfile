@@ -129,7 +129,7 @@ backup2 target:
 [group("backup")]
 [working-directory: 'backup2']
 config2 target:
-  docker compose -f compose.{{target}}.yaml config
+  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm restic config
 
 [group("backup")]
 [working-directory: 'backup2']
