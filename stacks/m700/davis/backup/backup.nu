@@ -9,6 +9,7 @@ def run-in-docker [...args: string] {
       --name "davis-backup-restic"
       --volume /mnt/data/m700/davis:/repo
       --volume davis-data:/data/davis-data:ro
+      --volume ${BACKUP_EXPORT_DATA_DIR}:/data/export
       ...$args
   )
 }
@@ -37,7 +38,6 @@ def main [--restic-env-file: path, --restic-password-file: path] {
     RESTIC_PASSWORD_FILE: ($restic_password_file | path expand)
     BACKUP_EXPORT_DATA_DIR: $export_dir
   } {
-
     run-in-docker backup
     run-in-docker forget
     run-in-docker check
