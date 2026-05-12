@@ -8,6 +8,15 @@ def run-in-docker [...args: string] {
     ^docker compose -f $env.BACKUP_COMPOSE_FILE run --rm --quiet
       --name "davis-backup-restic"
       --volume /mnt/data/m700/davis:/repo
+      ...$args
+  )
+}
+
+def run-in-docker-backup [...args: string] {
+  (
+    ^docker compose -f $env.BACKUP_COMPOSE_FILE run --rm --quiet
+      --name "davis-backup-restic"
+      --volume /mnt/data/m700/davis:/repo
       --volume davis-data:/data/davis-data:ro
       --volume $"($env.BACKUP_EXPORT_DATA_DIR):/data/export"
       ...$args
@@ -38,7 +47,7 @@ def main [--restic-env-file: path, --restic-password-file: path] {
     RESTIC_PASSWORD_FILE: ($restic_password_file | path expand)
     BACKUP_EXPORT_DATA_DIR: $export_dir
   } {
-    run-in-docker backup
+    run-in-docker-backup backup
     run-in-docker forget
     run-in-docker check
     run-in-docker restic stats
