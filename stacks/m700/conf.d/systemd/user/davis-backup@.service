@@ -6,4 +6,4 @@ After=network-online.target
 [Service]
 Type=oneshot
 WorkingDirectory=%h/home-ops/stacks/m700/davis
-ExecStart=/usr/local/bin/just backup %i
+ExecStart=/usr/local/bin/just workflow-backup %i
