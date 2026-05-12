@@ -123,7 +123,7 @@ backup2 target:
   with-env {
     BACKUP_EXPORT_DATA_DIR: $export_dir
   } { 
-    docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm restic backup /data --exclude-caches --skip-if-unchanged
+    docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm backup
   }
 
 [group("backup")]
