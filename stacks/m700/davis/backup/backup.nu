@@ -43,4 +43,6 @@ def main [--restic-env-file: path, --restic-password-file: path] {
     run-in-docker check
     run-in-docker restic stats
   }
+
+  rm -rf $export_dir
 }
