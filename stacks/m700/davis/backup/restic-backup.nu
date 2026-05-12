@@ -4,6 +4,18 @@ const docker_container_name = "davis"
 const docker_volume_name = "davis-data"
 const database_name = "davis-database.db"
 
+def with-stopped-docker-container [name: string, operation: closure] {
+  docker container stop $name
+  try {
+    do $operation
+    docker container start $name
+  } catch {|err|
+      # https://github.com/nushell/nushell/issues/15279
+      docker container start $name
+      error make $err
+  }
+}
+
 def main [--target: string] {
   let compose_file = $"compose.($target).yaml"
   let restic_env_file = $"($target).restic.env"
@@ -25,13 +37,16 @@ def main [--target: string] {
       --database-name $database_name
       --target-dir $export_dir
   )
-  (
-    docker compose -f $compose_file --env-file $restic_env_file
-      run --rm --quiet
-      --volume "davis-data:/data/davis-data:ro"
-      --volume $"($export_dir):/data/export"
-      restic backup /data --exclude-caches --skip-if-unchanged
-  )
+
+  with-stopped-docker-container $docker_container_name {
+    (
+      docker compose -f $compose_file --env-file $restic_env_file
+        run --rm --quiet
+        --volume "davis-data:/data/davis-data:ro"
+        --volume $"($export_dir):/data/export"
+        restic backup /data --exclude-caches --skip-if-unchanged
+    )
+  }
 
   rm -rf $export_dir
 }
