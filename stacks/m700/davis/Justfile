@@ -106,7 +106,7 @@ backup2 target:
   const docker_container_name = "davis"
   const docker_volume_name = "davis-data"
 
-  const export_dir = (^mktemp -d /tmp/davis-backup-XXXXXX | str trim)
+  let export_dir = (^mktemp -d /tmp/davis-backup-XXXXXX | str trim)
 
   (
     nu export_container_envs.nu 
