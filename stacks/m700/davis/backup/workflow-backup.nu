@@ -8,8 +8,8 @@ def hc-ping [url: string, --logfile: string] {
   }
 }
 
-def main [--target: string] {
-  let hc_url = $"($env.HC_URL)-($target)"
+def main [--target: string, --hc-url1: string] {
+  let hc_url = $"($hc_url1)-($target)"
   let run_id = (random uuid)
 
   let logfile = (^mktemp /tmp/davis-backup-XXXXXX | str trim)
