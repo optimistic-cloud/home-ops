@@ -1,11 +1,19 @@
 use std/log
 
 const docker_container_name = "davis"
+
+def compose-file [target: string]: string {
+  match $target {
+    'local' => $"compose.($target).yaml",
+    's3' => "compose.s3.yaml",
+    _ => (error make {msg: $"Unknown target ($target)"})
+  }
+}
 const docker_volume_name = "davis-data"
 const database_name = "davis-database.db"
 
 def main [--target: string] {
-  let compose_file = $"compose.($target).yaml"
+  let compose_file = compose-file $target
   let restic_env_file = $"($target).restic.env"
 
   if not ( $compose_file | path exists ) { error make {msg: $"Compose file ($compose_file) is not found" } }
