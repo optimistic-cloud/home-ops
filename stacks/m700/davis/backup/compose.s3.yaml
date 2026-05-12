@@ -1,10 +1,12 @@
+name: davis-backup-restic-s3
+
 services:
   restic:
-    image: restic/restic:latest
+    image: restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76
+    hostname: m700
     restart: "no"
-    hostname: "m700"
-    secrets:
-      - restic_password
+    stdin_open: true
+    user: "0:0"
     environment:
       TZ: Europe/Berlin
       RESTIC_REPOSITORY: ${RESTIC_REPOSITORY}
@@ -14,8 +16,6 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     volumes:
       - restic-cache:/root/.cache/restic
-      - davis-data:/data/davis-data:ro
-      - ${BACKUP_EXPORT_DATA_DIR}:/data/export
 
 secrets:
   restic_password:
