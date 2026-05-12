@@ -35,9 +35,6 @@ volumes:
   restic-cache:
     name: restic-cache
     external: true
-  davis-data:
-    external: true
-
 
 secrets:
   password-file:
