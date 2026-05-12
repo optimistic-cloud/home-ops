@@ -2,7 +2,7 @@ use std/log
 
 const docker_container_name = "davis"
 
-def compose-file [target: string]: string {
+def compose-file [target: string]: nothing -> string {
   match $target {
     'local' => $"compose.($target).yaml",
     's3' => "compose.s3.yaml",
