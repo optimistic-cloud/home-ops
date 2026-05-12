@@ -1,9 +1,9 @@
 use std/log
 
-const name = "davis"
+const name = "wallos"
 const docker_container_name = $name
 const docker_volume_name = $"($name)-data"
-const database_name = $"($name)-database.db"
+const database_name = $"($name).db"
 
 def with-stopped-docker-container [name: string, operation: closure] {
   docker container stop $name

@@ -28,6 +28,36 @@ restart: down && up
 logs:
   docker compose logs -f
 
+set shell := ["bash", "-eou", "pipefail", "-c"]
+
+set dotenv-load
+
+help:
+  just --list --list-submodules
+
+####################################
+######## DOCKER             ########
+####################################
+
+[group('docker')]
+[doc('Start the stack')]
+up:
+  docker compose up -d --remove-orphans
+
+[group('docker')]
+[doc('Stop the stack')]
+down:
+  docker compose down --remove-orphans
+
+[group('docker')]
+[doc('Restart application stack')]
+restart: down && up
+
+[group('docker')]
+[doc('Get logs for the application')]
+logs:
+  docker compose logs -f
+
 [group("docker")]
 [doc('List data of the application')]
 ls-wallos-data:
@@ -40,127 +70,83 @@ ls-volume-data export_path:
   docker run --rm -v {{export_path}}:/data:ro alpine ls -la /data
 
 ####################################
-######## BACKUP             ########
+######## WORKFLOWS          ########
 ####################################
 
-[group("backup")]
-setup-backup: cleanup-backup
-  mkdir -p ${BACKUP_WORK_DIR}
-
-[group("backup")]
-cleanup-backup:
-  rm -rf ${BACKUP_WORK_DIR}
-
-[group("backup")]
-backup target: setup-backup && cleanup-backup
-  #!/usr/bin/env nu
-  use std/log
-  
-  let target = "{{target}}"
-
-  let hc_url = $"($env.HC_URL)-($target)"
-  let run_id = (random uuid)
-
-  let logfile = $"($env.BACKUP_WORK_DIR)/($target).backup.log"
-
-  try {
-    ^curl -X POST $"($hc_url)/start?rid=($run_id)&create=1"
-
-    (
-        nu backup.nu
-        --restic-env-file $"($target).restic.env"
-        --working-dir $env.BACKUP_WORK_DIR
-    ) 
-
-    if (($logfile | path exists) and ((ls $logfile | get size.0) == 0B)) {
-      error make {msg: "Backup failed, log file ($logfile) is empty"}
-    }
-    ^curl -X POST $"($hc_url)/0?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
-  } catch { |err|
-    log error "Backup failed: ($err.msg)"
-    $err.msg | save --append $logfile
-    ^curl -X POST $"($hc_url)/fail?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
-    error make $err
-  }
-
-[group("backup")]
-restore backup_target snapshot_id="latest":
-  #!/usr/bin/env bash
-  restore_data_dir="${BACKUP_RESTORE_DATA_DIR:?BACKUP_RESTORE_DATA_DIR is required}"
-  mkdir -p "${restore_data_dir}"
-  just restic-restore {{backup_target}} {{snapshot_id}}
+[group("workflows")]
+[doc('Run a backup for the specified target')]
+[working-directory: 'backup']
+workflow-backup target:
+  nu workflow-backup.nu --target {{target}} --hc-url $HC_URL
 
 ####################################
 ######## RESTIC             ########
 ####################################
 
+[group("restic")]
+[working-directory: 'backup']
+[doc('Run a backup for the specified target')]
+backup target:
+  nu restic-backup.nu --target {{target}}
+
+[group("restic")]
+[working-directory: 'backup']
+[doc('Forget old backups for the specified target')]
+forget target:
+  just _restic-run {{target}} forget --keep-within 365d --quiet
+
+[group("restic")]
+[working-directory: 'backup']
+[doc('Check the integrity of the repository')]
+check target:
+  just _restic-run {{target}} check --read-data-subset "33%"
+
+[group("restic")]
+[working-directory: 'backup']
+[doc('Get stats of the repository')]
+stats target:
+  just _restic-run {{target}} stats
+
+[group("restic")]
+[working-directory: 'backup']
+[doc('List snapshots of the repository')]
+snapshots target count="5":
+  just _restic-run {{target}} snapshots --latest {{count}}
+
 [group('restic')]
 [doc('Init repository')]
-restic-init backup_target:
-  just _restic-run {{backup_target}} init
-
-[group('restic')]
-[doc('Backup data')]
-[private]
-restic-backup backup_target:
-  #!/usr/bin/env bash
-
-  git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
-  just _restic-run {{backup_target}} --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet backup /data/wallos-data/db /data/export | jq
-
-[group('restic')]
-[doc('Restore data')]
-[private]
-restic-restore backup_target snapshot_id:
-  just _restic-run {{backup_target}} restore {{snapshot_id}} --target /restore-data
-
-[group('restic')]
-[doc('Get snapshots')]
-restic-snapshots backup_target count="5":
-  just _restic-run {{backup_target}} --quiet snapshots --latest {{count}}
+[working-directory: 'backup']
+init target:
+  just _restic-run {{target}} init
 
 [group('restic')]
 [doc('List files in the latest snapshot')]
-restic-ls backup_target snapshot_id="latest":
-  just _restic-run {{backup_target}} --quiet ls {{snapshot_id}}
+[working-directory: 'backup']
+ls target snapshot_id="latest":
+  just _restic-run {{target}} ls {{snapshot_id}}
 
 [group('restic')]
-[doc('Get stats of the repository')]
-restic-stats backup_target:
-  just _restic-run {{backup_target}} stats --mode raw-data
+[doc('Restore data')]
+[working-directory: 'backup']
+[private]
+restore target snapshot_id:
+  just _restic-run {{target}} restore {{snapshot_id}} --target /restore-data
 
 [group('restic')]
 [doc('Unlock repository')]
-restic-unlock backup_target:
-  just _restic-run {{backup_target}} --quiet unlock
-
-[group('restic')]
-[doc('Forget old snapshots')]
-restic-forget backup_target keep-within="365d":
-  just _restic-run {{backup_target}} --quiet forget --keep-within {{keep-within}}
+[working-directory: 'backup']
+restic-unlock target:
+  just _restic-run {{target}} unlock
 
 [group('restic')]
 [doc('Prune snapshots')]
-restic-prune backup_target:
-  just _restic-run {{backup_target}} --quiet prune
-
-[group('restic')]
-[doc('Check snapshots')]
-restic-check backup_target read-data-subset="33%":
-  just _restic-run {{backup_target}} --json check --read-data-subset {{read-data-subset}} | jq
+[working-directory: 'backup']
+restic-prune target:
+  just _restic-run {{target}} prune
 
 [group('restic')]
 [private]
-[doc('For each restic command but not backup, as it needs additional volumes and environment variables')]
-_restic-run backup_target +restic_args:
-  #!/usr/bin/env nu
-
-  let backup_target = "{{backup_target}}"
-
-  with-env { 
-    HOSTNAME: "m700"
-    RESTIC_ENV_FILE: $"($backup_target).restic.env" 
-  } {
-    ^docker compose -f docker-compose.backup.yaml run --rm restic {{restic_args}}
-  }
-
+[doc('Restic wrapper to run any restic command with the correct environment')]
+[working-directory: 'backup']
+_restic-run target +restic_args:
+  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm --quiet restic {{restic_args}}
