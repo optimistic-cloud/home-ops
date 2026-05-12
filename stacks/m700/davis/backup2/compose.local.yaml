@@ -1,31 +1,29 @@
+x-restic-common: &restic-common
+  image: restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76
+  hostname: m700
+  restart: "no"
+  env_file:
+  - ${RESTIC_ENV_FILE}
+  stdin_open: true
+  user: "0:0"
+  environment:
+    TZ: Europe/Berlin
+    RESTIC_REPOSITORY: ${RESTIC_REPOSITORY}
+    RESTIC_PASSWORD_FILE: /run/secrets/restic_password
+    RESTIC_CACHE_DIR: /root/.cache/restic
+  volumes:
+    - restic-cache:/root/.cache/restic
+    - /mnt/data/m700/davis:/repo
+  secrets:
+    - restic_password
+
 services:
   restic:
-    image: restic/restic:latest
-    restart: "no"
-    hostname: "m700"
-    secrets:
-      - restic_password
-    environment:
-      TZ: Europe/Berlin
-      RESTIC_REPOSITORY: ${RESTIC_REPOSITORY}
-      RESTIC_PASSWORD_FILE: /run/secrets/restic_password
-      RESTIC_CACHE_DIR: /root/.cache/restic
-    volumes:
-      - restic-cache:/root/.cache/restic
-      - /mnt/data/m700/davis:/repo
+    <<: *restic-common
 
   backup:
-    image: restic/restic:latest
-    restart: "no"
-    hostname: "m700"
+    <<: *restic-common
     command: backup /data --exclude-caches --skip-if-unchanged
-    secrets:
-      - restic_password
-    environment:
-      TZ: Europe/Berlin
-      RESTIC_REPOSITORY: ${RESTIC_REPOSITORY}
-      RESTIC_PASSWORD_FILE: /run/secrets/restic_password
-      RESTIC_CACHE_DIR: /root/.cache/restic
     volumes:
       - restic-cache:/root/.cache/restic
       - /mnt/data/m700/davis:/repo
