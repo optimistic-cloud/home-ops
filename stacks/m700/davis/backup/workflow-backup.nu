@@ -8,14 +8,14 @@ def hc-ping [url: string, --logfile: string] {
   }
 }
 
-def main [--target: string, --hc-url1: string] {
-  let hc_url = $"($hc_url1)-($target)"
+def main [--target: string, --hc-url: string] {
+  let ping_url = $"($hc_url)-($target)"
   let run_id = (random uuid)
 
   let logfile = (^mktemp /tmp/davis-backup-XXXXXX | str trim)
 
   try {
-    hc-ping $"($hc_url)/start?rid=($run_id)&create=1"
+    hc-ping $"($ping_url)/start?rid=($run_id)&create=1"
 
     ^just backup $target o+e> $logfile
     ^just forget $target o+e>> $logfile
@@ -23,11 +23,11 @@ def main [--target: string, --hc-url1: string] {
     ^just stats $target o+e>> $logfile
 
     if (($logfile | path exists) and ((ls $logfile | get size.0) == 0B)) { error make {msg: "Backup failed, log file ($logfile) is empty"}}
-    hc-ping $"($hc_url)/0?rid=($run_id)" --logfile $logfile
+    hc-ping $"($ping_url)/0?rid=($run_id)" --logfile $logfile
   } catch { |err|
     log error $"Backup failed: ($err.msg)"
     $err.msg | save --append $logfile
-    hc-ping $"($hc_url)/fail?rid=($run_id)" --logfile $logfile
+    hc-ping $"($ping_url)/fail?rid=($run_id)" --logfile $logfile
     error make $err
   }
 }
