@@ -14,7 +14,6 @@ x-restic-common: &restic-common
     RESTIC_PASSWORD_FILE: /run/secrets/password-file
   volumes:
     - restic-cache:/root/.cache/restic
-    - /mnt/data/m700/davis:/repo
   secrets:
     - password-file
 
@@ -35,8 +34,6 @@ services:
     command: backup /data --exclude-caches --skip-if-unchanged
     volumes:
       - restic-cache:/root/.cache/restic
-      - /mnt/data/m700/davis:/repo
-      - davis-data:/data/davis-data:ro
       - ${BACKUP_EXPORT_DATA_DIR}:/data/export
 
 volumes:

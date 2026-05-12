@@ -4,7 +4,12 @@ const docker_container_name = "davis"
 const docker_volume_name = "davis-data" 
 
 def run-in-docker [...args: string] {
-  ^docker compose -f docker-compose.backup.yaml run --rm --quiet ...$args
+  (
+    ^docker compose -f docker-compose.backup.yaml run --rm --quiet
+      --volume /mnt/data/m700/davis:/repo
+      --volume davis-data:/data/davis-data:ro
+      ...$args
+  )
 }
 
 def main [--restic-env-file: path, --restic-password-file: path] {
