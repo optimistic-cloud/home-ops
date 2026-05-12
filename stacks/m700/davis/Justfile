@@ -137,6 +137,7 @@ restic-prune backup_target:
 [group('restic')]
 [private]
 [doc('For each restic command but not backup, as it needs additional volumes and environment variables')]
+[working-directory: 'backup']
 _restic-run backup_target +restic_args:
   #!/usr/bin/env nu
 
