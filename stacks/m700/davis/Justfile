@@ -100,7 +100,7 @@ restore backup_target snapshot_id="latest":
 
 [group("backup")]
 [working-directory: 'backup2']
-backup2 target:
+backup-workflow target:
   #!/usr/bin/env nu
 
   use std/log
@@ -115,7 +115,7 @@ backup2 target:
   try {
     ^curl -fsS -m 10 --retry 5 -o /dev/null -X POST $"($hc_url)/start?rid=($run_id)&create=1"
 
-    nu backup2.nu --target {{target}} o+e> $logfile
+    just backup2 {{target}} o+e> $logfile
     just forget2 {{target}} o+e>> $logfile
     just check2 {{target}} o+e>> $logfile
     just stats2 {{target}} o+e>> $logfile
@@ -128,6 +128,11 @@ backup2 target:
     ^curl -fsS -m 10 --retry 5 -o /dev/null -X POST $"($hc_url)/fail?rid=($run_id)" -H "Content-Type: text/plain" --data-binary $"@($logfile)"
     error make $err
   }
+
+[group("backup")]
+[working-directory: 'backup2']
+backup2 target:
+  nu backup2.nu --target {{target}}
 
 
 [group("backup")]
