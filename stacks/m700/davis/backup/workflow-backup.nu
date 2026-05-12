@@ -17,10 +17,10 @@ def main [--target: string] {
   try {
     hc-ping $"($hc_url)/start?rid=($run_id)&create=1"
 
-    ^just backup {{target}} o+e> $logfile
-    ^just forget {{target}} o+e>> $logfile
-    ^just check {{target}} o+e>> $logfile
-    ^just stats {{target}} o+e>> $logfile
+    ^just backup $target o+e> $logfile
+    ^just forget $target o+e>> $logfile
+    ^just check $target o+e>> $logfile
+    ^just stats $target o+e>> $logfile
 
     if (($logfile | path exists) and ((ls $logfile | get size.0) == 0B)) { error make {msg: "Backup failed, log file ($logfile) is empty"}}
     hc-ping $"($hc_url)/0?rid=($run_id)" --logfile $logfile
