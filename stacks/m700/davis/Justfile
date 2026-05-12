@@ -62,29 +62,33 @@ workflow-backup target:
 ######## RESTIC             ########
 ####################################
 
-[group("backup")]
+[group("restic")]
 [working-directory: 'backup']
+[doc('Run a backup for the specified target')]
 backup target:
   nu restic-backup.nu --target {{target}}
 
-[group("backup")]
+[group("restic")]
 [working-directory: 'backup']
+[doc('Forget old backups for the specified target')]
 forget target:
   just _restic-run {{target}} forget --keep-within 365d --quiet
 
-[group("backup")]
+[group("restic")]
 [working-directory: 'backup']
+[doc('Check the integrity of the repository')]
 check target:
   just _restic-run {{target}} check --read-data-subset "33%"
 
-[group("backup")]
+[group("restic")]
 [working-directory: 'backup']
 [doc('Get stats of the repository')]
 stats target:
   just _restic-run {{target}} stats
 
-[group("backup")]
+[group("restic")]
 [working-directory: 'backup']
+[doc('List snapshots of the repository')]
 snapshots target count="5":
   just _restic-run {{target}} snapshots --latest {{count}}
 
