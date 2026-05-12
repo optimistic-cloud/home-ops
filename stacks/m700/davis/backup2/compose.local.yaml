@@ -1,0 +1,29 @@
+services:
+  restic:
+    image: restic/restic:latest
+    restart: "no"
+    hostname: "m700"
+    secrets:
+      - restic_password
+    environment:
+      TZ: Europe/Berlin
+      RESTIC_REPOSITORY: ${RESTIC_REPOSITORY}
+      RESTIC_PASSWORD_FILE: /run/secrets/restic_password
+      RESTIC_CACHE_DIR: /root/.cache/restic
+    volumes:
+      - restic-cache:/root/.cache/restic
+      - /mnt/data/m700/davis:/repo
+      - davis-data:/data/davis-data:ro
+      - ${BACKUP_EXPORT_DATA_DIR}:/data/export
+
+secrets:
+  restic_password:
+    file: local.restic.password
+
+volumes:        
+  restic-cache:        
+    name: restic-cache        
+    external: true
+  davis-data:
+    name: davis-data
+    external: true

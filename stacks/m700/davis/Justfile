@@ -98,6 +98,21 @@ restore backup_target snapshot_id="latest":
 ######## RESTIC             ########
 ####################################
 
+[group("backup")]
+[working-directory: 'backup2']
+backup2 target:                                                                                         
+  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm restic backup /data --exclude-caches --skip-if-unchanged
+
+[group("backup")]
+[working-directory: 'backup2']
+config2 target:
+  docker compose -f compose.{{target}}.yaml config
+
+[group("backup")]
+[working-directory: 'backup2']
+snapshots2 target:
+  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm restic snapshots
+
 [group('restic')]
 [doc('Init repository')]
 restic-init backup_target:
