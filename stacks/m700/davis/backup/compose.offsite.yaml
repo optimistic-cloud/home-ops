@@ -1,4 +1,4 @@
-name: davis-backup-restic-s3
+name: davis-backup-restic-offsite
 
 services:
   restic:
