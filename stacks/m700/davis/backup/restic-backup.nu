@@ -4,8 +4,9 @@ const docker_container_name = "davis"
 
 def compose-file [target: string]: nothing -> string {
   match $target {
-    'local' => $"compose.($target).yaml",
-    's3' => "compose.s3.yaml",
+    'local' => "compose.local.yaml",
+    'offsite' => "compose.s3.yaml",
+    'onsite' => "compose.s3.yaml",
     _ => (error make {msg: $"Unknown target ($target)"})
   }
 }
