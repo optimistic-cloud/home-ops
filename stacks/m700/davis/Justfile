@@ -120,11 +120,15 @@ backup2 target:
       --database-name "davis-database.db" 
       --target-dir $export_dir
   )
-  with-env {
-    BACKUP_EXPORT_DATA_DIR: $export_dir
-  } { 
-    docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm --quiet backup
-  }
+
+  (
+    docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env 
+      run --rm --quiet
+      --volume davis-data:/data/davis-data:ro
+      --volume $"($export_dir):/data/export"
+      restic backup /data --exclude-caches --skip-if-unchanged
+  )
+    
 
 [group("backup")]
 [working-directory: 'backup2']
