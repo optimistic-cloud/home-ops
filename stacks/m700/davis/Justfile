@@ -54,6 +54,7 @@ davis-log-tail:
 ####################################
 
 [group("workflows")]
+[doc('Run a backup for the specified target')]
 [working-directory: 'backup']
 workflow-backup target:
   nu workflow-backup.nu --target {{target}}
