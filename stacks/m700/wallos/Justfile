@@ -1,33 +1,3 @@
-set shell := ["bash", "-eoux", "pipefail", "-c"]
-
-set dotenv-load
-
-help:
-  just --list --list-submodules
-
-####################################
-######## DOCKER             ########
-####################################
-
-[group('docker')]
-[doc('Start the stack')]
-up:
-  docker compose up -d --remove-orphans
-
-[group('docker')]
-[doc('Stop the stack')]
-down:
-  docker compose down --remove-orphans
-
-[group('docker')]
-[doc('Restart application stack')]
-restart: down && up
-
-[group('docker')]
-[doc('Get logs for the application')]
-logs:
-  docker compose logs -f
-
 set shell := ["bash", "-eou", "pipefail", "-c"]
 
 set dotenv-load
