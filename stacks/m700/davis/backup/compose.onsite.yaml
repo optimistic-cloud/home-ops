@@ -1,4 +1,4 @@
-name: davis-backup-restic-offsite
+name: davis-backup-restic-onsite
 
 services:
   restic:
@@ -21,7 +21,7 @@ services:
 
 secrets:
   restic_password:
-    file: offsite.restic.password
+    file: onsite.restic.password
 
 volumes:
   restic-cache:
