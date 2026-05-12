@@ -100,8 +100,31 @@ restore backup_target snapshot_id="latest":
 
 [group("backup")]
 [working-directory: 'backup2']
-backup2 target:                                                                                         
-  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm restic backup /data --exclude-caches --skip-if-unchanged
+backup2 target:
+  #!/usr/bin/env nu
+  
+  const docker_container_name = "davis"
+  const docker_volume_name = "davis-data"
+
+  const export_dir = (^mktemp -d /tmp/davis-backup-XXXXXX | str trim)
+
+  (
+    nu export_container_envs.nu 
+      --docker-container-name $docker_container_name 
+      --target-dir $export_dir
+  )
+  (
+    nu export_sqlite.nu 
+      --docker-container-name $docker_container_name
+      --docker-volume-name $docker_volume_name
+      --database-name "davis-database.db" 
+      --target-dir $export_dir
+  )
+  with-env {
+    BACKUP_EXPORT_DATA_DIR: $export_dir
+  } { 
+    docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm restic backup /data --exclude-caches --skip-if-unchanged
+  }
 
 [group("backup")]
 [working-directory: 'backup2']
