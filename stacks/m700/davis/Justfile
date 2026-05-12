@@ -129,4 +129,4 @@ restic-prune target:
 [doc('Restic wrapper to run any restic command with the correct environment')]
 [working-directory: 'backup']
 _restic-run target +restic_args:
-  just _restic-run {{target}} {{restic_args}}
+  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm --quiet restic {{restic_args}}
