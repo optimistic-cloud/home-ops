@@ -30,7 +30,7 @@ def with-tmp-dir [name: string, operation: closure] {
   }
 }
 
-def main [--target: string] {
+def backup-to-target [target: string] {
   let compose_file = $"compose.($target).yaml"
   let restic_env_file = $"($target).restic.env"
 
@@ -60,5 +60,15 @@ def main [--target: string] {
           restic backup /data --exclude-caches --skip-if-unchanged
       )
     }
+  }
+}
+
+def main [...targets: string] {
+  if ($targets | is-empty) {
+    error make {msg: "At least one target is required"}
+  }
+
+  for target in $targets {
+    backup-to-target $target
   }
 }
