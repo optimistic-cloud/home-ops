@@ -41,7 +41,7 @@ services:
       TRUST_PROXY: true
       MAXMIND_LICENSE_KEY:
       #KEYS_STORAGE: file
-      ENCRYPTION_KEY_FILE: /app/secrets/pocket-id.encfile
+      ENCRYPTION_KEY_FILE: /run/secrets/encryption_key_file
 
       EMAIL_ONE_TIME_ACCESS_AS_UNAUTHENTICATED_ENABLED: true
       EMAIL_LOGIN_NOTIFICATION_ENABLED: true
@@ -59,15 +59,20 @@ services:
 
     volumes:
       - pocket-id-data:/app/data
-      - ./pocket-id.encfile:/app/secrets/pocket-id.encfile:ro
     healthcheck:
       test: [ "CMD", "/app/pocket-id", "healthcheck" ]
       interval: 180s
       timeout: 30s
       retries: 5
       start_period: 60s
-    networks:    
+    networks:
       - m700_default
+    secrets:
+      - encryption_key_file
+
+secrets:
+  encryption_key_file:
+    file: pocket-id.encfile
 
 volumes:
   pocket-id-data:
@@ -76,3 +81,4 @@ volumes:
 networks:
   m700_default:
     external: true
+

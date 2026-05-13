@@ -1,25 +1,27 @@
-name: pocket-id-backup
+name: pocket-id-backup-restic-offsite
 
 services:
   restic:
     image: restic/restic:0.18.1@sha256:39d9072fb5651c80d75c7a811612eb60b4c06b32ffe87c2e9f3c7222e1797e76
-    hostname: ${HOSTNAME:-pocket-id-backup}
-    # profiles:
-    #   - restic
+    hostname: m700
     restart: "no"
     stdin_open: true
-    user: "0:0" # TODO
+    user: "0:0"
     environment:
       TZ: Europe/Berlin
+      RESTIC_REPOSITORY: ${RESTIC_REPOSITORY}
+      RESTIC_PASSWORD_FILE: /run/secrets/restic_password
       RESTIC_CACHE_DIR: /root/.cache/restic
-    env_file:
-      - ${RESTIC_ENV_FILE:?RESTIC_ENV_FILE is required}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     volumes:
       - restic-cache:/root/.cache/restic
-      - /mnt/data/m700/pocket-id:/repo
-      - pocket-id-data:/data/pocket-id:ro
-      - ${EXPORT_DATA}:/data/export
-      - ${RESTORE_DATA}:/restore-data
+    secrets:
+      - restic_password
+
+secrets:
+  restic_password:
+    file: offsite.restic.password
 
 volumes:
   restic-cache:
