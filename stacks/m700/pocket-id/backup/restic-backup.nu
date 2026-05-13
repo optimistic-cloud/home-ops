@@ -30,14 +30,18 @@ def with-tmp-dir [name: string, operation: closure] {
   }
 }
 
+def get-restic-env-file-args [target: string] {
+  if $target == "local" { return [] }
+  let restic_env_file = $"($target).restic.env"
+  if not ( $restic_env_file | path exists ) { error make {msg: $"Restic environment file ($restic_env_file) is not found" } }
+  ["--env-file" $restic_env_file]
+}
+
 def main [--target: string] {
   let compose_file = $"compose.($target).yaml"
-  let restic_env_file = $"($target).restic.env"
+  let restic_env_file_args = get-restic-env-file-args $target
 
   if not ( $compose_file | path exists ) { error make {msg: $"Compose file ($compose_file) is not found" } }
-  if not ( $restic_env_file | path exists ) { error make {msg: $"Restic environment file ($restic_env_file) is not found" } }
-
-  #let export_dir = (^mktemp -d $"/tmp/($name)-backup-XXXXXX" | str trim)
 
   with-tmp-dir $name {|export_dir|
     (
@@ -53,12 +57,9 @@ def main [--target: string] {
         --target-dir $export_dir
     )
 
-    # Export file from container
-    docker cp $"($name):/run/secrets/encryption_key_file" $export_dir
-
     with-stopped-docker-container $docker_container_name {
       (
-        docker compose -f $compose_file --env-file $restic_env_file
+        docker compose -f $compose_file ...$restic_env_file_args
           run --rm --quiet
           --volume $"($docker_volume_name):/data/($docker_volume_name):ro"
           --volume $"($export_dir):/data/export"
