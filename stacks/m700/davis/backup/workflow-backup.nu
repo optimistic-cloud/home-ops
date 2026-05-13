@@ -9,7 +9,7 @@ def hc-ping [url: string, --logfile: string] {
 }
 
 def workflow-for-target [target: string] {
-  let ping_url = $"($env.HC_URL)/davis-($target)"
+  let ping_url = $"($env.HC_API)/davis-($target)"
   let run_id = (random uuid)
 
   let logfile = (^mktemp /tmp/davis-backup-XXXXXX | str trim)
