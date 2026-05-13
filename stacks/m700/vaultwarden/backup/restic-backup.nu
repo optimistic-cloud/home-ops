@@ -1,4 +1,5 @@
 use std/log
+use ../../conf.d/backup/lib/restic-compose.nu *
 
 const name = "vaultwarden"
 const docker_container_name = $name
@@ -30,18 +31,7 @@ def with-tmp-dir [name: string, operation: closure] {
   }
 }
 
-def get-restic-env-file-args [target: string] {
-  if $target == "local" { return [] }
-  let restic_env_file = $"($target).restic.env"
-  if not ( $restic_env_file | path exists ) { error make {msg: $"Restic environment file ($restic_env_file) is not found" } }
-  ["--env-file" $restic_env_file]
-}
-
 def main [--target: string] {
-  let compose_file = $"compose.($target).yaml"
-  let restic_env_file_args = get-restic-env-file-args $target
-
-  if not ( $compose_file | path exists ) { error make {msg: $"Compose file ($compose_file) is not found" } }
 
   with-tmp-dir $name {|export_dir|
     (
@@ -59,7 +49,7 @@ def main [--target: string] {
 
     with-stopped-docker-container $docker_container_name {
       (
-        docker compose -f $compose_file ...$restic_env_file_args
+        docker compose ...(get-restic-compose-args $target)
           run --rm --quiet
           --volume $"($docker_volume_name):/data/($docker_volume_name):ro"
           --volume $"($export_dir):/data/export"
