@@ -56,6 +56,7 @@ def backup-to-target [target: string] {
     docker cp gitea:"/var/lib/gitea/gitea-dump.tar.gz" $export_dir
     docker exec -u git gitea rm -f "/var/lib/gitea/gitea-dump.tar.gz"
 
+    mkdir $"($export_dir)/dump"
     tar -xzf $"($export_dir)/gitea-dump.tar.gz" -C $"($export_dir)/dump"
 
     with-stopped-docker-container $docker_container_name {
