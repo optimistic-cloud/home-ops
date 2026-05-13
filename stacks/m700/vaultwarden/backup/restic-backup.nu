@@ -63,13 +63,7 @@ def backup-to-target [target: string] {
   }
 }
 
-def main [...targets: string] {
-  if ($targets | is-empty) {
-    error make {msg: "At least one target is required"}
-  }
-
-  for target in $targets {
-    backup-to-target $target
-  }
+def main [target: string] {
+  backup-to-target $target
 }
 

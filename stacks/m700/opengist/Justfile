@@ -46,8 +46,8 @@ ls-volume-data export_path:
 [group("workflows")]
 [doc('Run a backup for the specified target')]
 [working-directory: 'backup']
-workflow-backup +targets:
-  nu workflow-backup.nu --hc-url $HC_URL {{targets}}
+workflow-backup target:
+  nu workflow-backup.nu --hc-url $HC_URL {{target}}
 
 ####################################
 ######## RESTIC             ########
@@ -56,8 +56,8 @@ workflow-backup +targets:
 [group("restic")]
 [working-directory: 'backup']
 [doc('Run a backup for the specified target')]
-backup +targets:
-  nu restic-backup.nu {{targets}}
+backup target:
+  nu restic-backup.nu {{target}}
 
 [group("restic")]
 [working-directory: 'backup']

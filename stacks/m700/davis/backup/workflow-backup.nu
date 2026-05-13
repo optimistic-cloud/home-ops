@@ -32,12 +32,6 @@ def workflow-for-target [target: string, hc_url: string] {
   }
 }
 
-def main [--hc-url: string, ...targets: string] {
-  if ($targets | is-empty) {
-    error make {msg: "At least one target is required"}
-  }
-
-  for target in $targets {
-    workflow-for-target $target $hc_url
-  }
+def main [--hc-url: string, target: string] {
+  workflow-for-target $target $hc_url
 }
