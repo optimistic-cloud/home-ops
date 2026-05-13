@@ -32,6 +32,11 @@ def with-tmp-dir [name: string, operation: closure] {
 }
 
 def main [--target: string] {
+  let compose_file = $"compose.($target).yaml"
+  let restic_env_file = $"($target).restic.env"
+
+  if not ( $compose_file | path exists ) { error make {msg: $"Compose file ($compose_file) is not found" } }
+  if not ( $restic_env_file | path exists ) { error make {msg: $"Restic environment file ($restic_env_file) is not found" } }
 
   with-tmp-dir $name {|export_dir|
     (
@@ -49,7 +54,7 @@ def main [--target: string] {
 
     with-stopped-docker-container $docker_container_name {
       (
-        docker compose ...(get-restic-compose-args $target)
+        docker compose -f $compose_file --env-file $restic_env_file
           run --rm --quiet
           --volume $"($docker_volume_name):/data/($docker_volume_name):ro"
           --volume $"($export_dir):/data/export"
