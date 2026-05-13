@@ -53,7 +53,7 @@ def backup-to-target [target: string] {
         --database sqlite3
         --type tar.gz
     )
-    docker cp gitea:"/var/lib/gitea/gitea-dump.tar.gz" "$export_dir"
+    docker cp gitea:"/var/lib/gitea/gitea-dump.tar.gz" $export_dir
     docker exec -u git gitea rm -f "/var/lib/gitea/gitea-dump.tar.gz"
 
     tar -xzf $"($export_dir)/gitea-dump.tar.gz" -C $"($export_dir)/dump"
