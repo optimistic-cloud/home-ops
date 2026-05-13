@@ -8,8 +8,8 @@ def hc-ping [url: string, --logfile: string] {
   }
 }
 
-def workflow-for-target [target: string, hc_url: string] {
-  let ping_url = $"($hc_url)-($target)"
+def workflow-for-target [target: string] {
+  let ping_url = $"($env.HC_URL)/davis-($target)"
   let run_id = (random uuid)
 
   let logfile = (^mktemp /tmp/davis-backup-XXXXXX | str trim)
@@ -32,6 +32,6 @@ def workflow-for-target [target: string, hc_url: string] {
   }
 }
 
-def main [--hc-url: string, target: string] {
-  workflow-for-target $target $hc_url
+def main [target: string] {
+  workflow-for-target $target
 }
