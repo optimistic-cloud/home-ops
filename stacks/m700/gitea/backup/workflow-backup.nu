@@ -8,8 +8,7 @@ def hc-ping [url: string, --logfile: string] {
   }
 }
 
-def workflow-for-target [target: string, hc_url: string] {
-  let ping_url = $"($hc_url)-($target)"
+def workflow-for-target [target: string, ping_url: string] {
   let run_id = (random uuid)
 
   let logfile = (^mktemp /tmp/gitea-backup-XXXXXX | str trim)
@@ -32,6 +31,7 @@ def workflow-for-target [target: string, hc_url: string] {
   }
 }
 
-def main [--hc-url: string, target: string] {
-  workflow-for-target $target $hc_url
+def main [target: string, ping_slug: string = "gitea"] {
+  let ping_url = $"($env.HC_API)/($ping_slug)-($target)"
+  workflow-for-target $target $ping_url
 }

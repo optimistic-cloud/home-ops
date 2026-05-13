@@ -47,7 +47,7 @@ ls-volume-data export_path:
 [doc('Run a backup for the specified target')]
 [working-directory: 'backup']
 workflow-backup target:
-  nu workflow-backup.nu --hc-url $HC_URL {{target}}
+  nu workflow-backup.nu {{target}}
 
 ####################################
 ######## RESTIC             ########
