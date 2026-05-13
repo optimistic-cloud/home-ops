@@ -1,5 +1,4 @@
 use std/log
-use ../../conf.d/backup/lib/restic-compose.nu *
 
 const name = "opengist"
 const docker_container_name = $name
