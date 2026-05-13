@@ -40,135 +40,84 @@ ls-volume-data export_path:
   docker run --rm -v {{export_path}}:/data:ro alpine ls -la /data
 
 ####################################
-######## BACKUP             ########
+######## WORKFLOWS          ########
 ####################################
 
-[group("backup")]
-prepare-backup-data:
-    bash prepare_backup_data.sh
-
-[group("backup")]
-cleanup-backup-data:
-  #!/usr/bin/env bash
-  set -eoux pipefail
-
-  export_path="${EXPORT_DATA:?EXPORT_DATA is required}"
-
-  rm -rf "${export_path}"
-
-[group("backup")]
-backup +backup_targets: && cleanup-backup-data up
-  #!/usr/bin/env bash
-  set -euo pipefail
-
-  run_id=$(cat /proc/sys/kernel/random/uuid)
-  hc_check_base_name=gitea
-  hc_base_url="https://${HC_API}/ping/${HC_PING_KEY}/${hc_check_base_name}"
-  curl_cmd="curl -fsS -m 10 --retry 5 -o /dev/null"
-
-  # ping start
-  for backup_target in {{backup_targets}}; do
-    ${curl_cmd} "${hc_base_url}-${backup_target}/start?create=1&rid=${run_id}"
-  done
-
-  just prepare-backup-data
-
-  for backup_target in {{backup_targets}}; do
-    # ping fail
-    on_error() {
-      ${curl_cmd} "${hc_base_url}-${backup_target}/fail?rid=${run_id}"
-    }
-    trap on_error ERR
-
-    log=$(just restic-backup "$backup_target")
-    exit_code=$?
-    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
-
-    log=$(just restic-check "$backup_target")
-    exit_code=$?
-    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
-
-    log=$(just restic-forget "$backup_target")
-    exit_code=$?
-    ${curl_cmd} --data-raw "${log}" "${hc_base_url}-${backup_target}/${exit_code}?rid=${run_id}"
-  done
-
-[group("backup")]
-restore backup_target snapshot_id="latest":
-  #!/usr/bin/env bash
-  mkdir -p "${RESTORE_DATA}"
-  just restic-restore {{backup_target}} {{snapshot_id}}
+[group("workflows")]
+[doc('Run a backup for the specified target')]
+[working-directory: 'backup']
+workflow-backup target:
+  nu workflow-backup.nu --hc-url $HC_URL {{target}}
 
 ####################################
 ######## RESTIC             ########
 ####################################
 
+[group("restic")]
+[working-directory: 'backup']
+[doc('Run a backup for the specified target')]
+backup target:
+  nu restic-backup.nu {{target}}
+
+[group("restic")]
+[working-directory: 'backup']
+[doc('Forget old backups for the specified target')]
+forget target:
+  just _restic-run {{target}} forget --keep-within 365d --quiet
+
+[group("restic")]
+[working-directory: 'backup']
+[doc('Check the integrity of the repository')]
+check target:
+  just _restic-run {{target}} check --read-data-subset "33%"
+
+[group("restic")]
+[working-directory: 'backup']
+[doc('Get stats of the repository')]
+stats target:
+  just _restic-run {{target}} stats
+
+[group("restic")]
+[working-directory: 'backup']
+[doc('List snapshots of the repository')]
+snapshots target count="5":
+  just _restic-run {{target}} snapshots --latest {{count}}
+
 [group('restic')]
 [doc('Init repository')]
-restic-init backup_target:
-  just _restic-run {{backup_target}} init
-
-[group('restic')]
-[doc('Backup data')]
-[private]
-restic-backup backup_target:
-  #!/usr/bin/env bash
-
-  git_commit=$(git ls-remote https://github.com/optimistic-cloud/home-ops.git HEAD | cut -f1)
-  just _restic-run {{backup_target}} --tag "git_commit=${git_commit}" --exclude-caches --skip-if-unchanged --json --quiet backup /data | jq
-
-[group('restic')]
-[doc('Restore data')]
-[private]
-restic-restore backup_target snapshot_id:
-  just _restic-run {{backup_target}} restore {{snapshot_id}} --target /restore-data
-
-[group('restic')]
-[doc('Get snapshots')]
-restic-snapshots backup_target count="5":
-  just _restic-run {{backup_target}} --quiet snapshots --latest {{count}}
+[working-directory: 'backup']
+init target:
+  just _restic-run {{target}} init
 
 [group('restic')]
 [doc('List files in the latest snapshot')]
-restic-ls backup_target snapshot_id="latest":
-  just _restic-run {{backup_target}} --quiet ls {{snapshot_id}}
+[working-directory: 'backup']
+ls target snapshot_id="latest":
+  just _restic-run {{target}} ls {{snapshot_id}}
 
 [group('restic')]
-[doc('Get stats of the repository')]
-restic-stats backup_target:
-  just _restic-run {{backup_target}} stats --mode raw-data
+[doc('Restore data')]
+[working-directory: 'backup']
+[private]
+restore target snapshot_id:
+  just _restic-run {{target}} restore {{snapshot_id}} --target /restore-data
 
 [group('restic')]
 [doc('Unlock repository')]
-restic-unlock backup_target:
-  just _restic-run {{backup_target}} --quiet unlock
-
-[group('restic')]
-[doc('Forget old snapshots')]
-restic-forget backup_target keep-within="365d":
-  just _restic-run {{backup_target}} --quiet forget --keep-within {{keep-within}}
+[working-directory: 'backup']
+restic-unlock target:
+  just _restic-run {{target}} unlock
 
 [group('restic')]
 [doc('Prune snapshots')]
-restic-prune backup_target:
-  just _restic-run {{backup_target}} --quiet prune
-
-[group('restic')]
-[doc('Check snapshots')]
-restic-check backup_target read-data-subset="33%":
-  just _restic-run {{backup_target}} --json check --read-data-subset {{read-data-subset}} | jq
+[working-directory: 'backup']
+restic-prune target:
+  just _restic-run {{target}} prune
 
 [group('restic')]
 [private]
-[doc('For each restic command but not backup, as it needs additional volumes and environment variables')]
-_restic-run backup_target +restic_args:
-  #!/usr/bin/env nu
-
-  let backup_target = "{{backup_target}}"
-
-  with-env { 
-    HOSTNAME: "m700"
-    RESTIC_ENV_FILE: $"($backup_target).restic.env" 
-  } {
-    ^docker compose -f docker-compose.backup.yaml run --rm restic {{restic_args}}
-  }
+[doc('Restic wrapper to run any restic command with the correct environment')]
+[working-directory: 'backup']
+_restic-run target +restic_args:
+  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm --quiet restic {{restic_args}}
+  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env down --remove-orphans
