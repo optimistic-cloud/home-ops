@@ -11,9 +11,22 @@ def with-stopped-docker-container [name: string, operation: closure] {
     do $operation
     docker container start $name
   } catch {|err|
-      # https://github.com/nushell/nushell/issues/15279
+      # TODO: https://github.com/nushell/nushell/issues/15279
       docker container start $name
       error make $err
+  }
+}
+
+def with-tmp-dir [name: string, operation: closure] {
+  let export_dir = (^mktemp -d $"/tmp/($name)-backup-XXXXXX" | str trim)
+
+  try {
+    do $operation $export_dir
+    rm -rf $export_dir
+  } catch {|err|
+    # TODO: https://github.com/nushell/nushell/issues/15279
+    rm -rf $export_dir
+    error make $err
   }
 }
 
@@ -24,33 +37,33 @@ def main [--target: string] {
   if not ( $compose_file | path exists ) { error make {msg: $"Compose file ($compose_file) is not found" } }
   if not ( $restic_env_file | path exists ) { error make {msg: $"Restic environment file ($restic_env_file) is not found" } }
 
-  let export_dir = (^mktemp -d $"/tmp/($name)-backup-XXXXXX" | str trim)
+  #let export_dir = (^mktemp -d $"/tmp/($name)-backup-XXXXXX" | str trim)
 
-  (
-    nu export_container_envs.nu
-      --docker-container-name $docker_container_name
-      --target-dir $export_dir
-  )
-  (
-    nu export_sqlite.nu
-      --docker-container-name $docker_container_name
-      --docker-volume-name $docker_volume_name
-      --database-name $database_name
-      --target-dir $export_dir
-  )
-
-  # Export file from container
-  docker cp $"($name):/run/secrets/encryption_key_file" $export_dir
-
-  with-stopped-docker-container $docker_container_name {
+  with-tmp-dir $name {|export_dir|
     (
-      docker compose -f $compose_file --env-file $restic_env_file
-        run --rm --quiet
-        --volume $"($docker_volume_name):/data/($docker_volume_name):ro"
-        --volume $"($export_dir):/data/export"
-        restic backup /data --exclude-caches --skip-if-unchanged
+      nu export_container_envs.nu
+        --docker-container-name $docker_container_name
+        --target-dir $export_dir
     )
-  }
+    (
+      nu export_sqlite.nu
+        --docker-container-name $docker_container_name
+        --docker-volume-name $docker_volume_name
+        --database-name $database_name
+        --target-dir $export_dir
+    )
 
-  rm -rf $export_dir
+    # Export file from container
+    docker cp $"($name):/run/secrets/encryption_key_file" $export_dir
+
+    with-stopped-docker-container $docker_container_name {
+      (
+        docker compose -f $compose_file --env-file $restic_env_file
+          run --rm --quiet
+          --volume $"($docker_volume_name):/data/($docker_volume_name):ro"
+          --volume $"($export_dir):/data/export"
+          restic backup /data --exclude-caches --skip-if-unchanged
+      )
+    }
+  }
 }
