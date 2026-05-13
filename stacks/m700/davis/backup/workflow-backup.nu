@@ -8,7 +8,7 @@ def hc-ping [url: string, --logfile: string] {
   }
 }
 
-def main [--target: string, --hc-url: string] {
+def workflow-for-target [target: string, hc_url: string] {
   let ping_url = $"($hc_url)-($target)"
   let run_id = (random uuid)
 
@@ -29,5 +29,15 @@ def main [--target: string, --hc-url: string] {
     $err.msg | save --append $logfile
     hc-ping $"($ping_url)/fail?rid=($run_id)" --logfile $logfile
     error make $err
+  }
+}
+
+def main [--hc-url: string, ...targets: string] {
+  if ($targets | is-empty) {
+    error make {msg: "At least one target is required"}
+  }
+
+  for target in $targets {
+    workflow-for-target $target $hc_url
   }
 }
