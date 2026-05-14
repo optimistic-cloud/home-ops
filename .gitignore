@@ -15,10 +15,10 @@ stacks/vps/caddy/data/
 conf.d/invidious/config.yml
 
 # lldap
-lldap/jwt.txt
-lldap/key_seed.txt
-lldap/cloudflare.ini
-lldap/etc/
+**/lldap/jwt.txt
+**/lldap/key_seed.txt
+**/lldap/cloudflare.ini
+**/lldap/etc/
 
 # restic
 *.restic.password
