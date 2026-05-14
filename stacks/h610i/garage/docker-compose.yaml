@@ -10,7 +10,8 @@ services:
     environment:
       API_BASE_URL: "http://garage:3903"
       S3_ENDPOINT_URL: "http://garage:3900"
-
+    networks:
+      - caddy
   garage:
     image: dxflrs/garage:v2.3.0@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690
     container_name: garage
