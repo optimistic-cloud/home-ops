@@ -21,7 +21,7 @@ services:
   # Gitea users are provisiond via Pocket ID
   # TODO: https://github.com/go-gitea/gitea/issues/31995
   gitea:
-    image: docker.gitea.com/gitea:1.25.5-rootless@sha256:be0b89adf2fc8657df508303d919c3be33e6413605882919f702177d62960c9a
+    image: docker.gitea.com/gitea:1.26.1-rootless@sha256:4c4256497e2e237ddebdd30986c7ce52cb6f936b3e90c34bb9f4665714599f62
     container_name: gitea
     restart: unless-stopped
     expose:
