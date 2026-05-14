@@ -14,25 +14,28 @@ services:
   certbot:
     container_name: lldap-certbot
     image: certbot/dns-cloudflare:latest@sha256:f90db06a98b61bd221fe5a9688d0bb975b444760ef677cb4369ffc2a8a16e579
-    command: >-
-      set -eEou pipefail
+    command:
+      - sh
+      - -c
+      - |
+        set -eEou pipefail
 
-      on_error() {
-        curl -fsS -m 10 --retry 5 -o /dev/null -X POST $HC_API/lldap-certbot/fail"
-      }
+        on_error() {
+          curl -fsS -m 10 --retry 5 -o /dev/null -X POST "$HC_API/lldap-certbot/fail"
+        }
 
-      trap on_error ERR
+        trap on_error ERR
 
-      certonly
-        --non-interactive
-        --agree-tos
-        --email ${EMAIL}
-        --dns-cloudflare
-        --dns-cloudflare-credentials "/run/secrets/cloudflare_token"
-        --dns-cloudflare-propagation-seconds 60
-        -d "ldap.optimistic.cloud"
+        certonly \
+          --non-interactive \
+          --agree-tos \
+          --email "$EMAIL" \
+          --dns-cloudflare \
+          --dns-cloudflare-credentials "/run/secrets/cloudflare_token" \
+          --dns-cloudflare-propagation-seconds 60 \
+          -d "ldap.optimistic.cloud"
 
-      curl -fsS -m 10 --retry 5 -o /dev/null -X POST $HC_API/lldap-certbot"
+        curl -fsS -m 10 --retry 5 -o /dev/null -X POST "$HC_API/lldap-certbot?create=1"
     volumes:
       - ./etc/letsencrypt:/etc/letsencrypt
       - ./certbot/data:/var/www/certbot
