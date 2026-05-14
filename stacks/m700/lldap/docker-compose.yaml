@@ -19,9 +19,9 @@ services:
         --non-interactive
         --agree-tos
         --email ${EMAIL}
-        --dns-cloudflare 
+        --dns-cloudflare
         --dns-cloudflare-credentials "/run/secrets/cloudflare_token"
-        --dns-cloudflare-propagation-seconds 60 
+        --dns-cloudflare-propagation-seconds 60
         -d "ldap.optimistic.cloud"
     volumes:
       - ./etc/letsencrypt:/etc/letsencrypt

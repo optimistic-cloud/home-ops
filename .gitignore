@@ -7,7 +7,7 @@ traefik.yml
 
 garage.toml
 
-# TODO: 
+# TODO:
 stacks/vps/caddy/config/
 stacks/vps/caddy/data/
 
@@ -17,6 +17,7 @@ conf.d/invidious/config.yml
 # lldap
 jwt.txt
 key_seed.txt
+cloudflare.ini
 
 # restic
 *.restic.password
