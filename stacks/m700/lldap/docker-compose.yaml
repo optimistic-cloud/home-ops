@@ -12,8 +12,9 @@ networks:
 services:
 
   certbot:
+    # https://hub.docker.com/r/certbot/dns-cloudflare
+    image: certbot/dns-cloudflare:v5.5.0@sha256:f90db06a98b61bd221fe5a9688d0bb975b444760ef677cb4369ffc2a8a16e579
     container_name: lldap-certbot
-    image: certbot/dns-cloudflare:latest@sha256:f90db06a98b61bd221fe5a9688d0bb975b444760ef677cb4369ffc2a8a16e579
     command: >-
       certonly
         --non-interactive
@@ -31,7 +32,8 @@ services:
     restart: "no"
 
   lldap:
-    image: lldap/lldap:stable@sha256:9e605a66c02514bfcffd1b67cafb1e98d50992216bb2871d7ae44622047dd09d
+    # https://hub.docker.com/r/lldap/lldap
+    image: lldap/lldap:v0.6.2@sha256:9e605a66c02514bfcffd1b67cafb1e98d50992216bb2871d7ae44622047dd09d
     container_name: lldap
     restart: unless-stopped
     networks:
