@@ -11,7 +11,7 @@ services:
       - 3000
       - 3001
     volumes:
-      - mdbook-data:/book
+      - ./mdbook-data:/book
     environment:
       TZ: Europe/Berlin
     command:
@@ -24,4 +24,3 @@ services:
 networks:
   m700_default:
     external: true
- 
