@@ -1,0 +1,112 @@
+set shell := ["bash", "-eou", "pipefail", "-c"]
+
+set dotenv-load
+
+help:
+  just --list --list-submodules
+
+####################################
+######## DOCKER             ########
+####################################
+
+[group('docker')]
+[doc('Start the stack')]
+up:
+  docker compose up -d --remove-orphans
+
+[group('docker')]
+[doc('Stop the stack')]
+down:
+  docker compose down --remove-orphans
+
+[group('docker')]
+[doc('Restart application stack')]
+restart: down && up
+
+[group('docker')]
+[doc('Get logs for the application')]
+logs:
+  docker compose logs -f
+
+####################################
+######## WORKFLOWS          ########
+####################################
+
+[group("workflows")]
+[doc('Run a backup for the specified target')]
+[working-directory: 'backup']
+workflow-backup target:
+  nu workflow-backup.nu {{target}}
+
+####################################
+######## RESTIC             ########
+####################################
+
+[group("restic")]
+[working-directory: 'backup']
+[doc('Run a backup for the specified target')]
+backup target:
+  nu restic-backup.nu {{target}}
+
+[group('restic')]
+[doc('Restore data')]
+[working-directory: 'backup']
+[private]
+restore target snapshot_id:
+  nu restic-restore.nu {{target}} {{snapshot_id}}
+
+[group("restic")]
+[working-directory: 'backup']
+[doc('Forget old backups for the specified target')]
+forget target:
+  just _restic-run {{target}} forget --keep-within 365d --quiet
+
+[group("restic")]
+[working-directory: 'backup']
+[doc('Check the integrity of the repository')]
+check target:
+  just _restic-run {{target}} check --read-data-subset "33%"
+
+[group("restic")]
+[working-directory: 'backup']
+[doc('Get stats of the repository')]
+stats target:
+  just _restic-run {{target}} stats
+
+[group("restic")]
+[working-directory: 'backup']
+[doc('List snapshots of the repository')]
+snapshots target count="5":
+  just _restic-run {{target}} snapshots --latest {{count}}
+
+[group('restic')]
+[doc('Init repository')]
+[working-directory: 'backup']
+init target:
+  just _restic-run {{target}} init
+
+[group('restic')]
+[doc('List files in the latest snapshot')]
+[working-directory: 'backup']
+ls target snapshot_id="latest":
+  just _restic-run {{target}} ls {{snapshot_id}}
+
+[group('restic')]
+[doc('Unlock repository')]
+[working-directory: 'backup']
+restic-unlock target:
+  just _restic-run {{target}} unlock
+
+[group('restic')]
+[doc('Prune snapshots')]
+[working-directory: 'backup']
+restic-prune target:
+  just _restic-run {{target}} prune
+
+[group('restic')]
+[private]
+[doc('Restic wrapper to run any restic command with the correct environment')]
+[working-directory: 'backup']
+_restic-run target +restic_args:
+  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env run --rm --quiet restic {{restic_args}}
+  docker compose -f compose.{{target}}.yaml --env-file {{target}}.restic.env down --remove-orphans

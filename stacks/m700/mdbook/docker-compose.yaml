@@ -1,0 +1,27 @@
+name: mdbook
+
+services:
+  mdbook:
+    container_name: mdbook
+    image: peaceiris/mdbook:v0.5.0
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    expose:
+      - 3000
+      - 3001
+    volumes:
+      - mdbook-data:/book
+    environment:
+      TZ: Europe/Berlin
+    command:
+      - serve
+      - --hostname
+      - '0.0.0.0'
+    networks:
+      - m700_default
+
+networks:
+  m700_default:
+    external: true
+ 

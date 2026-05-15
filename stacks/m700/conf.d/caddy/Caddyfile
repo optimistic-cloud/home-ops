@@ -2,7 +2,7 @@
     acme_dns cloudflare {env.CF_DNS_API_TOKEN}
 
     #debug
-    
+
     #servers {
     #  # DANGEROUS: logs Authorization/Cookie headers unredacted
     #  log_credentials
@@ -50,6 +50,9 @@ dav.optimistic.cloud {
 ldap.optimistic.cloud {
     reverse_proxy lldap:17170
 }
+docs.optimistic.cloud {
+    reverse_proxy mdbook:3000
+}
 
 # Matrix
 matrix.optimistic.cloud {
@@ -67,4 +70,3 @@ element-admin.optimistic.cloud {
 element.optimistic.cloud {
     reverse_proxy element:80
 }
-            
