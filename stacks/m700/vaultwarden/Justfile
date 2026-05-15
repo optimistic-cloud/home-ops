@@ -59,6 +59,13 @@ workflow-backup target:
 backup target:
   nu restic-backup.nu {{target}}
 
+[group('restic')]
+[doc('Restore data')]
+[working-directory: 'backup']
+[private]
+restore target snapshot_id:
+  nu restic-restore.nu {{target}} {{snapshot_id}}
+
 [group("restic")]
 [working-directory: 'backup']
 [doc('Forget old backups for the specified target')]
@@ -94,13 +101,6 @@ init target:
 [working-directory: 'backup']
 ls target snapshot_id="latest":
   just _restic-run {{target}} ls {{snapshot_id}}
-
-[group('restic')]
-[doc('Restore data')]
-[working-directory: 'backup']
-[private]
-restore target snapshot_id:
-  just _restic-run {{target}} restore {{snapshot_id}} --target /restore-data
 
 [group('restic')]
 [doc('Unlock repository')]
