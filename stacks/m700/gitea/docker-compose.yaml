@@ -76,6 +76,7 @@ services:
       start_period: 60s
     networks:
       - m700_default
+      - gitea
 
   runner:
     image: docker.io/gitea/act_runner:nightly
@@ -94,6 +95,8 @@ services:
     volumes:
       - gitea-runner-data:/data
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - gitea
 
 volumes:
   m700_gitea-data:
@@ -106,3 +109,4 @@ volumes:
 networks:
   m700_default:
     external: true
+  gitea:
