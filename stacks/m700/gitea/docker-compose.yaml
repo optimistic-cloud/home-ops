@@ -97,7 +97,7 @@ services:
         condition: service_healthy
     environment:
       CONFIG_FILE: /data/config.yaml
-      GITEA_INSTANCE_URL: "https://git.optimistic.cloud"
+      GITEA_INSTANCE_URL: "https://git.${DOMAIN}"
       GITEA_RUNNER_REGISTRATION_TOKEN: "${REGISTRATION_TOKEN}"
       GITEA_RUNNER_NAME: "m700"
       GITEA_RUNNER_LABELS: "m700:docker://node:20-bookworm"
