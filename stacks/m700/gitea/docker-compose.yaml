@@ -109,3 +109,5 @@ volumes:
 networks:
   m700_default:
     external: true
+  gitea_default:
+    external: true
