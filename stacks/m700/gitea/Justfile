@@ -34,6 +34,11 @@ ls-gitea-data:
   just ls-volume-data gitea-data
 
 [group("docker")]
+[doc('List data of the runner')]
+ls-gitea-runner-data:
+  just ls-volume-data gitea_runner-data
+
+[group("docker")]
 [doc('List docker volume data')]
 [private]
 ls-volume-data export_path:
