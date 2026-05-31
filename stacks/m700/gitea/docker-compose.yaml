@@ -86,7 +86,7 @@ services:
       gitea:
         condition: service_healthy
     environment:
-      GITEA_RUNNER_EPHEMERAL: 0
+      GITEA_RUNNER_EPHEMERAL: "false"
       CONFIG_FILE: /data/config.yaml
       GITEA_INSTANCE_URL: "https://git.optimistic.cloud"
       GITEA_RUNNER_REGISTRATION_TOKEN: "${REGISTRATION_TOKEN}"
