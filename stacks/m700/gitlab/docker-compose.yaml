@@ -80,16 +80,11 @@ services:
 
 volumes:
   m700_gitlab-config:
-    external: true
   m700_gitlab-logs:
-    external: true
   m700_gitlab-data:
-    external: true
   runner-data:
-    external: false
 
 networks:
   m700_default:
     external: true
   gitlab_default:
-    external: true
