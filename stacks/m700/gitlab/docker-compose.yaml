@@ -20,7 +20,7 @@ services:
   #        --name "m700"
 
   gitlab:
-    image: docker.io/gitlab/gitlab-ce:17.11.3-ce.0
+    image: docker.io/gitlab/gitlab-ce:19.0.1-ce.0@sha256:c7082004a0f64123634fda345e849453d52956621893bed7d2218fa6f088247f
     container_name: gitlab
     restart: unless-stopped
     expose:
