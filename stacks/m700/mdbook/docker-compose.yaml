@@ -3,7 +3,7 @@ name: mdbook
 services:
   mdbook:
     container_name: mdbook
-    image: peaceiris/mdbook:v0.5.0
+    image: peaceiris/mdbook:v0.5.0@sha256:a82fd90af897238521c17e4b64479f5d56b578e4776198788256086b3a59617a
     restart: unless-stopped
     user: "1000:1000"
     stdin_open: true
