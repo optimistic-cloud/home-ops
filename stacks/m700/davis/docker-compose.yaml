@@ -15,7 +15,7 @@ services:
 
   davis:
     image: ghcr.io/tchapi/davis-standalone:5.4.2@sha256:ca267e945012edfb2d1252d9dbb298d39804c6d47232ee2535ae7fc3c664109b
-    container_name: ${DOCKER_CONTAINER_NAME}
+    container_name: davis
     restart: unless-stopped
     env_file: .env
     depends_on:
@@ -24,7 +24,7 @@ services:
     environment:
       - APP_ENV=prod
       - DATABASE_DRIVER=sqlite
-      - DATABASE_URL=sqlite:////data/${DATABASE_NAME}
+      - DATABASE_URL=sqlite:////data/davis-database.db
       - MAILER_DSN=smtp://${MAIL_USERNAME}:${MAIL_PASSWORD}@${MAIL_HOST}:${MAIL_PORT}
       - APP_TIMEZONE=Europe/Berlin
       - CALDAV_ENABLED=true
