@@ -78,6 +78,16 @@ services:
       - m700_default
       - gitea_default
 
+  runner-init:
+    image: alpine:3.23.4@sha256:5b10f432ef3da1b8d4c7eb6c487f2f5a8f096bc91145e68878dd4a5019afde11
+    volumes:
+      - runner-data:/data
+    command: |
+      sh -c "
+        touch /data/config.yaml
+      "
+    restart: "no"
+
   runner:
     image: docker.io/gitea/act_runner:nightly
     container_name: gitea-runner
