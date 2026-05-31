@@ -51,6 +51,9 @@ services:
 
         gitlab_rails['time_zone'] = 'Europe/Berlin'
         gitlab_rails['usage_ping_enabled'] = false
+        puma['worker_processes'] = 2
+        sidekiq['concurrency'] = 5
+        prometheus_monitoring['enable'] = false
     volumes:
       - m700_gitlab-config:/etc/gitlab
       - m700_gitlab-logs:/var/log/gitlab
