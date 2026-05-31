@@ -91,7 +91,7 @@ services:
       GITEA_INSTANCE_URL: "http://gitea:3000"
       GITEA_RUNNER_REGISTRATION_TOKEN: "${REGISTRATION_TOKEN}"
       GITEA_RUNNER_NAME: "m700"
-      GITEA_RUNNER_LABELS: "m700"
+      GITEA_RUNNER_LABELS: "m700:docker://node:20-bookworm"
     volumes:
       - runner-data:/data
       - /var/run/docker.sock:/var/run/docker.sock
