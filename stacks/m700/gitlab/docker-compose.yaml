@@ -93,7 +93,7 @@ services:
       - gitlab_default
 
   runner:
-    image: docker.io/gitlab/gitlab-runner:v17.11.3
+    image: docker.io/gitlab/gitlab-runner:v17.11.4@sha256:1cb0ffb989a0e71866fc911f6fb48bdcfe07fc183bd3af8e414213c2c257f6bf
     container_name: gitlab-runner
     restart: unless-stopped
     depends_on:
