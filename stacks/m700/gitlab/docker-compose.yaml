@@ -1,0 +1,95 @@
+name: gitlab
+
+services:
+  # Deployment notes
+  # 1. Create external volumes before first run:
+  #      docker volume create m700_gitlab-config
+  #      docker volume create m700_gitlab-logs
+  #      docker volume create m700_gitlab-data
+  #      docker network create gitlab_default
+  # 2. Start the stack: docker compose up -d
+  # 3. GitLab takes ~5 min to become healthy on first boot
+  # 4. Register the runner after GitLab is up:
+  #      docker compose exec runner gitlab-runner register \
+  #        --non-interactive \
+  #        --url "http://gitlab:80" \
+  #        --token "<glrt-token from Admin > CI/CD > Runners>" \
+  #        --executor "docker" \
+  #        --docker-image "docker:latest" \
+  #        --docker-volumes "/var/run/docker.sock:/var/run/docker.sock" \
+  #        --name "m700"
+
+  gitlab:
+    image: docker.io/gitlab/gitlab-ce:17.11.3-ce.0
+    container_name: gitlab
+    restart: unless-stopped
+    expose:
+      - "80"
+    environment:
+      TZ: Europe/Berlin
+      GITLAB_ROOT_PASSWORD: "${GITLAB_ROOT_PASSWORD}"
+      SMTP_HOST: "${SMTP_HOST}"
+      SMTP_PORT: "${SMTP_PORT}"
+      GITLAB_SMTP_USER: "${GITLAB_SMTP_USER}"
+      GITLAB_SMTP_PASSWORD: "${GITLAB_SMTP_PASSWORD}"
+      GITLAB_SMTP_FROM: "${GITLAB_SMTP_FROM}"
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://gitlab.${DOMAIN}'
+        nginx['listen_port'] = 80
+        nginx['listen_https'] = false
+        nginx['redirect_http_to_https'] = false
+
+        gitlab_rails['initial_root_password'] = ENV['GITLAB_ROOT_PASSWORD']
+        gitlab_rails['display_initial_root_password'] = false
+
+        gitlab_rails['smtp_enable'] = true
+        gitlab_rails['smtp_address'] = ENV['SMTP_HOST']
+        gitlab_rails['smtp_port'] = ENV['SMTP_PORT'].to_i
+        gitlab_rails['smtp_user_name'] = ENV['GITLAB_SMTP_USER']
+        gitlab_rails['smtp_password'] = ENV['GITLAB_SMTP_PASSWORD']
+        gitlab_rails['smtp_from_address'] = ENV['GITLAB_SMTP_FROM']
+
+        gitlab_rails['time_zone'] = 'Europe/Berlin'
+        gitlab_rails['usage_ping_enabled'] = false
+    volumes:
+      - m700_gitlab-config:/etc/gitlab
+      - m700_gitlab-logs:/var/log/gitlab
+      - m700_gitlab-data:/var/opt/gitlab
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/-/health"]
+      interval: 180s
+      timeout: 30s
+      retries: 5
+      start_period: 360s
+    networks:
+      - m700_default
+      - gitlab_default
+
+  runner:
+    image: docker.io/gitlab/gitlab-runner:v17.11.3
+    container_name: gitlab-runner
+    restart: unless-stopped
+    depends_on:
+      gitlab:
+        condition: service_healthy
+    volumes:
+      - runner-data:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - gitlab_default
+
+volumes:
+  m700_gitlab-config:
+    external: true
+  m700_gitlab-logs:
+    external: true
+  m700_gitlab-data:
+    external: true
+  runner-data:
+    external: false
+
+networks:
+  m700_default:
+    external: true
+  gitlab_default:
+    external: true

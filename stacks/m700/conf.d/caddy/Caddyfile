@@ -23,6 +23,9 @@ gist.optimistic.cloud {
 git.optimistic.cloud {
     reverse_proxy gitea:3000
 }
+gitlab.optimistic.cloud {
+    reverse_proxy gitlab:80
+}
 id.optimistic.cloud {
     reverse_proxy pocket-id:1411
 }
