@@ -24,7 +24,7 @@ services:
   #     <<: *default-healthcheck
 
   synapse:
-    image: matrixdotorg/synapse:latest@sha256:3a18f811c6269f0e814e38496e90869cf7aeb05fc4301526cdd31608fef63616
+    image: matrixdotorg/synapse:latest@sha256:6965329e03e72f170c9f7e201e83d5f6e06116aae0431a76634dd84d4f70b106
     container_name: synapse
     restart: unless-stopped
     # depends_on:
