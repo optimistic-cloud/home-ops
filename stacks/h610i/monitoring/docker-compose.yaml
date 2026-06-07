@@ -1,7 +1,7 @@
 services:
   dozzle:
     container_name: dozzle
-    image: amir20/dozzle:latest@sha256:3d42f4c7b27f475117004f8524b52b6ea2cc1cdc39a508892d6b81ffb2883160
+    image: amir20/dozzle:latest@sha256:fa12525776bf665147d82bf031ff262ee89a0a12454122558a353ec38ada4aaf
     command: agent
     restart: unless-stopped
     ports:
