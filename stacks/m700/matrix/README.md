@@ -13,3 +13,11 @@ add `enable_registration: false` to homeserver.yaml
 - https://github.com/element-hq/matrix-authentication-service
 - https://github.com/wlphi/ess-docker-compose/blob/main/docker-compose.yml
 - https://element-hq.github.io/synapse/latest/turn-howto.html
+
+
+# join the room
+curl -XPOST \
+                                                -H "Authorization: Bearer <token>" \
+                                                -H "Content-Type: application/json" \
+                                                -d '{}' \
+                                                "https://matrix.server.com/_matrix/client/r0/rooms/<room_id>/join"
