@@ -53,6 +53,7 @@ services:
       GITEA__service__ALLOW_ONLY_EXTERNAL_REGISTRATION: true
       GITEA__service__SHOW_REGISTRATION_BUTTON: false
       GITEA__service__ENABLE_PASSKEY_AUTHENTICATION: false
+      GITEA__service__ENABLE_NOTIFY_MAIL: true
 
       GITEA__openid__ENABLE_OPENID_SIGNIN: false
       GITEA__openid__ENABLE_OPENID_SIGNUP: false
