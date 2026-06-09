@@ -65,6 +65,8 @@ services:
 
       GITEA__server__START_SSH_SERVER: false
       GITEA__server__DISABLE_SSH: true
+
+      GITEA__webhook__ALLOWED_HOST_LIST: "matrix.${DOMAIN}"
     volumes:
       - m700_gitea-data:/var/lib/gitea
       - m700_gitea-config:/etc/gitea
