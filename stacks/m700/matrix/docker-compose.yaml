@@ -46,7 +46,7 @@ services:
       - m700_default
 
   element:
-    image: vectorim/element-web:latest@sha256:3f031bba174a062d21dcb506662031ce717586c05c03d018063c19470941ac70
+    image: vectorim/element-web:latest@sha256:3e7dbd4424de9e11c812bc740acf2725b2abe66ea0d0802023b56fd85d3fa09a
     container_name: element
     volumes:
       - ./element-config.json:/app/config.json:ro
