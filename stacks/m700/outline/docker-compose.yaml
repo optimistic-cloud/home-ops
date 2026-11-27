@@ -39,7 +39,7 @@ services:
 
   postgres:
     container_name: outline-postgres
-    image: postgres:18@sha256:a9abf4275f9e99bff8e6aed712b3b7dfec9cac1341bba01c1ffdfce9ff9fc34a
+    image: postgres:18@sha256:64c8b0d31e4ab6ea665e8426ea406a94bf52de3c05b3a4a8bf713704eefa9328
     env_file: .env
     restart: unless-stopped
     expose:
