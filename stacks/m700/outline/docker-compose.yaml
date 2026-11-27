@@ -21,7 +21,7 @@ services:
       - outline
 
   redis:
-    image: redis@sha256:315270d166080f537bbdf1b489b603aaaa213cb55a544acfa51feb7481abb1c0
+    image: redis@sha256:56a1737794e36c3ebe8a4544a8ab421af3ab1a6488fb2238aec228c404933fed
     env_file: .env
     restart: unless-stopped
     expose:
